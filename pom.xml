@@ -75,7 +75,7 @@
                     <execution>
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>ni.edu.uam.proyectofinalpae/ni.edu.uam.proyectofinalpae.application.HelloApplication
+                            <mainClass>ni.edu.uam.proyectofinalpae/ni.edu.uam.proyectofinalpae.application.MainApplication
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
