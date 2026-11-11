@@ -3,6 +3,7 @@ module ni.edu.uam.proyectofinalpae {
     requires javafx.fxml;
     requires static lombok;
     requires jakarta.persistence;
+    requires org.hibernate.orm.core;
 
     opens ni.edu.uam.proyectofinalpae to javafx.fxml;
     exports ni.edu.uam.proyectofinalpae;
