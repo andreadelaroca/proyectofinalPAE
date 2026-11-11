@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/favafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.LoginController">
+    <padding>
+            <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+    </padding>
+    <Label text="BunBun Stitches - Iniciar sesión" textFill="#3b5998">
+        <font>
+            <Font name="System Bold" size="24.0" />
+        </font>
+    </Label>
+
+    <GridPane hgap="10.0" vgap="15.0">
+        <Label text="Usuario:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="txtUsuario" promptText="Ingrese su nombre de usuario" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+        <Label text="Contraseña:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <PasswordField fx:id="txtPassword" promptText="Ingrese su contraseña" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    </GridPane>
+    Button fx:id="btnLogin" onAction="#handleLogin" text="Ingresar" prefWidth="150.0" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;" />
+
+    <Label fx:id="lblError" textFill="red" />
+</VBox>
