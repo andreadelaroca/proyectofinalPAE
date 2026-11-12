@@ -5,7 +5,7 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity @Table(name = "clientes") @Getter @Setter @AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity @Table(name = "clientes") @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class Cliente {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

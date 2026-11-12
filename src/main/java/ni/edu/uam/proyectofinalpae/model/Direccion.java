@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "direcciones") @Getter @Setter @AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "direcciones") @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class Direccion {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
