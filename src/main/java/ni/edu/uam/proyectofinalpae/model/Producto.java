@@ -28,4 +28,7 @@ public class Producto {
 
     @Column(nullable = false, length = 6)
     private String color;
+
+    @Column(nullable = false)
+    private String rutaImagen;
 }

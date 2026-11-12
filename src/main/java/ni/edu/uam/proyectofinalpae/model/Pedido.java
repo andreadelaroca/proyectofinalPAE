@@ -50,8 +50,8 @@ public class Pedido {
     }
 
     public void removerDetalle(DetallePedido detalle) {
-        detalles.add(detalle);
-        detalle.setPedido(this);
+        detalles.remove(detalle);
+        detalle.setPedido(null);
         calcularTotalActualizado();
     }
 

@@ -33,6 +33,6 @@ public class Colaborador {
 
     public void agregarPedido(Pedido pedido) {
         pedidos.add(pedido);
-        pedido.asignarColaborador(this);
+        pedido.setColaborador(this);
     }
 }
