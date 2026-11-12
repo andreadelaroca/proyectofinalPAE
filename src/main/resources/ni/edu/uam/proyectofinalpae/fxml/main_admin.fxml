@@ -1,104 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 
-<TabPane tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controllers.MainAdminController">
+<TabPane prefHeight="540.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
     <tabs>
-        <!-- Pestaña 1: Gestión de Pedidos -->
         <Tab text="Pedidos">
-            <VBox spacing="10.0">
-                <padding>
-                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                </padding>
-                <HBox spacing="10.0" alignment="CENTER_LEFT">
-                    <Label text="Gestión de Pedidos" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
-                    <Region HBox.hgrow="ALWAYS" />
-                    <Button text="Nuevo Pedido" onAction="#nuevoPedido" />
-                    <Button text="Actualizar Estado" onAction="#actualizarEstado" />
-                </HBox>
-
-                <TableView fx:id="tblPedidos" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="colIdPedido" text="ID Pedido" prefWidth="75" />
-                        <TableColumn fx:id="colFecha" text="Fecha Compra" prefWidth="100" />
-                        <TableColumn fx:id="colEstado" text="Estado" prefWidth="120" />
-                        <TableColumn fx:id="colTotal" text="Total" prefWidth="80" />
-                        <TableColumn fx:id="colDescripcion" text="Descripción" prefWidth="200" />
-                        <TableColumn fx:id="colCliente" text="Usuario Cliente" prefWidth="120" />
-                        <TableColumn fx:id="colColaborador" text="Usuario Colaborador" prefWidth="120" />
-                    </columns>
-                </TableView>
-            </VBox>
+            <content>
+                <fx:include fx:id="pedidosTab" source="pedidos-view.fxml" />
+            </content>
         </Tab>
-
-        <!-- Pestaña 2: Registro de Clientes -->
         <Tab text="Clientes">
-            <VBox spacing="10.0">
-                <padding>
-                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                </padding>
-                <Label text="Registro de Clientes" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
-
-                <GridPane hgap="10.0" vgap="10.0">
-                    <Label text="Usuario:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                    <TextField fx:id="txtRegUsuario" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-
-                    <Label text="Contraseña:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                    <PasswordField fx:id="txtRegPassword" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-
-                    <Label text="Primer Nombre:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-                    <TextField fx:id="txtPrimerNombre" GridPane.columnIndex="3" GridPane.rowIndex="0" />
-
-                    <Label text="Apellido:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                    <TextField fx:id="txtApellido" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-
-                    <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-                    <TextField fx:id="txtEmail" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-
-                    <Label text="Teléfono:" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                    <TextField fx:id="txtTelefono" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-
-                    <Label text="Dirección:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-                    <TextField fx:id="txtDireccion" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.columnSpan="3" />
-                </GridPane>
-
-                <HBox spacing="10.0">
-                    <Button text="Guardar Cliente" onAction="#guardarCliente" />
-                    <Button text="Limpiar" onAction="#limpiarFormularioCliente" />
-                </HBox>
-            </VBox>
+            <content>
+                <fx:include fx:id="clientesTab" source="clientes-view.fxml" />
+            </content>
         </Tab>
-
-        <!-- Pestaña 3: Informes -->
         <Tab text="Informes">
-            <VBox spacing="10.0">
-                <padding>
-                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                </padding>
-                <Label text="Generación de Informes" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
-
-                <HBox spacing="10.0" alignment="CENTER_LEFT">
-                    <Label text="Desde:" />
-                    <DatePicker fx:id="dpFechaInicio" />
-                    <Label text="Hasta:" />
-                    <DatePicker fx:id="dpFechaFinal" />
-                    <Label text="Tipo:" />
-                    <ComboBox fx:id="cbTipoInforme" promptText="Seleccione tipo" />
-                    <Button text="Generar Informe" onAction="#generarInforme" />
-                </HBox>
-
-                <Separator />
-
-                <!-- Área para mostrar los resultados del informe (Beneficio o Demanda) -->
-                <TableView fx:id="tblInformes" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="colConcepto" text="Concepto" prefWidth="200" />
-                        <TableColumn fx:id="colValor" text="Valor/Total" prefWidth="150" />
-                    </columns>
-                </TableView>
-            </VBox>
+            <content>
+                <fx:include fx:id="informesTab" source="informes-view.fxml" />
+            </content>
         </Tab>
     </tabs>
 </TabPane>

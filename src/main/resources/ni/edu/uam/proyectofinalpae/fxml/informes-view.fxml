@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="500.0" prefWidth="800.0" spacing="12.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+    <padding>
+        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+    </padding>
+    <children>
+        <Label text="Generación de Informes">
+            <font>
+                <Font name="System Bold" size="18.0" />
+            </font>
+        </Label>
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <children>
+                <Label text="Desde:" />
+                <DatePicker fx:id="dpDesde" prefWidth="150.0" />
+                <Label text="Hasta:" />
+                <DatePicker fx:id="dpHasta" prefWidth="150.0" />
+                <Label text="Tipo:" />
+                <ComboBox fx:id="cbTipoInforme" prefWidth="150.0" promptText="Seleccione tipo" />
+                <Button fx:id="btnGenerarInforme" mnemonicParsing="false" text="Generar Informe" />
+            </children>
+        </HBox>
+        <Separator />
+        <TableView fx:id="tblInformes" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colConcepto" prefWidth="200.0" text="Concepto" />
+                <TableColumn fx:id="colValorTotal" prefWidth="160.0" text="Valor/Total" />
+            </columns>
+        </TableView>
+    </children>
+</VBox>

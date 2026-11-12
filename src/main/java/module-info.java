@@ -4,6 +4,8 @@ module ni.edu.uam.proyectofinalpae {
     requires static lombok;
     requires jakarta.persistence;
     requires org.hibernate.orm.core;
+    requires java.naming;
+    requires java.sql;
 
     opens ni.edu.uam.proyectofinalpae to javafx.fxml;
     exports ni.edu.uam.proyectofinalpae;
