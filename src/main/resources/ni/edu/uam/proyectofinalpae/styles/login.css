@@ -1,0 +1,33 @@
+.login-fondo {
+    -fx-background-color: linear-gradient(to bottom right, #e2e8f0, #cbd5e1);
+}
+
+.login-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12px;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 12px;
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.12), 20, 0, 0, 6);
+}
+
+.login-titulo {
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0f172a;
+}
+
+.login-subtitulo {
+    -fx-font-size: 12.5px;
+    -fx-text-fill: #64748b;
+}
+
+.login-label-campo {
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+}
+
+.mensaje-error {
+    -fx-text-fill: #dc2626;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
