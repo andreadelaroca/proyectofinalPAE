@@ -1,18 +1,26 @@
+/* ==========================================================================
+   ESTILOS GENERALES - PALETA BUNBUN HUB (global.css)
+   Ruta: resources/ni.edu.uam.proyectofinalpae/styles/global.css
+   ========================================================================== */
+
 .root {
     -fx-font-family: "Segoe UI", "Roboto", "Arial", sans-serif;
     -fx-font-size: 13px;
-    -fx-background-color: #f4f6f9;
+    -fx-background-color: #f4f5fb;
 }
 
 /* --- Títulos y Etiquetas --- */
 .label {
-    -fx-text-fill: #334155;
+    -fx-text-fill: #2d3456;
 }
 
 .titulo-vista {
-    -fx-font-size: 19px;
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
-    -fx-text-fill: #0f172a;
+    -fx-text-fill: #28338a;
+    -fx-border-color: transparent transparent transparent #3b49b8;
+    -fx-border-width: 0 0 0 4px;
+    -fx-padding: 0 0 0 10px;
 }
 
 /* --- Campos de Texto, Contraseña, ComboBox y DatePicker --- */
@@ -21,22 +29,22 @@
 .combo-box,
 .date-picker {
     -fx-background-color: #ffffff;
-    -fx-border-color: #cbd5e1;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
+    -fx-border-color: #c7cde8;
+    -fx-border-radius: 7px;
+    -fx-background-radius: 7px;
     -fx-padding: 6px 10px;
-    -fx-text-fill: #1e293b;
+    -fx-text-fill: #1e244d;
 }
 
 .text-field:focused,
 .password-field:focused,
 .combo-box:focused,
 .date-picker:focused {
-    -fx-border-color: #2563eb;
-    -fx-border-width: 1.5px;
+    -fx-border-color: #3b49b8;
+    -fx-border-width: 1.6px;
+    -fx-effect: dropshadow(three-pass-box, rgba(59, 73, 184, 0.18), 8, 0, 0, 0);
 }
 
-/* Ajuste interno para que DatePicker y ComboBox no dupliquen bordes */
 .date-picker > .text-field,
 .combo-box > .text-field {
     -fx-background-color: transparent;
@@ -52,161 +60,138 @@
 /* --- Botones Base --- */
 .button {
     -fx-background-color: #ffffff;
-    -fx-border-color: #cbd5e1;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
-    -fx-text-fill: #334155;
+    -fx-border-color: #c7cde8;
+    -fx-border-radius: 7px;
+    -fx-background-radius: 7px;
+    -fx-text-fill: #3b49b8;
     -fx-font-weight: bold;
-    -fx-padding: 7px 15px;
+    -fx-padding: 7px 16px;
     -fx-cursor: hand;
 }
 
 .button:hover {
-    -fx-background-color: #f1f5f9;
-    -fx-border-color: #94a3b8;
+    -fx-background-color: #eef0fc;
+    -fx-border-color: #646ee8;
 }
 
 .button:pressed {
-    -fx-background-color: #e2e8f0;
+    -fx-background-color: #dfe3fa;
 }
 
 /* Botón Acción Principal (Guardar, Nuevo Pedido, Generar Informe, Entrar) */
 .btn-primario {
-    -fx-background-color: #2563eb;
-    -fx-border-color: #2563eb;
+    -fx-background-color: linear-gradient(to right, #3b49b8, #525ed6);
+    -fx-border-color: #3b49b8;
     -fx-text-fill: #ffffff;
 }
 
 .btn-primario:hover {
-    -fx-background-color: #1d4ed8;
-    -fx-border-color: #1d4ed8;
+    -fx-background-color: linear-gradient(to right, #28338a, #3b49b8);
+    -fx-border-color: #28338a;
 }
 
 .btn-primario:pressed {
-    -fx-background-color: #1e40af;
+    -fx-background-color: #1f276e;
 }
 
-/* Botón Secundario / Limpiar */
+/* Botón Secundario / Limpiar / Cerrar Sesión */
 .btn-secundario {
-    -fx-background-color: #e2e8f0;
-    -fx-border-color: #cbd5e1;
-    -fx-text-fill: #475569;
+    -fx-background-color: #eef0fc;
+    -fx-border-color: #c7cde8;
+    -fx-text-fill: #3b49b8;
 }
 
 .btn-secundario:hover {
-    -fx-background-color: #cbd5e1;
+    -fx-background-color: #dfe3fa;
+    -fx-border-color: #646ee8;
 }
 
 /* --- Tablas (TableView) --- */
 .table-view {
     -fx-background-color: #ffffff;
-    -fx-border-color: #cbd5e1;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
+    -fx-border-color: #c7cde8;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
     -fx-padding: 0;
 }
 
 .table-view .column-header-background {
-    -fx-background-color: #f1f5f9;
-    -fx-border-color: transparent transparent #cbd5e1 transparent;
-    -fx-border-width: 1px;
+    -fx-background-color: #3b49b8;
+    -fx-background-radius: 7px 7px 0 0;
 }
 
 .table-view .column-header,
 .table-view .filler {
     -fx-background-color: transparent;
-    -fx-size: 36px;
-    -fx-border-color: transparent #e2e8f0 transparent transparent;
+    -fx-size: 38px;
+    -fx-border-color: transparent rgba(255, 255, 255, 0.18) transparent transparent;
 }
 
 .table-view .column-header .label {
-    -fx-text-fill: #334155;
+    -fx-text-fill: #ffffff;
     -fx-font-weight: bold;
     -fx-alignment: CENTER_LEFT;
-    -fx-padding: 0 8px;
+    -fx-padding: 0 10px;
 }
 
 .table-row-cell {
     -fx-background-color: #ffffff;
-    -fx-border-color: transparent transparent #f1f5f9 transparent;
-    -fx-cell-size: 34px;
+    -fx-border-color: transparent transparent #eef0fc transparent;
+    -fx-cell-size: 35px;
 }
 
 .table-row-cell:odd {
-    -fx-background-color: #f8fafc;
+    -fx-background-color: #f8f9fe;
 }
 
 .table-row-cell:hover {
-    -fx-background-color: #eff6ff;
+    -fx-background-color: #eef0fc;
 }
 
 .table-row-cell:selected {
-    -fx-background-color: #dbeafe;
+    -fx-background-color: #dfe3fa;
 }
 
 .table-row-cell:selected .table-cell {
-    -fx-text-fill: #1e3a8a;
+    -fx-text-fill: #28338a;
     -fx-font-weight: bold;
 }
 
 .table-cell {
-    -fx-text-fill: #334155;
+    -fx-text-fill: #2d3456;
     -fx-alignment: CENTER_LEFT;
-    -fx-padding: 0 8px;
+    -fx-padding: 0 10px;
 }
 
-/* --- Pestañas (TabPane) --- */
-.tab-pane .tab-header-area .tab-header-background {
-    -fx-background-color: #e2e8f0;
-}
-
-.tab-pane .tab {
-    -fx-background-color: #cbd5e1;
-    -fx-background-radius: 6px 6px 0 0;
-    -fx-padding: 6px 14px;
-    -fx-cursor: hand;
-}
-
-.tab-pane .tab:selected {
-    -fx-background-color: #f4f6f9;
-}
-
-.tab-pane .tab .tab-label {
-    -fx-text-fill: #475569;
-    -fx-font-weight: bold;
-}
-
-.tab-pane .tab:selected .tab-label {
-    -fx-text-fill: #2563eb;
-}
-
+/* --- Tarjetas del Panel Principal (main_admin) --- */
 .modulo-card {
     -fx-background-color: #ffffff;
-    -fx-border-color: #cbd5e1;
+    -fx-border-color: #646ee8 #c7cde8 #c7cde8 #c7cde8;
+    -fx-border-width: 4px 1px 1px 1px;
     -fx-border-radius: 10px;
     -fx-background-radius: 10px;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.08), 12, 0, 0, 4);
+    -fx-effect: dropshadow(three-pass-box, rgba(59, 73, 184, 0.10), 14, 0, 0, 5);
 }
 
 .modulo-card:hover {
-    -fx-background-color: #f8fafc;
-    -fx-border-color: #2563eb;
-    -fx-border-width: 1.5px;
+    -fx-background-color: #fafbff;
+    -fx-border-color: #3b49b8 #646ee8 #646ee8 #646ee8;
+    -fx-effect: dropshadow(three-pass-box, rgba(59, 73, 184, 0.22), 18, 0, 0, 6);
 }
 
 .titulo-card {
     -fx-font-size: 17px;
     -fx-font-weight: bold;
-    -fx-text-fill: #0f172a;
+    -fx-text-fill: #28338a;
 }
 
+/* --- Efecto Hover para Iconos Clicables --- */
 .icono-modulo {
     -fx-cursor: hand;
-    -fx-opacity: 0.92;
+    -fx-opacity: 0.94;
 }
 
 .icono-modulo:hover {
     -fx-opacity: 1.0;
-    -fx-effect: dropshadow(three-pass-box, rgba(37, 99, 235, 0.28), 10, 0, 0, 3);
+    -fx-effect: dropshadow(three-pass-box, rgba(100, 110, 232, 0.35), 12, 0, 0, 4);
 }

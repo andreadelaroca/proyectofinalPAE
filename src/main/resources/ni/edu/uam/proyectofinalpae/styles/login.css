@@ -1,33 +1,39 @@
+/* ==========================================================================
+   ESTILOS EXCLUSIVOS DE LOGIN - PALETA BUNBUN HUB (login.css)
+   Complementa a global.css
+   ========================================================================== */
+
 .login-fondo {
-    -fx-background-color: linear-gradient(to bottom right, #e2e8f0, #cbd5e1);
+    -fx-background-color: linear-gradient(to bottom right, #eef0fc, #d8defa);
 }
 
 .login-card {
     -fx-background-color: #ffffff;
-    -fx-background-radius: 12px;
-    -fx-border-color: #cbd5e1;
-    -fx-border-radius: 12px;
-    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.12), 20, 0, 0, 6);
+    -fx-background-radius: 14px;
+    -fx-border-color: #3b49b8 #c7cde8 #c7cde8 #c7cde8;
+    -fx-border-width: 5px 1px 1px 1px;
+    -fx-border-radius: 14px;
+    -fx-effect: dropshadow(three-pass-box, rgba(40, 51, 138, 0.16), 22, 0, 0, 8);
 }
 
 .login-titulo {
-    -fx-font-size: 21px;
+    -fx-font-size: 22px;
     -fx-font-weight: bold;
-    -fx-text-fill: #0f172a;
+    -fx-text-fill: #28338a;
 }
 
 .login-subtitulo {
     -fx-font-size: 12.5px;
-    -fx-text-fill: #64748b;
+    -fx-text-fill: #5c648a;
 }
 
 .login-label-campo {
     -fx-font-weight: bold;
-    -fx-text-fill: #334155;
+    -fx-text-fill: #2d3456;
 }
 
 .mensaje-error {
-    -fx-text-fill: #dc2626;
+    -fx-text-fill: #d9385a;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
 }
