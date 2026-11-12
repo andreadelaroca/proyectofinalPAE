@@ -26,7 +26,7 @@ public final class HibernateUtil {
             return propiedades;
         } catch (java.io.IOException e) {
             throw new IllegalStateException("Error leyendo configuración",e);
-        }
+        } //TODO: añadir reportes
     }
     public static SessionFactory factory() {
         return FACTORY;
