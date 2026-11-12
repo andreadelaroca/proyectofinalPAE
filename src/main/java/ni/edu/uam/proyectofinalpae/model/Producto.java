@@ -1,10 +1,12 @@
 package ni.edu.uam.proyectofinalpae.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.math.BigDecimal;
 
-@Entity @Table(name = "producto")
+@Entity @Table(name = "productos") @Getter @Setter
+@AllArgsConstructor @NoArgsConstructor(access =  AccessLevel.PROTECTED)
 public class Producto {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,5 +27,8 @@ public class Producto {
     private BigDecimal precioUnitario;
 
     @Column(nullable = false, length = 6)
-    private String color; //TODO: implementar colorpicker en el controller
+    private String color;
+
+    @Column(nullable = false)
+    private String rutaImagen;
 }

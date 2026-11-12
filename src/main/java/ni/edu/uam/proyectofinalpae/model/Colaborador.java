@@ -1,11 +1,13 @@
 package ni.edu.uam.proyectofinalpae.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity @Table(name = "colaborador")
+@Entity @Table(name = "colaboradores") @Getter @Setter
+@AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Colaborador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,4 +30,9 @@ public class Colaborador {
 
     @OneToMany(mappedBy = "colaborador", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pedido> pedidos = new ArrayList<>();
+
+    public void agregarPedido(Pedido pedido) {
+        pedidos.add(pedido);
+        pedido.setColaborador(this);
+    }
 }
