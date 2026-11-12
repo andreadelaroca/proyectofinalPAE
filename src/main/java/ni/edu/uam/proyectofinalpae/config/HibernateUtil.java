@@ -1,9 +1,6 @@
 package ni.edu.uam.proyectofinalpae.config;
 
-import ni.edu.uam.proyectofinalpae.model.Producto;
-import ni.edu.uam.proyectofinalpae.model.Pedido;
-import ni.edu.uam.proyectofinalpae.model.Cliente;
-import ni.edu.uam.proyectofinalpae.model.Colaborador;
+import ni.edu.uam.proyectofinalpae.model.*;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -12,7 +9,7 @@ public final class HibernateUtil {
     private HibernateUtil() {}
     private static SessionFactory crear() {
         try {
-            return new Configuration().addProperties(cargar()).addAnnotatedClass(Cliente.class).addAnnotatedClass(Pedido.class).addAnnotatedClass(Colaborador.class).addAnnotatedClass(Producto.class).buildSessionFactory();
+            return new Configuration().addProperties(cargar()).addAnnotatedClass(Cliente.class).addAnnotatedClass(Pedido.class).addAnnotatedClass(Colaborador.class).addAnnotatedClass(Producto.class).addAnnotatedClass(DetallePedido.class).addAnnotatedClass(Direccion.class).buildSessionFactory();
         } catch (Exception e) {
             throw new IllegalStateException("No se pudo iniciar Hibernate. Revise PostgreSQL y hibernate.properties",e);
         }
@@ -26,7 +23,7 @@ public final class HibernateUtil {
             return propiedades;
         } catch (java.io.IOException e) {
             throw new IllegalStateException("Error leyendo configuración",e);
-        } //TODO: añadir reportes
+        }
     }
     public static SessionFactory factory() {
         return FACTORY;
