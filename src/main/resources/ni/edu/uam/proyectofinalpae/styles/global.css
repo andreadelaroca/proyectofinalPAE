@@ -179,3 +179,34 @@
 .tab-pane .tab:selected .tab-label {
     -fx-text-fill: #2563eb;
 }
+
+.modulo-card {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.08), 12, 0, 0, 4);
+}
+
+.modulo-card:hover {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #2563eb;
+    -fx-border-width: 1.5px;
+}
+
+.titulo-card {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0f172a;
+}
+
+.icono-modulo {
+    -fx-cursor: hand;
+    -fx-opacity: 0.92;
+}
+
+.icono-modulo:hover {
+    -fx-opacity: 1.0;
+    -fx-effect: dropshadow(three-pass-box, rgba(37, 99, 235, 0.28), 10, 0, 0, 3);
+}
