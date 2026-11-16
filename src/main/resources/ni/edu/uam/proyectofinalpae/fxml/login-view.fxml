@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 
 <?import java.net.URL?>
-<VBox alignment="CENTER" prefHeight="320.0" prefWidth="420.0" spacing="15.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="CENTER" prefHeight="320.0" prefWidth="420.0" spacing="15.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.LoginController">
     <stylesheets>
         <URL value="@../styles/global.css" />
         <URL value="@../styles/login.css" />
@@ -41,7 +41,7 @@
                 <TextField fx:id="txtUsuario" promptText="Ingrese su usuario" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
                 <Label text="Contraseña:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                <PasswordField fx:id="txtContrasena" promptText="Ingrese su contraseña" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <PasswordField fx:id="pwfPassword" promptText="Ingrese su contraseña" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             </children>
         </GridPane>
         <Label fx:id="lblMensaje" textFill="#d32f2f" />

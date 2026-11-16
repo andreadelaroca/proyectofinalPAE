@@ -13,6 +13,7 @@ import ni.edu.uam.proyectofinalpae.model.Direccion;
 import ni.edu.uam.proyectofinalpae.model.Pedido;
 import ni.edu.uam.proyectofinalpae.service.ClienteService;
 import ni.edu.uam.proyectofinalpae.service.PedidoService;
+import static ni.edu.uam.proyectofinalpae.util.Utils.*;
 
 import java.net.URL;
 import java.util.List;
@@ -149,7 +150,7 @@ public class MainAdminController implements Initializable {
                 "Generando informe de " + cbTipoInforme.getValue() + " del " + dpFechaInicio.getValue() + " al " + dpFechaFinal.getValue());
     }
 
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
+    public void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alert = new Alert(tipo);
         alert.setTitle(titulo);
         alert.setHeaderText(null);
