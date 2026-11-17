@@ -26,6 +26,9 @@ public class Pedido {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal precioTotal;
 
+    @Column(nullable = false)
+    private String estado;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;

@@ -12,7 +12,8 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox prefHeight="480.0" prefWidth="820.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<?import java.net.URL?>
+<VBox alignment="CENTER" prefHeight="320.0" prefWidth="420.0" spacing="15.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.LoginController">
     <stylesheets>
         <URL value="@../styles/global.css" />
         <URL value="@../styles/login.css" />
