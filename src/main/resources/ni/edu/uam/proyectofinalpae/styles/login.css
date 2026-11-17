@@ -1,33 +1,56 @@
-.login-fondo {
-    -fx-background-color: linear-gradient(to bottom right, #e2e8f0, #cbd5e1);
+/* ==========================================================================
+   ESTILOS EXCLUSIVOS DE LOGIN - SCREEN DIVIDIDO (login.css)
+   ========================================================================== */
+
+.login-panel-izq {
+    -fx-background-color: #2F4156; /* Navy */
 }
 
-.login-card {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 12px;
-    -fx-border-color: #cbd5e1;
-    -fx-border-radius: 12px;
-    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.12), 20, 0, 0, 6);
+.login-marca {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #C8D9E6; /* Sky Blue */
+}
+
+.login-eslogan {
+    -fx-font-size: 14px;
+    -fx-font-style: italic;
+    -fx-text-fill: #C8D9E6; /* Sky Blue */
+}
+
+.login-panel-der {
+    -fx-background-color: #C8D9E6; /* Sky Blue */
 }
 
 .login-titulo {
-    -fx-font-size: 21px;
+    -fx-font-size: 30px;
     -fx-font-weight: bold;
-    -fx-text-fill: #0f172a;
+    -fx-text-fill: #2F4156; /* Navy */
 }
 
 .login-subtitulo {
-    -fx-font-size: 12.5px;
-    -fx-text-fill: #64748b;
+    -fx-font-size: 13.5px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #567C8D; /* Teal */
 }
 
-.login-label-campo {
-    -fx-font-weight: bold;
-    -fx-text-fill: #334155;
+/* En el login los inputs son blancos sobre el fondo Sky Blue, igual que en la maqueta */
+.login-input {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-border-color: transparent;
+    -fx-padding: 9px 16px;
+    -fx-text-fill: #2F4156;
+}
+
+.login-input:focused {
+    -fx-border-color: #2F4156;
+    -fx-border-width: 1.5px;
 }
 
 .mensaje-error {
-    -fx-text-fill: #dc2626;
-    -fx-font-size: 12px;
+    -fx-text-fill: #B83232;
+    -fx-font-size: 12.5px;
     -fx-font-weight: bold;
 }

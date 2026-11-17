@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="490.0" prefWidth="820.0" spacing="20.0" stylesheets="@../styles/global.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+    <padding>
+        <Insets bottom="26.0" left="30.0" right="30.0" top="24.0" />
+    </padding>
+    <children>
+        <Label styleClass="titulo-vista" text="Registrar pedido" />
+
+        <HBox spacing="24.0" VBox.vgrow="ALWAYS">
+            <children>
+                <!-- Tarjeta Izquierda: Identificación de pedido -->
+                <VBox prefWidth="342.0" spacing="18.0" styleClass="seccion-card" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="22.0" left="22.0" right="22.0" top="20.0" />
+                    </padding>
+                    <children>
+                        <Label styleClass="subtitulo-seccion" text="Identificación de pedido" />
+
+                        <HBox alignment="CENTER_LEFT" spacing="12.0">
+                            <children>
+                                <Label styleClass="label-campo" text="ID" />
+                                <TextField fx:id="txtIdPedido" prefHeight="34.0" prefWidth="72.0" promptText="1001" />
+                                <Label styleClass="label-campo" text="Fecha de compra" />
+                                <DatePicker fx:id="dpFechaCompra" prefHeight="36.0" prefWidth="104.0" />
+                            </children>
+                        </HBox>
+
+                        <VBox spacing="6.0">
+                            <children>
+                                <Label styleClass="label-campo" text="Usuario de cliente" />
+                                <TextField fx:id="txtUsuarioCliente" promptText="Ej. andrea123" />
+                            </children>
+                        </VBox>
+
+                        <Region VBox.vgrow="ALWAYS" />
+
+                        <HBox spacing="10.0">
+                            <children>
+                                <Button fx:id="btnGuardarPedido" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-primario" text="Guardar Pedido" HBox.hgrow="ALWAYS" />
+                                <Button fx:id="btnCancelar" mnemonicParsing="false" styleClass="btn-secundario" text="Cancelar" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <!-- Tarjeta Derecha: Detalles del pedido -->
+                <VBox prefHeight="386.0" prefWidth="292.0" spacing="14.0" styleClass="seccion-card" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="22.0" left="22.0" right="22.0" top="20.0" />
+                    </padding>
+                    <children>
+                        <Label styleClass="subtitulo-seccion" text="Detalles del pedido" />
+
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label styleClass="label-campo" text="Estado" />
+                                <ComboBox fx:id="cbEstado" maxWidth="1.7976931348623157E308" promptText="Seleccione estado" />
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label styleClass="label-campo" text="Descripción" />
+                                <TextField fx:id="txtDescripcion" promptText="Ej. 2 conejos blancos" />
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label styleClass="label-campo" text="Usuario de colaborador" />
+                                <TextField fx:id="txtUsuarioColaborador" promptText="Ej. sara123" />
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label styleClass="label-campo" text="Costo total" />
+                                <TextField fx:id="txtCostoTotal" maxWidth="180.0" prefWidth="180.0" promptText="0.00" />
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </children>
+</VBox>
