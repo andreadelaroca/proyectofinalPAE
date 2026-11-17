@@ -1,48 +1,63 @@
 /* ==========================================================================
    ESTILOS GENERALES - PALETA BUNBUN HUB (global.css)
-   Ruta: resources/ni.edu.uam.proyectofinalpae/styles/global.css
    ========================================================================== */
 
 .root {
     -fx-font-family: "Segoe UI", "Roboto", "Arial", sans-serif;
-    -fx-font-size: 13px;
-    -fx-background-color: #f4f5fb;
+    -fx-font-size: 13.5px;
+    -fx-background-color: #C8D9E6; /* Sky Blue */
 }
 
 /* --- Títulos y Etiquetas --- */
 .label {
-    -fx-text-fill: #2d3456;
+    -fx-text-fill: #2F4156; /* Navy */
+}
+
+.label-campo {
+    -fx-text-fill: #2F4156;
+    -fx-font-weight: bold;
+    -fx-font-size: 13.5px;
 }
 
 .titulo-vista {
-    -fx-font-size: 20px;
+    -fx-font-size: 28px;
     -fx-font-weight: bold;
-    -fx-text-fill: #28338a;
-    -fx-border-color: transparent transparent transparent #3b49b8;
-    -fx-border-width: 0 0 0 4px;
-    -fx-padding: 0 0 0 10px;
+    -fx-text-fill: #2F4156; /* Navy */
 }
 
-/* --- Campos de Texto, Contraseña, ComboBox y DatePicker --- */
+.subtitulo-seccion {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2F4156;
+}
+
+/* --- Tarjetas / Bloques Blancos de Formulario (como en tus referencias) --- */
+.seccion-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+}
+
+/* --- Inputs redondeados tipo píldora (estilo referencia) --- */
 .text-field,
 .password-field,
 .combo-box,
 .date-picker {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #c7cde8;
-    -fx-border-radius: 7px;
-    -fx-background-radius: 7px;
-    -fx-padding: 6px 10px;
-    -fx-text-fill: #1e244d;
+    -fx-background-color: #CFD0C0;
+    -fx-background-radius: 20px;
+    -fx-border-color: transparent;
+    -fx-border-radius: 20px;
+    -fx-padding: 7px 15px;
+    -fx-text-fill: #2F4156;
+    -fx-prompt-text-fill: #567C8D;
 }
 
 .text-field:focused,
 .password-field:focused,
 .combo-box:focused,
 .date-picker:focused {
-    -fx-border-color: #3b49b8;
-    -fx-border-width: 1.6px;
-    -fx-effect: dropshadow(three-pass-box, rgba(59, 73, 184, 0.18), 8, 0, 0, 0);
+    -fx-border-color: #567C8D; /* Teal */
+    -fx-border-width: 1.5px;
 }
 
 .date-picker > .text-field,
@@ -50,6 +65,7 @@
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-padding: 0;
+    -fx-text-fill: #2F4156;
 }
 
 .date-picker > .arrow-button,
@@ -57,135 +73,129 @@
     -fx-background-color: transparent;
 }
 
-/* --- Botones Base --- */
+/* --- Botones redondeados --- */
 .button {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #c7cde8;
-    -fx-border-radius: 7px;
-    -fx-background-radius: 7px;
-    -fx-text-fill: #3b49b8;
+    -fx-background-color: #F5EFEB; /* Beige */
+    -fx-border-color: #567C8D;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+    -fx-text-fill: #2F4156;
     -fx-font-weight: bold;
-    -fx-padding: 7px 16px;
+    -fx-padding: 8px 20px;
     -fx-cursor: hand;
 }
 
 .button:hover {
-    -fx-background-color: #eef0fc;
-    -fx-border-color: #646ee8;
+    -fx-background-color: #E8E0D8;
 }
 
-.button:pressed {
-    -fx-background-color: #dfe3fa;
-}
-
-/* Botón Acción Principal (Guardar, Nuevo Pedido, Generar Informe, Entrar) */
+/* Botón Principal (Navy -> hover Teal) */
 .btn-primario {
-    -fx-background-color: linear-gradient(to right, #3b49b8, #525ed6);
-    -fx-border-color: #3b49b8;
-    -fx-text-fill: #ffffff;
+    -fx-background-color: #2F4156; /* Navy */
+    -fx-border-color: #2F4156;
+    -fx-text-fill: #FFFFFF;
 }
 
 .btn-primario:hover {
-    -fx-background-color: linear-gradient(to right, #28338a, #3b49b8);
-    -fx-border-color: #28338a;
+    -fx-background-color: #567C8D; /* Teal */
+    -fx-border-color: #567C8D;
 }
 
 .btn-primario:pressed {
-    -fx-background-color: #1f276e;
+    -fx-background-color: #233142;
 }
 
-/* Botón Secundario / Limpiar / Cerrar Sesión */
+/* Botón Secundario (Beige) */
 .btn-secundario {
-    -fx-background-color: #eef0fc;
-    -fx-border-color: #c7cde8;
-    -fx-text-fill: #3b49b8;
+    -fx-background-color: #F5EFEB; /* Beige */
+    -fx-border-color: #D6CFC7;
+    -fx-text-fill: #2F4156;
 }
 
 .btn-secundario:hover {
-    -fx-background-color: #dfe3fa;
-    -fx-border-color: #646ee8;
+    -fx-background-color: #E6DDD3;
+    -fx-border-color: #567C8D;
 }
 
 /* --- Tablas (TableView) --- */
 .table-view {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #c7cde8;
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #B4C8D8;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
     -fx-padding: 0;
 }
 
 .table-view .column-header-background {
-    -fx-background-color: #3b49b8;
-    -fx-background-radius: 7px 7px 0 0;
+    -fx-background-color: #2F4156; /* Navy */
+    -fx-background-radius: 5px 5px 0 0;
 }
 
 .table-view .column-header,
 .table-view .filler {
     -fx-background-color: transparent;
     -fx-size: 38px;
-    -fx-border-color: transparent rgba(255, 255, 255, 0.18) transparent transparent;
+    -fx-border-color: transparent rgba(200, 217, 230, 0.2) transparent transparent;
 }
 
 .table-view .column-header .label {
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: #FFFFFF;
     -fx-font-weight: bold;
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0 10px;
 }
 
 .table-row-cell {
-    -fx-background-color: #ffffff;
-    -fx-border-color: transparent transparent #eef0fc transparent;
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent transparent #F5EFEB transparent;
     -fx-cell-size: 35px;
 }
 
 .table-row-cell:odd {
-    -fx-background-color: #f8f9fe;
+    -fx-background-color: #F5EFEB; /* Beige suave */
 }
 
 .table-row-cell:hover {
-    -fx-background-color: #eef0fc;
+    -fx-background-color: #E3EDF5;
 }
 
 .table-row-cell:selected {
-    -fx-background-color: #dfe3fa;
+    -fx-background-color: #567C8D; /* Teal */
 }
 
 .table-row-cell:selected .table-cell {
-    -fx-text-fill: #28338a;
+    -fx-text-fill: #FFFFFF;
     -fx-font-weight: bold;
 }
 
 .table-cell {
-    -fx-text-fill: #2d3456;
+    -fx-text-fill: #2F4156;
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0 10px;
 }
 
 /* --- Tarjetas del Panel Principal (main_admin) --- */
 .modulo-card {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #646ee8 #c7cde8 #c7cde8 #c7cde8;
-    -fx-border-width: 4px 1px 1px 1px;
-    -fx-border-radius: 10px;
-    -fx-background-radius: 10px;
-    -fx-effect: dropshadow(three-pass-box, rgba(59, 73, 184, 0.10), 14, 0, 0, 5);
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #567C8D;
+    -fx-border-width: 0 0 4px 0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(three-pass-box, rgba(47, 65, 86, 0.12), 14, 0, 0, 4);
 }
 
 .modulo-card:hover {
-    -fx-background-color: #fafbff;
-    -fx-border-color: #3b49b8 #646ee8 #646ee8 #646ee8;
-    -fx-effect: dropshadow(three-pass-box, rgba(59, 73, 184, 0.22), 18, 0, 0, 6);
+    -fx-background-color: #F5EFEB; /* Beige al pasar el mouse */
+    -fx-border-color: #2F4156;
 }
 
 .titulo-card {
-    -fx-font-size: 17px;
+    -fx-font-size: 18px;
     -fx-font-weight: bold;
-    -fx-text-fill: #28338a;
+    -fx-text-fill: #2F4156;
 }
 
-/* --- Efecto Hover para Iconos Clicables --- */
+/* --- Iconos Clicables --- */
 .icono-modulo {
     -fx-cursor: hand;
     -fx-opacity: 0.94;
@@ -193,5 +203,5 @@
 
 .icono-modulo:hover {
     -fx-opacity: 1.0;
-    -fx-effect: dropshadow(three-pass-box, rgba(100, 110, 232, 0.35), 12, 0, 0, 4);
+    -fx-effect: dropshadow(three-pass-box, rgba(86, 124, 141, 0.45), 12, 0, 0, 4);
 }

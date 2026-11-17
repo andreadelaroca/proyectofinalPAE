@@ -1,39 +1,56 @@
 /* ==========================================================================
-   ESTILOS EXCLUSIVOS DE LOGIN - PALETA BUNBUN HUB (login.css)
-   Complementa a global.css
+   ESTILOS EXCLUSIVOS DE LOGIN - SCREEN DIVIDIDO (login.css)
    ========================================================================== */
 
-.login-fondo {
-    -fx-background-color: linear-gradient(to bottom right, #eef0fc, #d8defa);
+.login-panel-izq {
+    -fx-background-color: #2F4156; /* Navy */
 }
 
-.login-card {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 14px;
-    -fx-border-color: #3b49b8 #c7cde8 #c7cde8 #c7cde8;
-    -fx-border-width: 5px 1px 1px 1px;
-    -fx-border-radius: 14px;
-    -fx-effect: dropshadow(three-pass-box, rgba(40, 51, 138, 0.16), 22, 0, 0, 8);
+.login-marca {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #C8D9E6; /* Sky Blue */
+}
+
+.login-eslogan {
+    -fx-font-size: 14px;
+    -fx-font-style: italic;
+    -fx-text-fill: #C8D9E6; /* Sky Blue */
+}
+
+.login-panel-der {
+    -fx-background-color: #C8D9E6; /* Sky Blue */
 }
 
 .login-titulo {
-    -fx-font-size: 22px;
+    -fx-font-size: 30px;
     -fx-font-weight: bold;
-    -fx-text-fill: #28338a;
+    -fx-text-fill: #2F4156; /* Navy */
 }
 
 .login-subtitulo {
-    -fx-font-size: 12.5px;
-    -fx-text-fill: #5c648a;
+    -fx-font-size: 13.5px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #567C8D; /* Teal */
 }
 
-.login-label-campo {
-    -fx-font-weight: bold;
-    -fx-text-fill: #2d3456;
+/* En el login los inputs son blancos sobre el fondo Sky Blue, igual que en la maqueta */
+.login-input {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-border-color: transparent;
+    -fx-padding: 9px 16px;
+    -fx-text-fill: #2F4156;
+}
+
+.login-input:focused {
+    -fx-border-color: #2F4156;
+    -fx-border-width: 1.5px;
 }
 
 .mensaje-error {
-    -fx-text-fill: #d9385a;
-    -fx-font-size: 12px;
+    -fx-text-fill: #B83232;
+    -fx-font-size: 12.5px;
     -fx-font-weight: bold;
 }
