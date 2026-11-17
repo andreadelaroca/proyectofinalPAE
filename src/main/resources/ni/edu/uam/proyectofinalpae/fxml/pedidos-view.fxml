@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<VBox prefHeight="520.0" prefWidth="840.0" spacing="18.0" stylesheets="@../styles/global.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="520.0" prefWidth="840.0" spacing="18.0" stylesheets="@../styles/global.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
     <padding>
         <Insets bottom="24.0" left="28.0" right="28.0" top="22.0" />
     </padding>
@@ -24,13 +19,13 @@
         </HBox>
         <TableView fx:id="tblPedidos" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="colIdPedido" prefWidth="75.0" text="ID Pedido" />
-                <TableColumn fx:id="colFechaCompra" prefWidth="105.0" text="Fecha Compra" />
-                <TableColumn fx:id="colEstado" prefWidth="110.0" text="Estado" />
-                <TableColumn fx:id="colTotal" prefWidth="80.0" text="Total" />
-                <TableColumn fx:id="colDescripcion" prefWidth="175.0" text="Descripción" />
-                <TableColumn fx:id="colUsuarioCliente" prefWidth="110.0" text="Usuario Cliente" />
-                <TableColumn fx:id="colUsuarioColaborador" prefWidth="115.0" text="Usuario Colaborador" />
+                <TableColumn fx:id="colIdPedido" prefWidth="92.0" text="ID Pedido" />
+                <TableColumn fx:id="colFechaCompra" prefWidth="120.0" text="Fecha Compra" />
+                <TableColumn fx:id="colEstado" prefWidth="79.0" text="Estado" />
+                <TableColumn fx:id="colTotal" prefWidth="65.0" text="Total" />
+                <TableColumn fx:id="colDescripcion" prefWidth="189.0" text="Descripción" />
+                <TableColumn fx:id="colUsuarioCliente" prefWidth="113.0" text="Cliente" />
+                <TableColumn fx:id="colUsuarioColaborador" prefWidth="125.0" text="Colaborador" />
             </columns>
         </TableView>
     </children>

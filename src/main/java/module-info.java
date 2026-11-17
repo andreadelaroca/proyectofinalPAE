@@ -13,4 +13,5 @@ module ni.edu.uam.proyectofinalpae {
     opens ni.edu.uam.proyectofinalpae.application to javafx.fxml;
     exports ni.edu.uam.proyectofinalpae.controller;
     opens ni.edu.uam.proyectofinalpae.controller to javafx.fxml;
+    opens ni.edu.uam.proyectofinalpae.model;
 }
