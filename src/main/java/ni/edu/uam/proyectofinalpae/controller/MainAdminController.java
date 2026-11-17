@@ -118,6 +118,18 @@ public class MainAdminController {
         animarFondoTarjeta((Region) event.getSource(), COLOR_TARJETA_HOVER, COLOR_TARJETA_NORMAL);
     }
 
+    @FXML
+    private void abrirProductos() {
+        abrirVentanaMaximizada("productos-view.fxml", "BunBun Hub - Gestión de Productos");
+    }
+
+    @FXML
+    private void abrirColaboradores() {
+        // Lógica pendiente para el módulo de colaboradores
+        mostrarAlerta(Alert.AlertType.INFORMATION, "Módulo en desarrollo",
+                "La gestión de colaboradores estará disponible próximamente.");
+    }
+
     private void animarEscala(Node nodo, double escalaDestino) {
         ScaleTransition st = new ScaleTransition(Duration.millis(150), nodo);
         st.setToX(escalaDestino);
