@@ -5,6 +5,7 @@ import ni.edu.uam.proyectofinalpae.model.Pedido;
 import ni.edu.uam.proyectofinalpae.repository.GenericRepository;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
 import java.util.List;
 
 public class PedidoService {
@@ -34,7 +35,28 @@ public class PedidoService {
 
     public List<Pedido> obtenerTodos() {
         try (Session session = HibernateUtil.factory().openSession()) {
-            return repository.findAll(session);
+            return session.createQuery(
+                    "SELECT p FROM Pedido p " +
+                            "JOIN FETCH p.cliente " +
+                            "JOIN FETCH p.colaborador " +
+                            "ORDER BY p.id DESC", Pedido.class
+            ).list();
+        }
+    }
+
+    public void actualizarEstado(Long idPedido, String nuevoEstado) {
+        Transaction tx = null;
+        try (Session session = HibernateUtil.factory().openSession()) {
+            tx = session.beginTransaction();
+            session.createMutationQuery(
+                            "UPDATE Pedido p SET p.estado = :estado WHERE p.id = :id")
+                    .setParameter("estado", nuevoEstado)
+                    .setParameter("id", idPedido)
+                    .executeUpdate();
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            throw new RuntimeException("Error al actualizar el estado del pedido", e);
         }
     }
 }
