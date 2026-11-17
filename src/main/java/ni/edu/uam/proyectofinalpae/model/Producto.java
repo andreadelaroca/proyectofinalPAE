@@ -14,8 +14,8 @@ public class Producto {
     @Column(nullable = false, length = 70)
     private String nombre;
 
-    @Column(nullable = false, length = 30)
-    private String marca;
+    @OneToMany(mappedBy = "producto")
+    private Proveedor proveedor;
 
     @Column(nullable = false, length = 120)
     private String descripcion;
