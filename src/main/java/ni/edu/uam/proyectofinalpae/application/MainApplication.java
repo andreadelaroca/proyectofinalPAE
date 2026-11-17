@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import ni.edu.uam.proyectofinalpae.service.PedidoService;
 
 import java.io.IOException;
 
@@ -14,6 +15,7 @@ public class MainApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 320, 240);
         stage.setTitle("Ventana de Administrador");
         stage.setScene(scene);
+        stage.setMaximized(true);
         stage.show();
     }
 }

@@ -5,60 +5,108 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<VBox prefHeight="500.0" prefWidth="800.0" spacing="15.0" stylesheets="@../styles/global.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="540.0" prefWidth="860.0" spacing="20.0" stylesheets="@../styles/global.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
     <padding>
-        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+        <Insets bottom="28.0" left="32.0" right="32.0" top="25.0" />
     </padding>
     <children>
-        <Label text="Registro de Clientes">
-            <font>
-                <Font name="System Bold" size="18.0" />
-            </font>
-        </Label>
-        <GridPane hgap="12.0" vgap="12.0">
-            <columnConstraints>
-                <ColumnConstraints hgrow="NEVER" minWidth="75.0" />
-                <ColumnConstraints hgrow="NEVER" prefWidth="170.0" />
-                <ColumnConstraints hgrow="NEVER" minWidth="95.0" />
-                <ColumnConstraints hgrow="NEVER" prefWidth="170.0" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints vgrow="NEVER" />
-                <RowConstraints vgrow="NEVER" />
-                <RowConstraints vgrow="NEVER" />
-                <RowConstraints vgrow="NEVER" />
-            </rowConstraints>
+        <Label styleClass="titulo-vista" text="Registro de Clientes" />
+
+        <HBox spacing="24.0" VBox.vgrow="ALWAYS">
             <children>
-                <Label text="Usuario:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                <TextField fx:id="txtUsuario" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                <Label text="Primer Nombre:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-                <TextField fx:id="txtPrimerNombre" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+                <!-- Tarjeta Izquierda: Credenciales de acceso -->
+                <VBox prefWidth="360.0" spacing="14.0" styleClass="seccion-card" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="22.0" left="22.0" right="22.0" top="20.0" />
+                    </padding>
+                    <children>
+                        <Label styleClass="subtitulo-seccion" text="Credenciales de acceso" />
 
-                <Label text="Contraseña:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                <PasswordField fx:id="txtContrasena" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <Label text="Apellido:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                <TextField fx:id="txtApellido" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label styleClass="label-campo" text="Usuario" />
+                                <TextField fx:id="txtUsuario" promptText="Ej. oliver123" />
+                            </children>
+                        </VBox>
 
-                <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-                <TextField fx:id="txtEmail" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                <Label text="Teléfono:" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                <TextField fx:id="txtTelefono" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label styleClass="label-campo" text="Contraseña" />
+                                <PasswordField fx:id="txtContrasena" promptText="••••••••" />
+                            </children>
+                        </VBox>
 
-                <Label text="Dirección:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-                <TextField fx:id="txtDireccion" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="3" />
-            </children>
-        </GridPane>
-        <HBox spacing="10.0">
-            <children>
-                <Button fx:id="btnGuardarCliente" mnemonicParsing="false" text="Guardar Cliente" />
-                <Button fx:id="btnLimpiar" mnemonicParsing="false" text="Limpiar" />
+                        <Region VBox.vgrow="ALWAYS" />
+
+                        <HBox spacing="10.0">
+                            <children>
+                                <Button fx:id="btnGuardarCliente" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn-primario" text="Guardar Cliente" HBox.hgrow="ALWAYS" />
+                                <Button fx:id="btnLimpiar" mnemonicParsing="false" styleClass="btn-secundario" text="Limpiar" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <!-- Tarjeta Derecha: Información personal y Contacto -->
+                <VBox prefWidth="420.0" spacing="14.0" styleClass="seccion-card" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="22.0" left="22.0" right="22.0" top="20.0" />
+                    </padding>
+                    <children>
+                        <Label styleClass="subtitulo-seccion" text="Información personal" />
+
+                        <HBox spacing="14.0">
+                            <children>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label styleClass="label-campo" text="Primer Nombre" />
+                                        <TextField fx:id="txtPrimerNombre" />
+                                    </children>
+                                </VBox>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label styleClass="label-campo" text="Apellido" />
+                                        <TextField fx:id="txtApellido" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+
+                        <Label styleClass="subtitulo-seccion" text="Contacto">
+                            <VBox.margin>
+                                <Insets top="6.0" />
+                            </VBox.margin>
+                        </Label>
+
+                        <HBox spacing="14.0">
+                            <children>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label styleClass="label-campo" text="Email" />
+                                        <TextField fx:id="txtEmail" />
+                                    </children>
+                                </VBox>
+                                <VBox prefWidth="150.0" spacing="5.0">
+                                    <children>
+                                        <Label styleClass="label-campo" text="Teléfono" />
+                                        <TextField fx:id="txtTelefono" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label styleClass="label-campo" text="Dirección" />
+                                <TextField fx:id="txtDireccion" />
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
             </children>
         </HBox>
     </children>

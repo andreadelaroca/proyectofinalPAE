@@ -5,11 +5,18 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
-@Entity @Table(name = "productos") @Getter @Setter
-@AllArgsConstructor @NoArgsConstructor(access =  AccessLevel.PROTECTED)
+@Entity
+@Table(name = "productos")
+@Getter @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Producto {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, unique = true, length = 20)
+    private String codigo;
 
     @Column(nullable = false, length = 70)
     private String nombre;

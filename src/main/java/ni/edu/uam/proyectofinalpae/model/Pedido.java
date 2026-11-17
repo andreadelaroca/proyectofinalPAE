@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity @Table(name = "pedidos") @Getter @Setter @AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity @Table(name = "pedidos") @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +25,9 @@ public class Pedido {
 
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal precioTotal;
+
+    @Column(nullable = false)
+    private String estado;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_cliente", nullable = false)
@@ -43,7 +46,9 @@ public class Pedido {
         this.descripcion = descripcion;
         this.precioTotal = precioTotal;
     }
+
     public void agregarDetalle(DetallePedido detalle) {
+        detalle.calcularSubtotal(); // Calcula el subtotal antes de sumarlo al total
         detalles.add(detalle);
         detalle.setPedido(this);
         calcularTotalActualizado();

@@ -61,4 +61,15 @@ public class ColaboradorService {
             return repository.findAll(session);
         }
     }
+
+    public Colaborador autenticar(String username, String password) {
+        try (Session session = HibernateUtil.factory().openSession()) {
+            return session.createQuery(
+                            "FROM Colaborador c WHERE c.username = :user AND c.password = :pass",
+                            Colaborador.class)
+                    .setParameter("user", username)
+                    .setParameter("pass", password)
+                    .uniqueResult();
+        }
+    }
 }

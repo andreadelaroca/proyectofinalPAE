@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 
-@Entity @Table(name = "detalles_pedido") @Getter @Setter @AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity @Table(name = "detalles_pedido") @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class DetallePedido {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
