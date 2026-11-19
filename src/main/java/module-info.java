@@ -12,6 +12,7 @@ module ni.edu.uam.proyectofinalpae {
     requires javafx.web;
     requires java.net.http;
     requires jakarta.mail;
+    requires com.google.gson;
 
     opens ni.edu.uam.proyectofinalpae to javafx.fxml;
     exports ni.edu.uam.proyectofinalpae;
