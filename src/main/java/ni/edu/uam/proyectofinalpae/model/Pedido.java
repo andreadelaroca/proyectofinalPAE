@@ -10,8 +10,7 @@ import java.util.List;
 
 @Entity @Table(name = "pedidos") @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class Pedido {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -24,43 +23,46 @@ public class Pedido {
     private String descripcion;
 
     @Column(nullable = false, precision = 12, scale = 2)
-    private BigDecimal precioTotal;
+    private BigDecimal precioTotal = BigDecimal.ZERO;
 
-    @Column(nullable = false)
-    private String estado;
+    @Enumerated(EnumType.STRING) @Column(nullable = false, length = 20)
+    private EstadoPedido estado = EstadoPedido.PENDIENTE;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_colaborador", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "id_colaborador")
     private Colaborador colaborador;
+
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "id_direccion_entrega")
+    private Direccion direccionEntrega;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetallePedido> detalles = new ArrayList<>();
 
-    public Pedido(LocalDate fechaPedido, LocalDate fechaEntrega, String descripcion, BigDecimal precioTotal) {
+    public Pedido(LocalDate fechaPedido, LocalDate fechaEntrega, String descripcion) {
         this.fechaPedido = fechaPedido;
         this.fechaEntrega = fechaEntrega;
         this.descripcion = descripcion;
-        this.precioTotal = precioTotal;
     }
 
     public void agregarDetalle(DetallePedido detalle) {
-        detalle.calcularSubtotal(); // Calcula el subtotal antes de sumarlo al total
-        detalles.add(detalle);
         detalle.setPedido(this);
-        calcularTotalActualizado();
+        detalle.calcularSubtotal();
+        detalles.add(detalle);
+        recalcularTotal();
     }
 
     public void removerDetalle(DetallePedido detalle) {
         detalles.remove(detalle);
         detalle.setPedido(null);
-        calcularTotalActualizado();
+        recalcularTotal();
     }
 
-    private void calcularTotalActualizado() {
-        this.precioTotal = detalles.stream().map(DetallePedido::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+    public void recalcularTotal() {
+        this.precioTotal = detalles.stream()
+                .map(DetallePedido::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
