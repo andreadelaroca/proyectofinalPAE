@@ -21,10 +21,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-<<<<<<< HEAD
-import javafx.concurrent.Task;
-=======
->>>>>>> origin/main
 
 public class GestionPedidosController {
 
@@ -224,30 +220,4 @@ public class GestionPedidosController {
         alerta.setContentText(mensaje);
         alerta.showAndWait();
     }
-<<<<<<< HEAD
-
-    private void configurarFiltro() {
-        txtBuscar.textProperty().addListener((obs, anterior, nuevo) -> {
-            String filtro = (nuevo == null) ? "" : nuevo.toLowerCase().trim();
-            listaFiltrada.setPredicate(pedido -> {
-                if (filtro.isEmpty()) return true;
-
-                String idTexto = pedido.getId() != null ? String.valueOf(pedido.getId()) : "";
-                String cliente = (pedido.getCliente() != null)
-                        ? (pedido.getCliente().getNombres() + " " + pedido.getCliente().getApellidos() + " " + pedido.getCliente().getUsername()).toLowerCase()
-                        : "";
-                String colaborador = (pedido.getColaborador() != null)
-                        ? (pedido.getColaborador().getNombres() + " " + pedido.getColaborador().getApellidos()).toLowerCase()
-                        : "";
-                String estado = pedido.getEstado() != null ? pedido.getEstado().name().toLowerCase() : "";
-
-                return idTexto.contains(filtro)
-                        || cliente.contains(filtro)
-                        || colaborador.contains(filtro)
-                        || estado.contains(filtro);
-            });
-        });
-    }
-=======
->>>>>>> origin/main
 }

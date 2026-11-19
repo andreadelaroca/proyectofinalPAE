@@ -104,25 +104,20 @@ public class NuevoClienteController {
             lblMensaje.setText("El teléfono no puede superar los 20 caracteres.");
             return;
         }
-<<<<<<< HEAD
-        if (password.length() < 8) {
-            lblMensaje.setText("La contraseña debe tener al menos 8 caracteres.");
-            return;
-        }
-        if (!password.equals(confirmar)) {
-            lblMensaje.setText("Las contraseñas no coinciden.");
-            return;
-=======
-        if (!password.isEmpty() || !confirmar.isEmpty()) {
+        if (!esEdicion) {
+            if (password.length() < 8) {
+                lblMensaje.setText("La contraseña debe tener al menos 8 caracteres.");
+                return;
+            }
+        } else if (!password.isEmpty() || !confirmar.isEmpty()) {
             if (password.length() < 4) {
                 lblMensaje.setText("La contraseña debe tener al menos 4 caracteres.");
                 return;
             }
-            if (!password.equals(confirmar)) {
-                lblMensaje.setText("Las contraseñas no coinciden.");
-                return;
-            }
->>>>>>> origin/main
+        }
+        if (!password.equals(confirmar)) {
+            lblMensaje.setText("Las contraseñas no coinciden.");
+            return;
         }
         if (correo.length() > 60 || !correo.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
             lblMensaje.setText("Ingrese un correo electrónico válido (máx. 60 caracteres).");
@@ -143,24 +138,6 @@ public class NuevoClienteController {
                     throw new IllegalArgumentException("El nombre de usuario '" + username + "' ya está registrado.");
                 }
 
-<<<<<<< HEAD
-                Cliente nuevo = new Cliente();
-                nuevo.setNombres(nombres);
-                nuevo.setApellidos(apellidos);
-                nuevo.setUsername(username);
-
-                nuevo.setCorreo(correo);
-                nuevo.setTelefono(telefono);
-
-                Direccion direccion = new Direccion();
-                direccion.setNombre(direccionTexto);
-                direccion.setLatitud(latitudSeleccionada);
-                direccion.setLongitud(longitudSeleccionada);
-                nuevo.agregarDireccion(direccion);
-
-                clienteService.registrar(nuevo, password);
-                return nuevo;
-=======
                 Cliente target = esEdicion ? clienteEdicion : new Cliente();
                 target.setNombres(nombres);
                 target.setApellidos(apellidos);
@@ -174,20 +151,23 @@ public class NuevoClienteController {
 
                 if (target.getDirecciones() != null && !target.getDirecciones().isEmpty()) {
                     target.getDirecciones().get(0).setNombre(direccionTexto);
+                    target.getDirecciones().get(0).setLatitud(latitudSeleccionada);
+                    target.getDirecciones().get(0).setLongitud(longitudSeleccionada);
                 } else {
                     Direccion direccion = new Direccion();
                     direccion.setNombre(direccionTexto);
+                    direccion.setLatitud(latitudSeleccionada);
+                    direccion.setLongitud(longitudSeleccionada);
                     target.agregarDireccion(direccion);
                 }
 
                 if (esEdicion) {
                     clienteService.actualizar(target);
                 } else {
-                    clienteService.guardar(target);
+                    clienteService.registrar(target, password);
                 }
 
                 return target;
->>>>>>> origin/main
             }
         };
 
@@ -202,13 +182,9 @@ public class NuevoClienteController {
             Alert alerta = new Alert(Alert.AlertType.INFORMATION);
             alerta.setTitle(esEdicion ? "Cliente Actualizado" : "Cliente Registrado");
             alerta.setHeaderText(null);
-<<<<<<< HEAD
-            alerta.setContentText("El cliente " + clienteCreado.getNombres() + " fue registrado. Revisa el correo y confirma el código antes de iniciar sesión.");
-=======
             alerta.setContentText(esEdicion
                     ? "Los datos de " + tareaGuardar.getValue().getNombres() + " fueron actualizados."
-                    : "El cliente " + tareaGuardar.getValue().getNombres() + " fue registrado correctamente.");
->>>>>>> origin/main
+                    : "El cliente " + tareaGuardar.getValue().getNombres() + " fue registrado. Revisa el correo y confirma el código antes de iniciar sesión.");
             alerta.showAndWait();
 
             cerrarVentana();

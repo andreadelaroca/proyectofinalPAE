@@ -48,15 +48,8 @@ public class ClientesController {
         );
 
         btnRefrescar.setOnAction(e -> cargarClientes());
-<<<<<<< HEAD
-        btnNuevoCliente.setOnAction(e -> abrirNuevoCliente());
-        btnVerMapa.disableProperty().bind(tblClientes.getSelectionModel().selectedItemProperty().isNull());
-        btnVerMapa.setOnAction(e -> verEnMapa());
-=======
         btnEditarCliente.setOnAction(e -> abrirModalCliente(tblClientes.getSelectionModel().getSelectedItem()));
         btnNuevoCliente.setOnAction(e -> abrirModalCliente(null));
->>>>>>> origin/main
-
         cargarClientes();
 
         tblClientes.getColumns().forEach(col -> col.setReorderable(false));

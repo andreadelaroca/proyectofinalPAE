@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<<<<<<< HEAD
-<ScrollPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.NuevoProductoController" fitToWidth="true"><content><VBox spacing="10" style="-fx-padding: 24;" prefWidth="880"><Label text="Nuevo producto" style="-fx-font-size: 19; -fx-font-weight: bold;" /><TextField fx:id="txtCodigo" promptText="txtCodigo" maxWidth="450" /><TextField fx:id="txtNombre" promptText="txtNombre" maxWidth="450" /><TextField fx:id="txtMarca" promptText="txtMarca" maxWidth="450" /><TextArea fx:id="txtDescripcion" promptText="txtDescripcion" maxWidth="450" /><TextField fx:id="txtPrecio" promptText="txtPrecio" maxWidth="450" /><TextField fx:id="txtCantidad" promptText="txtCantidad" maxWidth="450" /><ColorPicker fx:id="cpColor"/><TextField fx:id="txtRutaImagen" promptText="txtRutaImagen" maxWidth="450" /><Button fx:id="btnExaminar" text="Buscar imagen" /><HBox spacing="10"><Button fx:id="btnGuardar" text="Guardar" /><Button fx:id="btnCancelar" text="Cancelar" /></HBox><Label fx:id="lblMensaje"/></VBox></content></ScrollPane>
-=======
-
 <VBox prefHeight="600.0" prefWidth="720.0" spacing="16.0"
       stylesheets="@../styles/global.css"
       xmlns="http://javafx.com/javafx/17"
@@ -100,4 +96,3 @@
         </HBox>
     </children>
 </VBox>
->>>>>>> origin/main

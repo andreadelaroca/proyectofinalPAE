@@ -160,21 +160,8 @@ public class NuevoProductoController {
             return;
         }
 
-<<<<<<< HEAD
-        try {
-            Producto nuevo = new Producto();
-            nuevo.setNombre(nombre);
-            nuevo.setMarca(new ni.edu.uam.proyectofinalpae.service.MarcaService().obtenerOCrear(marca));
-            nuevo.setDescripcion(descripcion);
-            nuevo.setPrecioUnitario(precio);
-            nuevo.setCantidad(cantidad);
-            nuevo.setColor(colorAHex(cpColor.getValue()));
-            nuevo.setRutaImagen(rutaImagen);
-=======
         btnGuardar.setDisable(true);
         String hexColor = colorAHex(cpColor.getValue());
->>>>>>> origin/main
-
         Task<Producto> tareaGuardar = new Task<>() {
             @Override
             protected Producto call() {

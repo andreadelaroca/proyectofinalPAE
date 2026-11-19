@@ -93,25 +93,20 @@ public class NuevoColaboradorController {
             lblMensaje.setText("El teléfono no puede superar los 20 caracteres.");
             return;
         }
-<<<<<<< HEAD
-        if (password.length() < 8) {
-            lblMensaje.setText("La contraseña debe tener al menos 8 caracteres.");
-            return;
-        }
-        if (!password.equals(confirmar)) {
-            lblMensaje.setText("Las contraseñas no coinciden.");
-            return;
-=======
-        if (!password.isEmpty() || !confirmar.isEmpty()) {
+        if (!esEdicion) {
+            if (password.length() < 8) {
+                lblMensaje.setText("La contraseña debe tener al menos 8 caracteres.");
+                return;
+            }
+        } else if (!password.isEmpty() || !confirmar.isEmpty()) {
             if (password.length() < 4) {
                 lblMensaje.setText("La contraseña debe tener al menos 4 caracteres.");
                 return;
             }
-            if (!password.equals(confirmar)) {
-                lblMensaje.setText("Las contraseñas no coinciden.");
-                return;
-            }
->>>>>>> origin/main
+        }
+        if (!password.equals(confirmar)) {
+            lblMensaje.setText("Las contraseñas no coinciden.");
+            return;
         }
         if (correo.length() > 60 || !correo.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
             lblMensaje.setText("Ingrese un correo electrónico válido (máx. 60 caracteres).");
@@ -128,19 +123,6 @@ public class NuevoColaboradorController {
                     throw new IllegalArgumentException("El nombre de usuario '" + username + "' ya está registrado.");
                 }
 
-<<<<<<< HEAD
-                Colaborador nuevo = new Colaborador();
-                nuevo.setNombres(nombres);
-                nuevo.setApellidos(apellidos);
-                nuevo.setUsername(username);
-
-                nuevo.setCorreo(correo);
-                nuevo.setTelefono(telefono);
-                nuevo.setDireccion(direccion);
-
-                colaboradorService.registrar(nuevo, password);
-                return nuevo;
-=======
                 Colaborador target = esEdicion ? colaboradorEdicion : new Colaborador();
                 target.setNombres(nombres);
                 target.setApellidos(apellidos);
@@ -155,11 +137,10 @@ public class NuevoColaboradorController {
                 if (esEdicion) {
                     colaboradorService.actualizar(target);
                 } else {
-                    colaboradorService.guardar(target);
+                    colaboradorService.registrar(target, password);
                 }
 
                 return target;
->>>>>>> origin/main
             }
         };
 
@@ -174,13 +155,9 @@ public class NuevoColaboradorController {
             Alert alerta = new Alert(Alert.AlertType.INFORMATION);
             alerta.setTitle(esEdicion ? "Colaborador Actualizado" : "Colaborador Registrado");
             alerta.setHeaderText(null);
-<<<<<<< HEAD
-            alerta.setContentText("El colaborador " + colaboradorCreado.getNombres() + " fue registrado. Revisa el correo y confirma el código antes de iniciar sesión.");
-=======
             alerta.setContentText(esEdicion
                     ? "Los datos de " + tareaGuardar.getValue().getNombres() + " fueron actualizados."
-                    : "El colaborador " + tareaGuardar.getValue().getNombres() + " fue registrado correctamente.");
->>>>>>> origin/main
+                    : "El colaborador " + tareaGuardar.getValue().getNombres() + " fue registrado. Revisa el correo y confirma el código antes de iniciar sesión.");
             alerta.showAndWait();
 
             cerrarVentana();

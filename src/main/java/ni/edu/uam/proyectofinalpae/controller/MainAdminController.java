@@ -140,16 +140,7 @@ public class MainAdminController implements Initializable {
                 nuevoCliente.agregarDireccion(direccion);
             }
 
-<<<<<<< HEAD
             clienteService.registrar(nuevoCliente, txtRegPassword.getText());
-=======
-            Stage loginStage = new Stage();
-            loginStage.setTitle("Inicio de Sesión");
-            loginStage.setScene(new Scene(root));
-            loginStage.setMaximized(true);
-            loginStage.show();
->>>>>>> origin/main
-
             mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "Cliente registrado. Revisa el correo para verificarlo.");
             limpiarFormularioCliente(null);
 
