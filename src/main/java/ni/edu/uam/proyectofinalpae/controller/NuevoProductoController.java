@@ -1,5 +1,6 @@
 package ni.edu.uam.proyectofinalpae.controller;
 
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 
 public class NuevoProductoController {
 
+    @FXML private Label lblTitulo;
     @FXML private TextField txtCodigo;
     @FXML private TextField txtMarca;
     @FXML private TextField txtNombre;
@@ -28,22 +30,65 @@ public class NuevoProductoController {
 
     private final ProductoService productoService = new ProductoService();
     private Producto productoGuardado;
+    private Producto productoEdicion;
+    private boolean guardadoExitoso = false;
 
     @FXML
     public void initialize() {
         lblMensaje.setText("");
         txtMarca.setText("BunBun");
         cpColor.setValue(Color.web("#C8D9E6"));
+        txtCodigo.setText("Calculando...");
 
-        try {
-            txtCodigo.setText(productoService.obtenerSiguienteCodigo());
-        } catch (Exception e) {
-            txtCodigo.setText("BUN-AUTO");
-        }
+        Task<String> tareaCodigo = new Task<>() {
+            @Override
+            protected String call() {
+                return productoService.obtenerSiguienteCodigo();
+            }
+        };
+        tareaCodigo.setOnSucceeded(e -> {
+            // Solo asigna el código automático si no se cargó un producto para editar
+            if (productoEdicion == null) {
+                txtCodigo.setText(tareaCodigo.getValue());
+            }
+        });
+        tareaCodigo.setOnFailed(e -> {
+            if (productoEdicion == null) {
+                txtCodigo.setText("BUN-AUTO");
+            }
+        });
+        Thread hilo = new Thread(tareaCodigo);
+        hilo.setDaemon(true);
+        hilo.start();
 
         btnExaminar.setOnAction(e -> seleccionarImagen());
         btnCancelar.setOnAction(e -> cerrarVentana());
         btnGuardar.setOnAction(e -> guardarProducto());
+    }
+
+    public void cargarProductoParaEditar(Producto producto) {
+        this.productoEdicion = producto;
+        if (lblTitulo != null) {
+            lblTitulo.setText("Editar Producto");
+        }
+        btnGuardar.setText("Guardar Cambios");
+
+        txtCodigo.setText(producto.getCodigo());
+        txtMarca.setText(producto.getMarca());
+        txtNombre.setText(producto.getNombre());
+        txtDescripcion.setText(producto.getDescripcion());
+        txtPrecio.setText(producto.getPrecioUnitario() != null ? producto.getPrecioUnitario().toPlainString() : "");
+        txtCantidad.setText(producto.getCantidad() != null ? String.valueOf(producto.getCantidad()) : "0");
+        txtRutaImagen.setText(producto.getRutaImagen());
+
+        if (producto.getColor() != null && !producto.getColor().isBlank()) {
+            try {
+                String hex = producto.getColor().startsWith("#") ? producto.getColor() : "#" + producto.getColor();
+                cpColor.setValue(Color.web(hex));
+            } catch (IllegalArgumentException ignored) {
+                cpColor.setValue(Color.web("#C8D9E6"));
+            }
+        }
     }
 
     private void seleccionarImagen() {
@@ -61,6 +106,8 @@ public class NuevoProductoController {
 
     private void guardarProducto() {
         lblMensaje.setText("");
+
+        boolean esEdicion = (productoEdicion != null);
 
         String nombre = txtNombre.getText().trim();
         String marca = txtMarca.getText().trim();
@@ -112,29 +159,58 @@ public class NuevoProductoController {
             return;
         }
 
-        try {
-            Producto nuevo = new Producto();
-            nuevo.setNombre(nombre);
-            nuevo.setMarca(marca);
-            nuevo.setDescripcion(descripcion);
-            nuevo.setPrecioUnitario(precio);
-            nuevo.setCantidad(cantidad);
-            nuevo.setColor(colorAHex(cpColor.getValue()));
-            nuevo.setRutaImagen(rutaImagen);
+        btnGuardar.setDisable(true);
+        String hexColor = colorAHex(cpColor.getValue());
 
-            productoGuardado = productoService.registrarProducto(nuevo);
+        Task<Producto> tareaGuardar = new Task<>() {
+            @Override
+            protected Producto call() {
+                Producto target = esEdicion ? productoEdicion : new Producto();
+                target.setNombre(nombre);
+                target.setMarca(marca);
+                target.setDescripcion(descripcion);
+                target.setPrecioUnitario(precio);
+                target.setCantidad(cantidad);
+                target.setColor(hexColor);
+                target.setRutaImagen(rutaImagen);
+
+                if (esEdicion) {
+                    productoService.actualizarProducto(target);
+                    return target;
+                } else {
+                    return productoService.registrarProducto(target);
+                }
+            }
+        };
+
+        tareaGuardar.setOnSucceeded(e -> {
+            btnGuardar.setDisable(false);
+            guardadoExitoso = true;
+
+            if (!esEdicion) {
+                productoGuardado = tareaGuardar.getValue();
+            }
 
             Alert info = new Alert(Alert.AlertType.INFORMATION);
-            info.setTitle("Producto Registrado");
+            info.setTitle(esEdicion ? "Producto Actualizado" : "Producto Registrado");
             info.setHeaderText(null);
-            info.setContentText("Producto guardado exitosamente con el código: " + productoGuardado.getCodigo());
+            info.setContentText(esEdicion
+                    ? "El producto " + tareaGuardar.getValue().getCodigo() + " fue actualizado correctamente."
+                    : "Producto guardado exitosamente con el código: " + productoGuardado.getCodigo());
             info.showAndWait();
 
             cerrarVentana();
-        } catch (Exception e) {
+        });
+
+        tareaGuardar.setOnFailed(e -> {
+            btnGuardar.setDisable(false);
             lblMensaje.setText("Error al guardar el producto en la base de datos.");
-            e.printStackTrace();
-        }
+            tareaGuardar.getException().printStackTrace();
+        });
+
+        Thread hilo = new Thread(tareaGuardar);
+        hilo.setDaemon(true);
+        hilo.start();
     }
 
     private String colorAHex(Color color) {
@@ -151,5 +227,9 @@ public class NuevoProductoController {
 
     public Producto getProductoGuardado() {
         return productoGuardado;
+    }
+
+    public boolean isGuardadoExitoso() {
+        return guardadoExitoso;
     }
 }
