@@ -24,6 +24,29 @@ public class ProductoService {
         });
     }
 
+    /**
+     * Actualiza los datos de un producto existente manteniendo su código BUN-XXX.
+     */
+    public void actualizarProducto(Producto producto) {
+        Transaction tx = null;
+        try (Session session = HibernateUtil.factory().openSession()) {
+            tx = session.beginTransaction();
+
+            if (producto.getColor() != null && producto.getColor().startsWith("#")) {
+                producto.setColor(producto.getColor().substring(1));
+            }
+
+            session.merge(producto);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            throw new RuntimeException("Error al actualizar el producto", e);
+        }
+    }
+
+    /**
+     * Útil si deseas previsualizar el próximo código en un TextField deshabilitado del formulario.
+     */
     public String obtenerSiguienteCodigo() {
         return Tx.read(s -> {
             Long ultimoId = s.createQuery("SELECT COALESCE(MAX(p.id), 0L) FROM Producto p", Long.class).uniqueResult();

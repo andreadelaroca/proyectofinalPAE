@@ -13,7 +13,7 @@
         <Insets bottom="22.0" left="28.0" right="28.0" top="20.0" />
     </padding>
     <children>
-        <Label styleClass="titulo-vista" text="Nuevo Producto" />
+        <Label fx:id="lblTitulo" styleClass="titulo-vista" text="Nuevo Producto" />
 
         <!-- Código automático y Marca -->
         <HBox spacing="14.0">
