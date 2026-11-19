@@ -13,6 +13,7 @@
         <TableColumn fx:id="colCliente" text="Cliente" prefWidth="110" />
         <TableColumn fx:id="colColaborador" text="Colaborador" prefWidth="110" />
     </columns></TableView><HBox spacing="10">
+    <Button text="Cerrar sesión" onAction="#cerrarSesion" styleClass="btn-secundario"/>
     <Button text="Nuevo pedido" onAction="#nuevoPedido"/>
     <Button text="Cambiar estado" onAction="#actualizarEstado"/>
     <Button text="Nuevo colaborador" onAction="#abrirColaboradores"/>
