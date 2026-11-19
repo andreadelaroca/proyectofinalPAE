@@ -41,12 +41,12 @@ public class Venta {
     @Column(nullable = false, length = 20)
     private EstadoVenta estado = EstadoVenta.COMPLETADA;
 
-    @ManyToOne(fetch = FetchType.LAZY @JoinColumn(name = "id_cliente")
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "id_cliente")
     private Cliente cliente;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "id_colaborador", nullable = false)
     private Colaborador colaborador;
-¿
+
     @OneToOne(fetch = FetchType.LAZY) @JoinColumn(name = "id_pedido", unique = true)
     private Pedido pedido;
 
