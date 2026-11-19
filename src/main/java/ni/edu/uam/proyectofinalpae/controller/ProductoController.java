@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,15 +17,18 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ni.edu.uam.proyectofinalpae.model.Producto;
 import ni.edu.uam.proyectofinalpae.service.ProductoService;
-import javafx.concurrent.Task;
-import java.util.List;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 
 public class ProductoController {
 
     @FXML private Button btnNuevoProducto;
+    @FXML private Button btnEditarProducto;
+    @FXML private Button btnRefrescar;
+    @FXML private TextField txtBuscar;
+
     @FXML private TableView<Producto> tblProductos;
     @FXML private TableColumn<Producto, String> colCodigo;
     @FXML private TableColumn<Producto, String> colNombre;
@@ -33,24 +37,30 @@ public class ProductoController {
     @FXML private TableColumn<Producto, Integer> colCantidad;
     @FXML private TableColumn<Producto, String> colColor;
     @FXML private TableColumn<Producto, String> colDescripcion;
-    @FXML private Button btnRefrescar;
-    @FXML private TextField txtBuscar;
-
-    private FilteredList<Producto> listaFiltrada;
 
     private final ProductoService productoService = new ProductoService();
     private final ObservableList<Producto> listaProductos = FXCollections.observableArrayList();
+    private FilteredList<Producto> listaFiltrada;
 
     @FXML
     public void initialize() {
         configurarColumnas();
-        cargarProductos();
-        btnNuevoProducto.setOnAction(e -> abrirNuevoProducto());
-        btnRefrescar.setOnAction(e -> cargarProductos());
 
         listaFiltrada = new FilteredList<>(listaProductos, p -> true);
         tblProductos.setItems(listaFiltrada);
         configurarFiltro();
+
+        btnEditarProducto.disableProperty().bind(
+                tblProductos.getSelectionModel().selectedItemProperty().isNull()
+        );
+
+        btnNuevoProducto.setOnAction(e -> abrirModalProducto(null));
+        btnEditarProducto.setOnAction(e -> abrirModalProducto(tblProductos.getSelectionModel().getSelectedItem()));
+        btnRefrescar.setOnAction(e -> cargarProductos());
+
+        cargarProductos();
+
+        tblProductos.getColumns().forEach(col -> col.setReorderable(false));
     }
 
     private void configurarColumnas() {
@@ -66,7 +76,6 @@ public class ProductoController {
                 new SimpleObjectProperty<>(cell.getValue().getCantidad()));
         colDescripcion.setCellValueFactory(cell ->
                 new SimpleStringProperty(cell.getValue().getDescripcion()));
-
         colColor.setCellValueFactory(cell ->
                 new SimpleStringProperty(cell.getValue().getColor()));
 
@@ -98,6 +107,17 @@ public class ProductoController {
                 }
             }
         });
+
+        // Doble clic en una fila abre el modal en modo edición
+        tblProductos.setRowFactory(tv -> {
+            TableRow<Producto> fila = new TableRow<>();
+            fila.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !fila.isEmpty()) {
+                    abrirModalProducto(fila.getItem());
+                }
+            });
+            return fila;
+        });
     }
 
     private void cargarProductos() {
@@ -113,7 +133,6 @@ public class ProductoController {
 
         tarea.setOnSucceeded(e -> {
             listaProductos.setAll(tarea.getValue());
-            tblProductos.setItems(listaProductos);
             tblProductos.setPlaceholder(new Label("No hay productos registrados."));
             btnRefrescar.setDisable(false);
         });
@@ -129,36 +148,48 @@ public class ProductoController {
         hilo.start();
     }
 
-    private void abrirNuevoProducto() {
+    private void abrirModalProducto(Producto productoAEditar) {
+        btnNuevoProducto.setDisable(true);
+        btnEditarProducto.disableProperty().unbind();
+        btnEditarProducto.setDisable(true);
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/ni/edu/uam/proyectofinalpae/fxml/nuevo-producto-view.fxml")
             );
             Parent root = loader.load();
-
             NuevoProductoController controller = loader.getController();
 
+            if (productoAEditar != null) {
+                controller.cargarProductoParaEditar(productoAEditar);
+            }
+
             Stage modal = new Stage();
-            modal.setTitle("BunBun Hub - Nuevo Producto");
+            modal.setTitle(productoAEditar == null ? "BunBun Hub - Nuevo Producto" : "BunBun Hub - Editar Producto");
             modal.setScene(new Scene(root));
             modal.initOwner(btnNuevoProducto.getScene().getWindow());
             modal.initModality(Modality.WINDOW_MODAL);
             modal.setResizable(false);
             modal.showAndWait();
 
-            // Si se registró un producto, se agrega directo en memoria sin recargar toda la BD
-            Producto creado = controller.getProductoGuardado();
-            if (creado != null) {
+            if (productoAEditar == null && controller.getProductoGuardado() != null) {
+                Producto creado = controller.getProductoGuardado();
                 listaProductos.add(creado);
                 tblProductos.getSelectionModel().select(creado);
+            } else if (productoAEditar != null && controller.isGuardadoExitoso()) {
+                tblProductos.refresh();
             }
         } catch (IOException e) {
             Alert alerta = new Alert(Alert.AlertType.ERROR);
             alerta.setTitle("Error");
             alerta.setHeaderText(null);
-            alerta.setContentText("No se pudo abrir el formulario de nuevo producto.");
+            alerta.setContentText("No se pudo abrir el formulario de producto.");
             alerta.showAndWait();
             e.printStackTrace();
+        } finally {
+            btnNuevoProducto.setDisable(false);
+            btnEditarProducto.disableProperty().bind(
+                    tblProductos.getSelectionModel().selectedItemProperty().isNull()
+            );
         }
     }
 

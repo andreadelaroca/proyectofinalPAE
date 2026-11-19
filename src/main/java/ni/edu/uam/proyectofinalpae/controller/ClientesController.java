@@ -1,6 +1,5 @@
 package ni.edu.uam.proyectofinalpae.controller;
 
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,11 +22,11 @@ public class ClientesController {
 
     @FXML private TextField txtBuscar;
     @FXML private Button btnRefrescar;
+    @FXML private Button btnEditarCliente;
     @FXML private Button btnNuevoCliente;
     @FXML private Button btnVerMapa;
 
     @FXML private TableView<Cliente> tblClientes;
-    @FXML private TableColumn<Cliente, Long> colId;
     @FXML private TableColumn<Cliente, String> colNombres;
     @FXML private TableColumn<Cliente, String> colApellidos;
     @FXML private TableColumn<Cliente, String> colUsername;
@@ -44,16 +43,26 @@ public class ClientesController {
         configurarTabla();
         configurarFiltro();
 
+        btnEditarCliente.disableProperty().bind(
+                tblClientes.getSelectionModel().selectedItemProperty().isNull()
+        );
+
         btnRefrescar.setOnAction(e -> cargarClientes());
+<<<<<<< HEAD
         btnNuevoCliente.setOnAction(e -> abrirNuevoCliente());
         btnVerMapa.disableProperty().bind(tblClientes.getSelectionModel().selectedItemProperty().isNull());
         btnVerMapa.setOnAction(e -> verEnMapa());
+=======
+        btnEditarCliente.setOnAction(e -> abrirModalCliente(tblClientes.getSelectionModel().getSelectedItem()));
+        btnNuevoCliente.setOnAction(e -> abrirModalCliente(null));
+>>>>>>> origin/main
 
         cargarClientes();
+
+        tblClientes.getColumns().forEach(col -> col.setReorderable(false));
     }
 
     private void configurarTabla() {
-        colId.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getId()));
         colNombres.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getNombres()));
         colApellidos.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getApellidos()));
         colUsername.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getUsername()));
@@ -65,6 +74,17 @@ public class ClientesController {
                     ? "Sin dirección"
                     : c.getDirecciones().get(0).getNombre();
             return new SimpleStringProperty(dir);
+        });
+
+        // Doble clic en una fila abre el modal en modo edición
+        tblClientes.setRowFactory(tv -> {
+            TableRow<Cliente> fila = new TableRow<>();
+            fila.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !fila.isEmpty()) {
+                    abrirModalCliente(fila.getItem());
+                }
+            });
+            return fila;
         });
 
         listaFiltrada = new FilteredList<>(listaClientes, p -> true);
@@ -86,6 +106,7 @@ public class ClientesController {
 
     private void cargarClientes() {
         tblClientes.setPlaceholder(new Label("Cargando clientes..."));
+        btnRefrescar.setDisable(true);
 
         Task<List<Cliente>> tarea = new Task<>() {
             @Override
@@ -97,10 +118,12 @@ public class ClientesController {
         tarea.setOnSucceeded(e -> {
             listaClientes.setAll(tarea.getValue());
             tblClientes.setPlaceholder(new Label("No hay clientes registrados."));
+            btnRefrescar.setDisable(false);
         });
 
         tarea.setOnFailed(e -> {
             tblClientes.setPlaceholder(new Label("Error al cargar los clientes."));
+            btnRefrescar.setDisable(false);
             tarea.getException().printStackTrace();
         });
 
@@ -109,7 +132,10 @@ public class ClientesController {
         hilo.start();
     }
 
-    private void abrirNuevoCliente() {
+    private void abrirModalCliente(Cliente clienteAEditar) {
+        btnNuevoCliente.setDisable(true);
+        btnEditarCliente.disableProperty().unbind();
+        btnEditarCliente.setDisable(true);
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/ni/edu/uam/proyectofinalpae/fxml/nuevo-cliente-view.fxml")
@@ -117,21 +143,32 @@ public class ClientesController {
             Parent root = loader.load();
             NuevoClienteController controller = loader.getController();
 
+            if (clienteAEditar != null) {
+                controller.cargarClienteParaEditar(clienteAEditar);
+            }
+
             Stage modal = new Stage();
-            modal.setTitle("BunBun Hub - Nuevo Cliente");
+            modal.setTitle(clienteAEditar == null ? "BunBun Hub - Nuevo Cliente" : "BunBun Hub - Editar Cliente");
             modal.setScene(new Scene(root));
             modal.initOwner(btnNuevoCliente.getScene().getWindow());
             modal.initModality(Modality.WINDOW_MODAL);
             modal.setResizable(false);
             modal.showAndWait();
 
-            if (controller.getClienteCreado() != null) {
+            if (clienteAEditar == null && controller.getClienteCreado() != null) {
                 listaClientes.add(controller.getClienteCreado());
+            } else if (clienteAEditar != null && controller.isGuardadoExitoso()) {
+                tblClientes.refresh();
             }
         } catch (IOException e) {
             e.printStackTrace();
             Alert alerta = new Alert(Alert.AlertType.ERROR, "No se pudo abrir el formulario de cliente.");
             alerta.showAndWait();
+        } finally {
+            btnNuevoCliente.setDisable(false);
+            btnEditarCliente.disableProperty().bind(
+                    tblClientes.getSelectionModel().selectedItemProperty().isNull()
+            );
         }
     }
     private void verEnMapa() {

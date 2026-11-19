@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -20,7 +21,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+<<<<<<< HEAD
 import javafx.concurrent.Task;
+=======
+>>>>>>> origin/main
 
 public class GestionPedidosController {
 
@@ -36,16 +40,20 @@ public class GestionPedidosController {
     @FXML private TableColumn<Pedido, String> colUsuarioColaborador;
     @FXML private Button btnRefrescar;
     @FXML private TextField txtBuscar;
-
-    private FilteredList<Pedido> listaFiltrada;
+    @FXML private CheckBox chkOcultarFinalizados;
 
     private final PedidoService pedidoService = new PedidoService();
     private final ObservableList<Pedido> listaPedidos = FXCollections.observableArrayList();
+    private FilteredList<Pedido> listaFiltrada;
 
     @FXML
     public void initialize() {
         configurarColumnas();
-        cargarPedidos();
+
+        listaFiltrada = new FilteredList<>(listaPedidos, p -> true);
+        tblPedidos.setItems(listaFiltrada);
+        configurarFiltro();
+        aplicarFiltros();
 
         // El botón solo se activa cuando hay un pedido seleccionado en la tabla
         btnActualizarEstado.disableProperty().bind(
@@ -56,9 +64,9 @@ public class GestionPedidosController {
         btnActualizarEstado.setOnAction(e -> actualizarEstadoPedido());
         btnRefrescar.setOnAction(e -> cargarPedidos());
 
-        listaFiltrada = new FilteredList<>(listaPedidos, p -> true);
-        tblPedidos.setItems(listaFiltrada);
-        configurarFiltro();
+        cargarPedidos();
+
+        tblPedidos.getColumns().forEach(col -> col.setReorderable(false));
     }
 
     private void configurarColumnas() {
@@ -73,7 +81,6 @@ public class GestionPedidosController {
         colDescripcion.setCellValueFactory(cell ->
                 new SimpleStringProperty(cell.getValue().getDescripcion()));
 
-        // Muestra el username; puedes usar getNombres() + " " + getApellidos() si prefieres nombre completo
         colUsuarioCliente.setCellValueFactory(cell ->
                 new SimpleStringProperty(cell.getValue().getCliente().getUsername()));
         colUsuarioColaborador.setCellValueFactory(cell ->
@@ -107,6 +114,7 @@ public class GestionPedidosController {
         hilo.setDaemon(true);
         hilo.start();
     }
+
     private void actualizarEstadoPedido() {
         Pedido seleccionado = tblPedidos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) return;
@@ -118,26 +126,37 @@ public class GestionPedidosController {
         dialogo.setContentText("Seleccione el nuevo estado:");
 
         dialogo.showAndWait().ifPresent(nuevoEstado -> {
-            // Si eligió el mismo estado actual, no envía ninguna consulta a PostgreSQL
             if (nuevoEstado.equals(seleccionado.getEstado())) return;
 
-            try {
-                // 1 sola consulta UPDATE a la base de datos
-                pedidoService.actualizarEstado(seleccionado.getId(), nuevoEstado);
+            Task<Void> tareaActualizar = new Task<>() {
+                @Override
+                protected Void call() {
+                    pedidoService.actualizarEstado(seleccionado.getId(), nuevoEstado);
+                    return null;
+                }
+            };
 
-                // Refresca la fila en memoria sin volver a consultar toda la tabla
+            tareaActualizar.setOnSucceeded(e -> {
                 seleccionado.setEstado(nuevoEstado);
                 tblPedidos.refresh();
-            } catch (Exception e) {
+                aplicarFiltros();
+            });
+
+            tareaActualizar.setOnFailed(e -> {
+                Throwable ex = tareaActualizar.getException();
                 mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                        "No se pudo actualizar el estado: " + e.getMessage());
-            }
+                        "No se pudo actualizar el estado: " + (ex != null ? ex.getMessage() : ""));
+            });
+
+            Thread hilo = new Thread(tareaActualizar);
+            hilo.setDaemon(true);
+            hilo.start();
         });
     }
 
     private void abrirNuevoPedido() {
+        btnNuevoPedido.setDisable(true);
         try {
-            // Ajusta el nombre del FXML al de tu formulario de registro de pedidos
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/ni/edu/uam/proyectofinalpae/fxml/nuevo-pedido-view.fxml")
             );
@@ -148,16 +167,54 @@ public class GestionPedidosController {
             modal.setScene(new Scene(root));
             modal.initOwner(btnNuevoPedido.getScene().getWindow());
             modal.initModality(Modality.WINDOW_MODAL);
-            modal.setResizable(false); // Bloquea el redimensionamiento
+            modal.setResizable(false);
             modal.showAndWait();
 
-            // Recarga la tabla al cerrar la ventana modal para mostrar el nuevo pedido
             cargarPedidos();
         } catch (IOException e) {
             mostrarAlerta(Alert.AlertType.ERROR, "Error",
                     "No se pudo abrir la ventana de nuevo pedido.");
             e.printStackTrace();
+        } finally {
+            btnNuevoPedido.setDisable(false);
         }
+    }
+
+    private void configurarFiltro() {
+        txtBuscar.textProperty().addListener((obs, anterior, nuevo) -> aplicarFiltros());
+        if (chkOcultarFinalizados != null) {
+            chkOcultarFinalizados.selectedProperty().addListener((obs, anterior, nuevo) -> aplicarFiltros());
+        }
+    }
+
+    private void aplicarFiltros() {
+        String filtro = (txtBuscar.getText() == null) ? "" : txtBuscar.getText().toLowerCase().trim();
+        boolean ocultarFinalizados = chkOcultarFinalizados != null && chkOcultarFinalizados.isSelected();
+
+        listaFiltrada.setPredicate(pedido -> {
+            String estado = pedido.getEstado() != null ? pedido.getEstado().toLowerCase().trim() : "";
+
+            // 1. Ocultar entregados y completados si el CheckBox está marcado
+            if (ocultarFinalizados && (estado.equals("entregado") || estado.equals("completado"))) {
+                return false;
+            }
+
+            // 2. Filtrar por texto si hay búsqueda activa
+            if (filtro.isEmpty()) return true;
+
+            String idTexto = pedido.getId() != null ? String.valueOf(pedido.getId()) : "";
+            String cliente = (pedido.getCliente() != null)
+                    ? (pedido.getCliente().getNombres() + " " + pedido.getCliente().getApellidos() + " " + pedido.getCliente().getUsername()).toLowerCase()
+                    : "";
+            String colaborador = (pedido.getColaborador() != null)
+                    ? (pedido.getColaborador().getNombres() + " " + pedido.getColaborador().getApellidos() + " " + pedido.getColaborador().getUsername()).toLowerCase()
+                    : "";
+
+            return idTexto.contains(filtro)
+                    || cliente.contains(filtro)
+                    || colaborador.contains(filtro)
+                    || estado.contains(filtro);
+        });
     }
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
@@ -167,6 +224,7 @@ public class GestionPedidosController {
         alerta.setContentText(mensaje);
         alerta.showAndWait();
     }
+<<<<<<< HEAD
 
     private void configurarFiltro() {
         txtBuscar.textProperty().addListener((obs, anterior, nuevo) -> {
@@ -190,4 +248,6 @@ public class GestionPedidosController {
             });
         });
     }
+=======
+>>>>>>> origin/main
 }
