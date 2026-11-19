@@ -2,6 +2,7 @@ package ni.edu.uam.proyectofinalpae.service;
 
 import ni.edu.uam.proyectofinalpae.model.Usuario;
 import ni.edu.uam.proyectofinalpae.repository.GenericRepository;
+import ni.edu.uam.proyectofinalpae.util.CorreoNoVerificadoException;
 import ni.edu.uam.proyectofinalpae.util.NegocioException;
 import ni.edu.uam.proyectofinalpae.util.PasswordUtil;
 import ni.edu.uam.proyectofinalpae.util.Tx;
@@ -12,7 +13,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Pattern;
 
-
+/**
+ * Login, verificación de correo y utilidades comunes a Cliente y Colaborador.
+ * El envío del correo NO está aquí: registrar() devuelve el código y otro servicio lo envía.
+ */
 public class UsuarioService {
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final int MINUTOS_VALIDEZ_CODIGO = 15;
@@ -20,6 +24,9 @@ public class UsuarioService {
 
     private final GenericRepository<Usuario, Long> repository = new GenericRepository<>(Usuario.class);
 
+    // ---------- Login ----------
+
+    /** Devuelve un Cliente o un Colaborador (usa instanceof). Lanza NegocioException si falla. */
     public Usuario autenticar(String username, String password) {
         return Tx.read(s -> {
             Usuario u = buscarPorUsername(s, username);
@@ -30,11 +37,13 @@ public class UsuarioService {
                 throw new NegocioException("Esta cuenta está desactivada.");
             }
             if (!u.isCorreoVerificado()) {
-                throw new NegocioException("Debes confirmar tu correo antes de iniciar sesión.");
+                throw new CorreoNoVerificadoException(u.getUsername(), u.getCorreo());
             }
             return u;
         });
     }
+
+    // ---------- Verificación de correo ----------
 
     public void confirmarCorreo(String username, String codigo) {
         Tx.exec("Error al confirmar el correo", s -> {
@@ -54,6 +63,7 @@ public class UsuarioService {
         });
     }
 
+    /** Genera un código nuevo y lo devuelve para reenviarlo por correo. */
     public String regenerarCodigo(String username) {
         return Tx.run("Error al generar el código", s -> {
             Usuario u = buscarPorUsername(s, username);
@@ -62,6 +72,8 @@ public class UsuarioService {
             return asignarCodigo(u);
         });
     }
+
+    // ---------- Contraseña ----------
 
     public void cambiarPassword(Long idUsuario, String actual, String nueva) {
         Tx.exec("Error al cambiar la contraseña", s -> {
@@ -75,6 +87,8 @@ public class UsuarioService {
         });
     }
 
+    // ---------- Consultas ----------
+
     public Usuario buscarPorId(Long id) {
         return Tx.read(s -> repository.findById(s, id));
     }
@@ -83,6 +97,7 @@ public class UsuarioService {
         return Tx.read(s -> repository.findAll(s));
     }
 
+    /** El username es único entre TODOS los usuarios (clientes y colaboradores). */
     public boolean existeUsername(String username) {
         return Tx.read(s -> existeUsername(s, username));
     }
@@ -91,6 +106,12 @@ public class UsuarioService {
         return Tx.read(s -> existeCorreo(s, correo));
     }
 
+    // ---------- Lo usan ClienteService y ColaboradorService al registrar ----------
+
+    /**
+     * Valida, comprueba duplicados, guarda el hash BCrypt y asigna el código de verificación.
+     * Debe llamarse dentro de la misma transacción que el persist. Devuelve el código en claro.
+     */
     static String prepararRegistro(Session s, Usuario u, String passwordPlano) {
         if (u.getUsername() == null || u.getUsername().isBlank()) {
             throw new NegocioException("El nombre de usuario es obligatorio.");
