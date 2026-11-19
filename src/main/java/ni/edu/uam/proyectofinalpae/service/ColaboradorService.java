@@ -20,7 +20,10 @@ public class ColaboradorService {
     }
 
     public Colaborador actualizar(Colaborador colaborador) {
-        return Tx.run("Error al actualizar el colaborador", s -> repository.update(s, colaborador));
+        return Tx.run("Error al actualizar el colaborador", s -> {
+            repository.update(s, colaborador);
+            return colaborador;
+        });
     }
 
     public void eliminar(Colaborador colaborador) {

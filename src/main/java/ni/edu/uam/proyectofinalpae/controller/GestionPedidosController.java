@@ -13,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import ni.edu.uam.proyectofinalpae.model.EstadoPedido;
 import ni.edu.uam.proyectofinalpae.model.Pedido;
 import ni.edu.uam.proyectofinalpae.service.PedidoService;
 
@@ -70,16 +71,20 @@ public class GestionPedidosController {
         colFechaCompra.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue().getFechaPedido()));
         colEstado.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getEstado()));
+                new SimpleStringProperty(formatearEstado(cell.getValue().getEstado())));
         colTotal.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue().getPrecioTotal()));
         colDescripcion.setCellValueFactory(cell ->
                 new SimpleStringProperty(cell.getValue().getDescripcion()));
 
-        colUsuarioCliente.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getCliente().getUsername()));
-        colUsuarioColaborador.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getColaborador().getUsername()));
+        colUsuarioCliente.setCellValueFactory(cell -> {
+            var cliente = cell.getValue().getCliente();
+            return new SimpleStringProperty(cliente != null ? cliente.getUsername() : "");
+        });
+        colUsuarioColaborador.setCellValueFactory(cell -> {
+            var colaborador = cell.getValue().getColaborador();
+            return new SimpleStringProperty(colaborador != null ? colaborador.getUsername() : "Sin asignar");
+        });
     }
 
     private void cargarPedidos() {
@@ -114,14 +119,17 @@ public class GestionPedidosController {
         Pedido seleccionado = tblPedidos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) return;
 
-        List<String> estados = List.of("Pendiente", "En proceso", "Entregado", "Cancelado");
-        ChoiceDialog<String> dialogo = new ChoiceDialog<>(seleccionado.getEstado(), estados);
+        EstadoPedido estadoActual = seleccionado.getEstado() != null
+                ? seleccionado.getEstado()
+                : EstadoPedido.PENDIENTE;
+
+        ChoiceDialog<EstadoPedido> dialogo = new ChoiceDialog<>(estadoActual, EstadoPedido.values());
         dialogo.setTitle("Actualizar Estado");
         dialogo.setHeaderText("Pedido #" + seleccionado.getId() + " - " + seleccionado.getCliente().getNombres());
         dialogo.setContentText("Seleccione el nuevo estado:");
 
         dialogo.showAndWait().ifPresent(nuevoEstado -> {
-            if (nuevoEstado.equals(seleccionado.getEstado())) return;
+            if (nuevoEstado == seleccionado.getEstado()) return;
 
             Task<Void> tareaActualizar = new Task<>() {
                 @Override
@@ -187,10 +195,10 @@ public class GestionPedidosController {
         boolean ocultarFinalizados = chkOcultarFinalizados != null && chkOcultarFinalizados.isSelected();
 
         listaFiltrada.setPredicate(pedido -> {
-            String estado = pedido.getEstado() != null ? pedido.getEstado().toLowerCase().trim() : "";
+            EstadoPedido estado = pedido.getEstado();
 
-            // 1. Ocultar entregados y completados si el CheckBox está marcado
-            if (ocultarFinalizados && (estado.equals("entregado") || estado.equals("completado"))) {
+            // 1. Ocultar entregados si el CheckBox está marcado
+            if (ocultarFinalizados && estado == EstadoPedido.ENTREGADO) {
                 return false;
             }
 
@@ -198,6 +206,9 @@ public class GestionPedidosController {
             if (filtro.isEmpty()) return true;
 
             String idTexto = pedido.getId() != null ? String.valueOf(pedido.getId()) : "";
+            String estadoTexto = (estado != null)
+                    ? (formatearEstado(estado) + " " + estado.name()).toLowerCase()
+                    : "";
             String cliente = (pedido.getCliente() != null)
                     ? (pedido.getCliente().getNombres() + " " + pedido.getCliente().getApellidos() + " " + pedido.getCliente().getUsername()).toLowerCase()
                     : "";
@@ -208,8 +219,19 @@ public class GestionPedidosController {
             return idTexto.contains(filtro)
                     || cliente.contains(filtro)
                     || colaborador.contains(filtro)
-                    || estado.contains(filtro);
+                    || estadoTexto.contains(filtro);
         });
+    }
+
+    private String formatearEstado(EstadoPedido estado) {
+        if (estado == null) return "";
+        return switch (estado) {
+            case PENDIENTE -> "Pendiente";
+            case EN_PROCESO -> "En proceso";
+            case LISTO -> "Listo";
+            case ENTREGADO -> "Entregado";
+            case CANCELADO -> "Cancelado";
+        };
     }
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {

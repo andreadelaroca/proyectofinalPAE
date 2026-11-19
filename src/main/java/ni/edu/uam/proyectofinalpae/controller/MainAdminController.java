@@ -116,12 +116,6 @@ public class MainAdminController implements Initializable {
                 nuevoCliente.agregarDireccion(direccion);
             }
 
-            Stage loginStage = new Stage();
-            loginStage.setTitle("Inicio de Sesión");
-            loginStage.setScene(new Scene(root));
-            loginStage.setMaximized(true);
-            loginStage.show();
-
             mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "Cliente registrado correctamente.");
             limpiarFormularioCliente(null);
 

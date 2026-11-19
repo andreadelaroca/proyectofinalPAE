@@ -21,7 +21,8 @@ public class MarcaService {
     public Marca actualizar(Marca marca) {
         return Tx.run("Error al actualizar la marca", s -> {
             validarNombreUnico(s, marca);
-            return repository.update(s, marca);
+            repository.update(s, marca);
+            return marca;
         });
     }
 

@@ -6,6 +6,7 @@ module ni.edu.uam.proyectofinalpae {
     requires org.hibernate.orm.core;
     requires java.naming;
     requires java.sql;
+    requires bcrypt;
 
     opens ni.edu.uam.proyectofinalpae to javafx.fxml;
     exports ni.edu.uam.proyectofinalpae;

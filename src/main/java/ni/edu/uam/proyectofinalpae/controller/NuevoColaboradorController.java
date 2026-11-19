@@ -6,6 +6,8 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import ni.edu.uam.proyectofinalpae.model.Colaborador;
 import ni.edu.uam.proyectofinalpae.service.ColaboradorService;
+import ni.edu.uam.proyectofinalpae.util.NegocioException;
+import ni.edu.uam.proyectofinalpae.util.PasswordUtil;
 
 public class NuevoColaboradorController {
 
@@ -26,6 +28,7 @@ public class NuevoColaboradorController {
     private Colaborador colaboradorCreado;
     private Colaborador colaboradorEdicion;
     private boolean guardadoExitoso = false;
+    private String codigoVerificacionGenerado;
 
     @FXML
     public void initialize() {
@@ -70,7 +73,7 @@ public class NuevoColaboradorController {
         String telefono = txtTelefono.getText().trim();
         String password = pfPassword.getText();
         String confirmar = pfConfirmarPassword.getText();
-        String correo = txtCorreo.getText().trim();
+        String correo = txtCorreo.getText().trim().toLowerCase();
 
         if (nombres.isEmpty() || apellidos.isEmpty() || username.isEmpty()
                 || telefono.isEmpty() || correo.isEmpty()) {
@@ -94,8 +97,8 @@ public class NuevoColaboradorController {
             return;
         }
         if (!password.isEmpty() || !confirmar.isEmpty()) {
-            if (password.length() < 4) {
-                lblMensaje.setText("La contraseña debe tener al menos 4 caracteres.");
+            if (password.length() < 8) {
+                lblMensaje.setText("La contraseña debe tener al menos 8 caracteres.");
                 return;
             }
             if (!password.equals(confirmar)) {
@@ -109,13 +112,19 @@ public class NuevoColaboradorController {
         }
 
         btnGuardar.setDisable(true);
+        codigoVerificacionGenerado = null;
 
         Task<Colaborador> tareaGuardar = new Task<>() {
             @Override
             protected Colaborador call() {
                 boolean cambioUsername = !esEdicion || !username.equalsIgnoreCase(colaboradorEdicion.getUsername());
                 if (cambioUsername && colaboradorService.existeUsername(username)) {
-                    throw new IllegalArgumentException("El nombre de usuario '" + username + "' ya está registrado.");
+                    throw new NegocioException("El nombre de usuario '" + username + "' ya está registrado.");
+                }
+
+                boolean cambioCorreo = !esEdicion || !correo.equalsIgnoreCase(colaboradorEdicion.getCorreo());
+                if (cambioCorreo && colaboradorService.existeCorreo(correo)) {
+                    throw new NegocioException("Ese correo ya está registrado.");
                 }
 
                 Colaborador target = esEdicion ? colaboradorEdicion : new Colaborador();
@@ -125,17 +134,15 @@ public class NuevoColaboradorController {
                 target.setCorreo(correo);
                 target.setTelefono(telefono);
 
-                if (!password.isEmpty()) {
-                    target.setPassword(password);
-                }
-
                 if (esEdicion) {
-                    colaboradorService.actualizar(target);
+                    if (!password.isEmpty()) {
+                        target.setPasswordHash(PasswordUtil.hash(password));
+                    }
+                    return colaboradorService.actualizar(target);
                 } else {
-                    colaboradorService.guardar(target);
+                    codigoVerificacionGenerado = colaboradorService.registrar(target, password);
+                    return target;
                 }
-
-                return target;
             }
         };
 
@@ -152,7 +159,8 @@ public class NuevoColaboradorController {
             alerta.setHeaderText(null);
             alerta.setContentText(esEdicion
                     ? "Los datos de " + tareaGuardar.getValue().getNombres() + " fueron actualizados."
-                    : "El colaborador " + tareaGuardar.getValue().getNombres() + " fue registrado correctamente.");
+                    : "El colaborador " + tareaGuardar.getValue().getNombres() + " fue registrado correctamente.\n"
+                    + "Código de verificación de correo: " + codigoVerificacionGenerado);
             alerta.showAndWait();
 
             cerrarVentana();

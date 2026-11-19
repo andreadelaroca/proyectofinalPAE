@@ -15,7 +15,10 @@ public class DireccionService {
     }
 
     public Direccion actualizar(Direccion direccion) {
-        return Tx.run("Error al actualizar la dirección", s -> repository.update(s, direccion));
+        return Tx.run("Error al actualizar la dirección", s -> {
+            repository.update(s, direccion);
+            return direccion;
+        });
     }
 
     public void eliminar(Direccion direccion) {

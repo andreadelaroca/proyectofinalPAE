@@ -68,8 +68,12 @@ public class ProductoController {
                 new SimpleStringProperty(cell.getValue().getCodigo()));
         colNombre.setCellValueFactory(cell ->
                 new SimpleStringProperty(cell.getValue().getNombre()));
-        colMarca.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getMarca()));
+        colMarca.setCellValueFactory(cell -> {
+            var marca = cell.getValue().getMarca();
+            return new SimpleStringProperty(
+                    marca != null && marca.getNombre() != null ? marca.getNombre() : "Sin marca"
+            );
+        });
         colPrecio.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue().getPrecioUnitario()));
         colCantidad.setCellValueFactory(cell ->
@@ -198,9 +202,12 @@ public class ProductoController {
             String filtro = (nuevo == null) ? "" : nuevo.toLowerCase().trim();
             listaFiltrada.setPredicate(prod -> {
                 if (filtro.isEmpty()) return true;
+                String nombreMarca = (prod.getMarca() != null && prod.getMarca().getNombre() != null)
+                        ? prod.getMarca().getNombre().toLowerCase()
+                        : "";
                 return (prod.getCodigo() != null && prod.getCodigo().toLowerCase().contains(filtro))
                         || (prod.getNombre() != null && prod.getNombre().toLowerCase().contains(filtro))
-                        || (prod.getMarca() != null && prod.getMarca().toLowerCase().contains(filtro));
+                        || nombreMarca.contains(filtro);
             });
         });
     }
