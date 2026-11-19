@@ -69,7 +69,7 @@ public class ProductoController {
         colNombre.setCellValueFactory(cell ->
                 new SimpleStringProperty(cell.getValue().getNombre()));
         colMarca.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getMarca()));
+                new SimpleStringProperty(cell.getValue().getMarca().getNombre()));
         colPrecio.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue().getPrecioUnitario()));
         colCantidad.setCellValueFactory(cell ->
@@ -200,7 +200,7 @@ public class ProductoController {
                 if (filtro.isEmpty()) return true;
                 return (prod.getCodigo() != null && prod.getCodigo().toLowerCase().contains(filtro))
                         || (prod.getNombre() != null && prod.getNombre().toLowerCase().contains(filtro))
-                        || (prod.getMarca() != null && prod.getMarca().toLowerCase().contains(filtro));
+                        || (prod.getMarca() != null && prod.getMarca().getNombre().toLowerCase().contains(filtro));
             });
         });
     }

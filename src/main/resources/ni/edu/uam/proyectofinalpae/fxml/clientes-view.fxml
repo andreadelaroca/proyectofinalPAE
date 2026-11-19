@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <VBox prefHeight="600.0" prefWidth="980.0" spacing="20.0"
       stylesheets="@../styles/global.css"
       xmlns="http://javafx.com/javafx/17"

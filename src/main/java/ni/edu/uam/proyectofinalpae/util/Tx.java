@@ -11,20 +11,19 @@ public final class Tx {
     private Tx() {}
 
     public static <R> R run(String errorMsg, Function<Session, R> work) {
-        Session session = HibernateUtil.factory().openSession();
-        Transaction tx = session.beginTransaction();
-        try {
-            R result = work.apply(session);
-            tx.commit();
-            return result;
-        } catch (NegocioException e) {
-            rollback(tx);
-            throw e;
-        } catch (Exception e) {
-            rollback(tx);
-            throw new RuntimeException(errorMsg, e);
-        } finally {
-            session.close();
+        try (Session session = HibernateUtil.factory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            try {
+                R result = work.apply(session);
+                tx.commit();
+                return result;
+            } catch (NegocioException e) {
+                rollback(tx);
+                throw e;
+            } catch (Exception e) {
+                rollback(tx);
+                throw new RuntimeException(errorMsg, e);
+            }
         }
     }
 

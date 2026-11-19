@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.VentaController" spacing="12" style="-fx-padding: 18;">
+    <Label text="Historial de ventas" style="-fx-font-size: 19px; -fx-font-weight: bold;" />
+    <HBox spacing="8"><TextField fx:id="txtBuscar" promptText="Buscar factura, cliente, colaborador o estado" HBox.hgrow="ALWAYS"/><Button fx:id="btnRefrescar" text="Actualizar"/><Button fx:id="btnNuevaVenta" text="Nueva venta"/><Button fx:id="btnAnular" text="Anular"/><Button fx:id="btnFactura" text="Factura PDF"/></HBox>
+    <TableView fx:id="tblVentas" VBox.vgrow="ALWAYS">
+        <columns><TableColumn fx:id="colNumeroFactura" text="Factura" prefWidth="105"/><TableColumn fx:id="colFecha" text="Fecha" prefWidth="115"/><TableColumn fx:id="colCliente" text="Cliente" prefWidth="130"/><TableColumn fx:id="colColaborador" text="Colaborador" prefWidth="130"/><TableColumn fx:id="colMetodoPago" text="Pago" prefWidth="100"/><TableColumn fx:id="colTotal" text="Total" prefWidth="90"/><TableColumn fx:id="colEstado" text="Estado" prefWidth="95"/></columns>
+    </TableView>
+</VBox>

@@ -14,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ni.edu.uam.proyectofinalpae.model.Pedido;
+import ni.edu.uam.proyectofinalpae.model.EstadoPedido;
 import ni.edu.uam.proyectofinalpae.service.PedidoService;
 
 import java.io.IOException;
@@ -70,7 +71,7 @@ public class GestionPedidosController {
         colFechaCompra.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue().getFechaPedido()));
         colEstado.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getEstado()));
+                new SimpleStringProperty(cell.getValue().getEstado().name()));
         colTotal.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue().getPrecioTotal()));
         colDescripcion.setCellValueFactory(cell ->
@@ -114,8 +115,8 @@ public class GestionPedidosController {
         Pedido seleccionado = tblPedidos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) return;
 
-        List<String> estados = List.of("Pendiente", "En proceso", "Entregado", "Cancelado");
-        ChoiceDialog<String> dialogo = new ChoiceDialog<>(seleccionado.getEstado(), estados);
+        List<EstadoPedido> estados = List.of(EstadoPedido.values());
+        ChoiceDialog<EstadoPedido> dialogo = new ChoiceDialog<>(seleccionado.getEstado(), estados);
         dialogo.setTitle("Actualizar Estado");
         dialogo.setHeaderText("Pedido #" + seleccionado.getId() + " - " + seleccionado.getCliente().getNombres());
         dialogo.setContentText("Seleccione el nuevo estado:");

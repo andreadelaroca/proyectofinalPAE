@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.NuevaVentaController" spacing="10" style="-fx-padding: 20;">
+    <Label text="Nueva venta" style="-fx-font-size: 19px; -fx-font-weight: bold;"/>
+    <Label text="Cliente (opcional: vacío = consumidor final)"/><ComboBox fx:id="cbCliente" maxWidth="Infinity"/>
+    <Label text="Colaborador"/><ComboBox fx:id="cbColaborador" maxWidth="Infinity"/>
+    <Label text="Método de pago"/><ComboBox fx:id="cbMetodoPago" maxWidth="Infinity"/>
+    <Label text="Producto"/><ComboBox fx:id="cbProducto" maxWidth="Infinity"/>
+    <HBox spacing="10"><Label text="Cantidad"/><Spinner fx:id="spCantidad" editable="true" prefWidth="120"/><Button fx:id="btnAgregar" text="Agregar producto"/></HBox>
+    <TextArea fx:id="txtDetalle" prefRowCount="5" promptText="Productos agregados" VBox.vgrow="ALWAYS"/>
+    <Label fx:id="lblMensaje" wrapText="true" style="-fx-text-fill: #a32121;"/>
+    <HBox spacing="10"><Button fx:id="btnGuardar" text="Registrar venta"/><Button fx:id="btnCancelar" text="Cancelar"/></HBox>
+</VBox>

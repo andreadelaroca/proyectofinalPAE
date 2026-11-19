@@ -291,7 +291,7 @@ public class NuevoPedidoController {
             pedidoActual.setFechaPedido(LocalDate.now());
             pedidoActual.setFechaEntrega(fechaEntrega);
             pedidoActual.setDescripcion(descripcion);
-            pedidoActual.setEstado("Pendiente");
+            pedidoActual.setEstado(EstadoPedido.PENDIENTE);
 
             pedidoService.registrarPedido(pedidoActual);
 

@@ -1,0 +1,31 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ni.edu.uam.proyectofinalpae.controller.RegistroController"
+            fitToWidth="true"
+            fitToHeight="true"
+            stylesheets="@../styles/global.css">
+
+    <content>
+        <VBox alignment="CENTER"
+              spacing="20"
+              prefWidth="900"
+              prefHeight="600">
+
+            <Label text="Registro de cliente"
+                   styleClass="titulo-vista"/>
+
+            <Button text="Crear cuenta"
+                    onAction="#registroCliente"
+                    styleClass="btn-primario"/>
+
+            <Button text="Volver al inicio de sesión"
+                    onAction="#volverLogin"
+                    styleClass="btn-secundario"/>
+        </VBox>
+    </content>
+</ScrollPane>

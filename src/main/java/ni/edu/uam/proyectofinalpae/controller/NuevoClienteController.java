@@ -19,6 +19,9 @@ public class NuevoClienteController {
     @FXML private PasswordField pfConfirmarPassword;
     @FXML private TextField txtCorreo;
     @FXML private TextArea txtDireccion;
+    @FXML private Button btnMapa;
+    private java.math.BigDecimal latitudSeleccionada;
+    private java.math.BigDecimal longitudSeleccionada;
 
     @FXML private Label lblMensaje;
     @FXML private Button btnCancelar;
@@ -34,6 +37,7 @@ public class NuevoClienteController {
         lblMensaje.setText("");
         btnCancelar.setOnAction(e -> cerrarVentana());
         btnGuardar.setOnAction(e -> guardarCliente());
+        if (btnMapa != null) btnMapa.setOnAction(e -> seleccionarMapa());
     }
 
     public void cargarClienteParaEditar(Cliente cliente) {
@@ -100,15 +104,20 @@ public class NuevoClienteController {
             lblMensaje.setText("El teléfono no puede superar los 20 caracteres.");
             return;
         }
-        if (!password.isEmpty() || !confirmar.isEmpty()) {
+        if (!esEdicion) {
+            if (password.length() < 8) {
+                lblMensaje.setText("La contraseña debe tener al menos 8 caracteres.");
+                return;
+            }
+        } else if (!password.isEmpty() || !confirmar.isEmpty()) {
             if (password.length() < 4) {
                 lblMensaje.setText("La contraseña debe tener al menos 4 caracteres.");
                 return;
             }
-            if (!password.equals(confirmar)) {
-                lblMensaje.setText("Las contraseñas no coinciden.");
-                return;
-            }
+        }
+        if (!password.equals(confirmar)) {
+            lblMensaje.setText("Las contraseñas no coinciden.");
+            return;
         }
         if (correo.length() > 60 || !correo.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
             lblMensaje.setText("Ingrese un correo electrónico válido (máx. 60 caracteres).");
@@ -142,16 +151,20 @@ public class NuevoClienteController {
 
                 if (target.getDirecciones() != null && !target.getDirecciones().isEmpty()) {
                     target.getDirecciones().get(0).setNombre(direccionTexto);
+                    target.getDirecciones().get(0).setLatitud(latitudSeleccionada);
+                    target.getDirecciones().get(0).setLongitud(longitudSeleccionada);
                 } else {
                     Direccion direccion = new Direccion();
                     direccion.setNombre(direccionTexto);
+                    direccion.setLatitud(latitudSeleccionada);
+                    direccion.setLongitud(longitudSeleccionada);
                     target.agregarDireccion(direccion);
                 }
 
                 if (esEdicion) {
                     clienteService.actualizar(target);
                 } else {
-                    clienteService.guardar(target);
+                    clienteService.registrar(target, password);
                 }
 
                 return target;
@@ -171,7 +184,7 @@ public class NuevoClienteController {
             alerta.setHeaderText(null);
             alerta.setContentText(esEdicion
                     ? "Los datos de " + tareaGuardar.getValue().getNombres() + " fueron actualizados."
-                    : "El cliente " + tareaGuardar.getValue().getNombres() + " fue registrado correctamente.");
+                    : "El cliente " + tareaGuardar.getValue().getNombres() + " fue registrado. Revisa el correo y confirma el código antes de iniciar sesión.");
             alerta.showAndWait();
 
             cerrarVentana();
@@ -188,8 +201,23 @@ public class NuevoClienteController {
         hilo.start();
     }
 
+    private void seleccionarMapa() {
+        ni.edu.uam.proyectofinalpae.map.MapaDireccionDialog.seleccionar(
+                        btnMapa.getScene().getWindow(), latitudSeleccionada, longitudSeleccionada)
+                .ifPresent(p -> {
+                    latitudSeleccionada = p.latitud();
+                    longitudSeleccionada = p.longitud();
+                    btnMapa.setText("Ubicación: " + latitudSeleccionada + ", " + longitudSeleccionada);
+                });
+    }
+
     private void cerrarVentana() {
         Stage stage = (Stage) btnCancelar.getScene().getWindow();
-        stage.close();
+        if (stage.getOwner() == null) {
+            ni.edu.uam.proyectofinalpae.util.SceneManager.abrirVentana(
+                    "/ni/edu/uam/proyectofinalpae/fxml/login.fxml", "BunBun Hub - Ingreso");
+        } else {
+            stage.close();
+        }
     }
 }
