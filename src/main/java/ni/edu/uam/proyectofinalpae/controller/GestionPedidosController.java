@@ -22,7 +22,7 @@ import java.time.LocalDate;
 import java.util.List;
 import javafx.concurrent.Task;
 
-public class PedidosController {
+public class GestionPedidosController {
 
     @FXML private Button btnNuevoPedido;
     @FXML private Button btnActualizarEstado;

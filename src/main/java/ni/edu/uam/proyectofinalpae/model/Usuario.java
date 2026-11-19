@@ -1,20 +1,26 @@
 package ni.edu.uam.proyectofinalpae.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.service.spi.InjectService;
-
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
-@MappedSuperclass @Getter @Setter @AllArgsConstructor @NoArgsConstructor @Inheritance(strategy = InheritanceType.JOINED)
-public class Usuario {
+@Entity
+@Table(name = "usuarios", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_usuario_username", columnNames = "username"),
+        @UniqueConstraint(name = "uk_usuario_correo", columnNames = "correo")
+})
+@Inheritance(strategy = InheritanceType.JOINED)
+@Getter @Setter @NoArgsConstructor
+public abstract class Usuario {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 20)
     private String username;
 
-    @Column(nullable = false, name = "passwordHash", length = 100)
+    @Column(name = "password_hash", nullable = false, length = 100)
     private String passwordHash;
 
     @Column(nullable = false, length = 40)
@@ -29,12 +35,13 @@ public class Usuario {
     @Column(nullable = false, length = 20)
     private String telefono;
 
-    @Column(nullable = false)
+    @Column(name = "correo_verificado", nullable = false)
     private boolean correoVerificado = false;
 
-    @Column(length = 100)
+    @Column(name = "token_verificacion", length = 100)
     private String tokenVerificacion;
 
+    @Column(name = "token_expiracion")
     private LocalDateTime tokenExpiracion;
 
     @Column(nullable = false)

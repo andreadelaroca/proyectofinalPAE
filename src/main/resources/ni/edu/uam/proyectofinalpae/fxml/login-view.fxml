@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.geometry.*?>
-<ScrollPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.LoginController" fitToWidth="true" fitToHeight="true"><content><VBox  spacing="9" alignment="TOP_LEFT" prefWidth="800" style="-fx-padding: 24;" >
-    <Label text="BunBun Hub - Iniciar sesión" style="-fx-font-size: 17px; -fx-font-weight: bold;" /><TextField fx:id="txtUsuario" promptText="Usuario" maxWidth="400" /><PasswordField fx:id="pwfPassword" promptText="Contraseña" maxWidth="400" /><HBox spacing="10"><Button text="Ingresar" fx:id="btnIniciarSesion" /><Button text="Limpiar" fx:id="btnLimpiar" /></HBox><Label text="Verificación de correo" style="-fx-font-size: 17px; -fx-font-weight: bold;" /><TextField fx:id="txtCodigo" promptText="Código de 6 dígitos" maxWidth="400" /><HBox spacing="10"><Button text="Confirmar código" onAction="#verificarCorreo" /><Button text="Reenviar código" onAction="#reenviarCodigo" /><Button text="Registrarme" onAction="#abrirRegistro" /></HBox><Label fx:id="lblEstado" wrapText="true" />
-</VBox></content></ScrollPane>

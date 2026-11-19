@@ -22,7 +22,7 @@ import java.util.List;
 import java.io.IOException;
 import java.math.BigDecimal;
 
-public class ProductosController {
+public class ProductoController {
 
     @FXML private Button btnNuevoProducto;
     @FXML private TableView<Producto> tblProductos;

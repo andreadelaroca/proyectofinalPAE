@@ -2,166 +2,116 @@ package ni.edu.uam.proyectofinalpae.service;
 
 import ni.edu.uam.proyectofinalpae.model.Usuario;
 import ni.edu.uam.proyectofinalpae.repository.GenericRepository;
-import ni.edu.uam.proyectofinalpae.util.CorreoNoVerificadoException;
 import ni.edu.uam.proyectofinalpae.util.NegocioException;
 import ni.edu.uam.proyectofinalpae.util.PasswordUtil;
 import ni.edu.uam.proyectofinalpae.util.Tx;
 import org.hibernate.Session;
-
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
-/**
- * Login, verificación de correo y utilidades comunes a Cliente y Colaborador.
- * El envío del correo NO está aquí: registrar() devuelve el código y otro servicio lo envía.
- */
 public class UsuarioService {
     private static final SecureRandom RANDOM = new SecureRandom();
-    private static final int MINUTOS_VALIDEZ_CODIGO = 15;
+    private static final int VALIDEZ_MINUTOS = 15;
     private static final Pattern CORREO = Pattern.compile("^[\\w.+-]+@[\\w-]+(\\.[\\w-]+)+$");
-
     private final GenericRepository<Usuario, Long> repository = new GenericRepository<>(Usuario.class);
+    private final CorreoService correoService = new CorreoService();
 
-    // ---------- Login ----------
-
-    /** Devuelve un Cliente o un Colaborador (usa instanceof). Lanza NegocioException si falla. */
     public Usuario autenticar(String username, String password) {
         return Tx.read(s -> {
             Usuario u = buscarPorUsername(s, username);
-            if (u == null || !PasswordUtil.verificar(password, u.getPasswordHash())) {
+            if (u == null || !PasswordUtil.verificar(password, u.getPasswordHash()))
                 throw new NegocioException("Usuario o contraseña incorrectos.");
-            }
-            if (!u.isActivo()) {
-                throw new NegocioException("Esta cuenta está desactivada.");
-            }
-            if (!u.isCorreoVerificado()) {
-                throw new CorreoNoVerificadoException(u.getUsername(), u.getCorreo());
-            }
+            if (!u.isActivo()) throw new NegocioException("La cuenta está desactivada.");
+            if (!u.isCorreoVerificado()) throw new NegocioException("Confirma tu correo antes de ingresar.");
             return u;
         });
     }
-
-    // ---------- Verificación de correo ----------
 
     public void confirmarCorreo(String username, String codigo) {
         Tx.exec("Error al confirmar el correo", s -> {
             Usuario u = buscarPorUsername(s, username);
             if (u == null) throw new NegocioException("Usuario no encontrado.");
             if (u.isCorreoVerificado()) return;
-            if (u.getTokenVerificacion() == null || u.getTokenExpiracion() == null
-                    || LocalDateTime.now().isAfter(u.getTokenExpiracion())) {
-                throw new NegocioException("El código expiró. Solicita uno nuevo.");
-            }
-            if (!u.getTokenVerificacion().equals(codigo == null ? "" : codigo.trim())) {
+            if (u.getTokenVerificacion() == null || u.getTokenExpiracion() == null ||
+                    !LocalDateTime.now().isBefore(u.getTokenExpiracion()))
+                throw new NegocioException("El código expiró. Solicita otro.");
+            if (!u.getTokenVerificacion().equals(codigo == null ? "" : codigo.trim()))
                 throw new NegocioException("Código incorrecto.");
-            }
             u.setCorreoVerificado(true);
             u.setTokenVerificacion(null);
             u.setTokenExpiracion(null);
         });
     }
 
-    /** Genera un código nuevo y lo devuelve para reenviarlo por correo. */
-    public String regenerarCodigo(String username) {
-        return Tx.run("Error al generar el código", s -> {
+    /** Guarda un código nuevo y lo envía al correo asociado. */
+    public void reenviarCodigo(String username) {
+        DatosCorreo datos = Tx.run("Error al regenerar el código", s -> {
             Usuario u = buscarPorUsername(s, username);
             if (u == null) throw new NegocioException("Usuario no encontrado.");
-            if (u.isCorreoVerificado()) throw new NegocioException("Este correo ya fue confirmado.");
-            return asignarCodigo(u);
+            if (u.isCorreoVerificado()) throw new NegocioException("Correo ya verificado.");
+            return new DatosCorreo(u.getCorreo(), asignarCodigo(u));
         });
+        correoService.enviarCodigo(datos.destino(), datos.codigo());
     }
 
-    // ---------- Contraseña ----------
-
     public void cambiarPassword(Long idUsuario, String actual, String nueva) {
-        Tx.exec("Error al cambiar la contraseña", s -> {
+        Tx.exec("Error al cambiar contraseña", s -> {
             Usuario u = s.get(Usuario.class, idUsuario);
             if (u == null) throw new NegocioException("Usuario no encontrado.");
-            if (!PasswordUtil.verificar(actual, u.getPasswordHash())) {
-                throw new NegocioException("La contraseña actual es incorrecta.");
-            }
+            if (!PasswordUtil.verificar(actual, u.getPasswordHash()))
+                throw new NegocioException("Contraseña actual incorrecta.");
             validarPassword(nueva);
             u.setPasswordHash(PasswordUtil.hash(nueva));
         });
     }
 
-    // ---------- Consultas ----------
+    public Usuario buscarPorId(Long id) { return Tx.read(s -> repository.findById(s, id)); }
+    public List<Usuario> obtenerTodos() { return Tx.read(s -> repository.findAll(s)); }
+    public boolean existeUsername(String nombre) { return Tx.read(s -> existe(s, "username", nombre)); }
+    public boolean existeCorreo(String correo) { return Tx.read(s -> existe(s, "correo", correo)); }
 
-    public Usuario buscarPorId(Long id) {
-        return Tx.read(s -> repository.findById(s, id));
-    }
-
-    public List<Usuario> obtenerTodos() {
-        return Tx.read(s -> repository.findAll(s));
-    }
-
-    /** El username es único entre TODOS los usuarios (clientes y colaboradores). */
-    public boolean existeUsername(String username) {
-        return Tx.read(s -> existeUsername(s, username));
-    }
-
-    public boolean existeCorreo(String correo) {
-        return Tx.read(s -> existeCorreo(s, correo));
-    }
-
-    // ---------- Lo usan ClienteService y ColaboradorService al registrar ----------
-
-    /**
-     * Valida, comprueba duplicados, guarda el hash BCrypt y asigna el código de verificación.
-     * Debe llamarse dentro de la misma transacción que el persist. Devuelve el código en claro.
-     */
     static String prepararRegistro(Session s, Usuario u, String passwordPlano) {
-        if (u.getUsername() == null || u.getUsername().isBlank()) {
-            throw new NegocioException("El nombre de usuario es obligatorio.");
-        }
-        if (u.getCorreo() == null || !CORREO.matcher(u.getCorreo().trim()).matches()) {
-            throw new NegocioException("El correo no es válido.");
-        }
+        if (u.getUsername() == null || !u.getUsername().trim().matches("[A-Za-z0-9_.-]{3,20}"))
+            throw new NegocioException("Usuario inválido (3 a 20 caracteres, sin espacios).");
+        if (u.getCorreo() == null || !CORREO.matcher(u.getCorreo().trim()).matches() ||
+                u.getCorreo().length() > 60)
+            throw new NegocioException("Correo inválido.");
         validarPassword(passwordPlano);
-
-        u.setUsername(u.getUsername().trim());
-        u.setCorreo(u.getCorreo().trim().toLowerCase());
-
-        if (existeUsername(s, u.getUsername())) throw new NegocioException("El nombre de usuario ya está en uso.");
-        if (existeCorreo(s, u.getCorreo())) throw new NegocioException("Ese correo ya está registrado.");
-
+        u.setUsername(u.getUsername().trim().toLowerCase(Locale.ROOT));
+        u.setCorreo(u.getCorreo().trim().toLowerCase(Locale.ROOT));
+        if (existe(s, "username", u.getUsername())) throw new NegocioException("Usuario ocupado.");
+        if (existe(s, "correo", u.getCorreo())) throw new NegocioException("Correo ya registrado.");
         u.setPasswordHash(PasswordUtil.hash(passwordPlano));
         u.setCorreoVerificado(false);
         u.setActivo(true);
         return asignarCodigo(u);
     }
 
+    private static void validarPassword(String p) {
+        if (p == null || p.length() < 8) throw new NegocioException("Contraseña de al menos 8 caracteres.");
+    }
+
     private static String asignarCodigo(Usuario u) {
         String codigo = String.format("%06d", RANDOM.nextInt(1_000_000));
         u.setTokenVerificacion(codigo);
-        u.setTokenExpiracion(LocalDateTime.now().plusMinutes(MINUTOS_VALIDEZ_CODIGO));
+        u.setTokenExpiracion(LocalDateTime.now().plusMinutes(VALIDEZ_MINUTOS));
         return codigo;
     }
 
-    private static void validarPassword(String p) {
-        if (p == null || p.length() < 8) {
-            throw new NegocioException("La contraseña debe tener al menos 8 caracteres.");
-        }
-    }
-
     private static Usuario buscarPorUsername(Session s, String username) {
-        if (username == null) return null;
-        return s.createQuery("FROM Usuario u WHERE LOWER(u.username) = LOWER(:user)", Usuario.class)
-                .setParameter("user", username.trim())
-                .uniqueResult();
+        if (username == null || username.isBlank()) return null;
+        return s.createQuery("FROM Usuario u WHERE LOWER(u.username) = :nombre", Usuario.class)
+                .setParameter("nombre", username.trim().toLowerCase(Locale.ROOT)).uniqueResult();
     }
-
-    private static boolean existeUsername(Session s, String username) {
-        Long n = s.createQuery("SELECT COUNT(u.id) FROM Usuario u WHERE LOWER(u.username) = LOWER(:v)", Long.class)
-                .setParameter("v", username.trim()).uniqueResult();
-        return n != null && n > 0;
+    private static boolean existe(Session s, String columna, String valor) {
+        if (valor == null || valor.isBlank()) return false;
+        String hql = columna.equals("username") ? "u.username" : "u.correo";
+        Long cuenta = s.createQuery("SELECT COUNT(u.id) FROM Usuario u WHERE LOWER(" + hql + ") = :v", Long.class)
+                .setParameter("v", valor.trim().toLowerCase(Locale.ROOT)).uniqueResult();
+        return cuenta != null && cuenta > 0;
     }
-
-    private static boolean existeCorreo(Session s, String correo) {
-        Long n = s.createQuery("SELECT COUNT(u.id) FROM Usuario u WHERE LOWER(u.correo) = LOWER(:v)", Long.class)
-                .setParameter("v", correo.trim()).uniqueResult();
-        return n != null && n > 0;
-    }
+    private record DatosCorreo(String destino, String codigo) {}
 }

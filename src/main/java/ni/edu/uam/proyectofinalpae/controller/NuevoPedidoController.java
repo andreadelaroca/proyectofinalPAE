@@ -7,35 +7,21 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import ni.edu.uam.proyectofinalpae.model.Cliente;
-import ni.edu.uam.proyectofinalpae.model.Colaborador;
-import ni.edu.uam.proyectofinalpae.model.DetallePedido;
-import ni.edu.uam.proyectofinalpae.model.Direccion;
-import ni.edu.uam.proyectofinalpae.model.Pedido;
-import ni.edu.uam.proyectofinalpae.model.Producto;
-import ni.edu.uam.proyectofinalpae.service.DireccionService;
+import ni.edu.uam.proyectofinalpae.model.*;
 import ni.edu.uam.proyectofinalpae.service.PedidoService;
 import ni.edu.uam.proyectofinalpae.service.ProductoService;
-import ni.edu.uam.proyectofinalpae.util.Async;
-import ni.edu.uam.proyectofinalpae.util.Ui;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 public class NuevoPedidoController {
 
     @FXML private ComboBox<Cliente> cbCliente;
-    @FXML private ComboBox<Direccion> cbDireccionEntrega;   // NUEVO: direcciones del cliente elegido
-    @FXML private ComboBox<Colaborador> cbColaborador;      // ahora opcional
+    @FXML private ComboBox<Colaborador> cbColaborador;
     @FXML private DatePicker dpFechaEntrega;
     @FXML private TextField txtDescripcion;
 
@@ -60,11 +46,9 @@ public class NuevoPedidoController {
 
     private final PedidoService pedidoService = new PedidoService();
     private final ProductoService productoService = new ProductoService();
-    private final DireccionService direccionService = new DireccionService();
 
     private final Pedido pedidoActual = new Pedido();
     private final ObservableList<DetallePedido> detallesObservable = FXCollections.observableArrayList();
-    private final ObservableList<Cliente> clientes = FXCollections.observableArrayList();
     private Producto productoSeleccionado;
 
     @FXML
@@ -72,12 +56,14 @@ public class NuevoPedidoController {
         lblMensaje.setText("");
         dpFechaEntrega.setValue(LocalDate.now().plusDays(3));
         txtCantidad.setText("1");
-        Ui.campoCodigoProducto(txtCodigoProducto);
+        inicializarCampoCodigo();
 
         configurarCombos();
         configurarTabla();
 
-        btnQuitarProducto.disableProperty().bind(tblDetalles.getSelectionModel().selectedItemProperty().isNull());
+        btnQuitarProducto.disableProperty().bind(
+                tblDetalles.getSelectionModel().selectedItemProperty().isNull()
+        );
 
         btnBuscarProducto.setOnAction(e -> buscarProducto());
         txtCodigoProducto.setOnAction(e -> buscarProducto());
@@ -88,7 +74,10 @@ public class NuevoPedidoController {
     }
 
     private void configurarCombos() {
-        FilteredList<Cliente> clientesFiltrados = new FilteredList<>(clientes, p -> true);
+        List<Cliente> todosLosClientes = pedidoService.obtenerClientes();
+        FilteredList<Cliente> clientesFiltrados = new FilteredList<>(
+                FXCollections.observableArrayList(todosLosClientes), p -> true
+        );
 
         cbCliente.setEditable(true);
         cbCliente.setVisibleRowCount(6);
@@ -103,9 +92,10 @@ public class NuevoPedidoController {
             @Override
             public Cliente fromString(String texto) {
                 if (texto == null || texto.isBlank()) return null;
-                return clientes.stream()
+                return todosLosClientes.stream()
                         .filter(c -> toString(c).equalsIgnoreCase(texto.trim()))
-                        .findFirst().orElse(null);
+                        .findFirst()
+                        .orElse(null);
             }
         };
         cbCliente.setConverter(clienteConverter);
@@ -115,34 +105,29 @@ public class NuevoPedidoController {
             final Cliente seleccionado = cbCliente.getSelectionModel().getSelectedItem();
 
             Platform.runLater(() -> {
-                if (seleccionado != null && clienteConverter.toString(seleccionado).equals(textoNuevo)) return;
-                if (seleccionado != null) cbCliente.getSelectionModel().clearSelection();
+                if (seleccionado != null && clienteConverter.toString(seleccionado).equals(textoNuevo)) {
+                    return;
+                }
+
+                if (seleccionado != null) {
+                    cbCliente.getSelectionModel().clearSelection();
+                }
 
                 String filtro = (textoNuevo == null) ? "" : textoNuevo.toLowerCase().trim();
-                clientesFiltrados.setPredicate(c -> filtro.isEmpty()
-                        || clienteConverter.toString(c).toLowerCase().contains(filtro));
+                clientesFiltrados.setPredicate(cliente -> {
+                    if (filtro.isEmpty()) return true;
+                    return clienteConverter.toString(cliente).toLowerCase().contains(filtro);
+                });
 
-                if (!clientesFiltrados.isEmpty() && editor.isFocused()) cbCliente.show();
-                else cbCliente.hide();
+                if (!clientesFiltrados.isEmpty() && editor.isFocused()) {
+                    cbCliente.show();
+                } else {
+                    cbCliente.hide();
+                }
             });
         });
 
-        // Al elegir cliente se cargan SUS direcciones para la entrega
-        cbCliente.getSelectionModel().selectedItemProperty().addListener((obs, anterior, cliente) -> cargarDirecciones(cliente));
-
-        cbDireccionEntrega.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(Direccion d) {
-                return d == null ? "" : d.getNombre();
-            }
-
-            @Override
-            public Direccion fromString(String s) {
-                return null;
-            }
-        });
-
-        cbColaborador.setPromptText("Sin asignar (opcional)");
+        cbColaborador.setItems(FXCollections.observableArrayList(pedidoService.obtenerColaboradores()));
         cbColaborador.setConverter(new StringConverter<>() {
             @Override
             public String toString(Colaborador c) {
@@ -154,30 +139,20 @@ public class NuevoPedidoController {
                 return null;
             }
         });
-
-        // Carga de BD fuera del hilo de JavaFX
-        Async.ejecutar(pedidoService::obtenerClientes, clientes::setAll,
-                error -> lblMensaje.setText("No se pudieron cargar los clientes: " + Async.mensaje(error)));
-        Async.ejecutar(pedidoService::obtenerColaboradores,
-                lista -> cbColaborador.setItems(FXCollections.observableArrayList(lista)),
-                error -> lblMensaje.setText("No se pudieron cargar los colaboradores: " + Async.mensaje(error)));
-    }
-
-    private void cargarDirecciones(Cliente cliente) {
-        cbDireccionEntrega.getItems().clear();
-        if (cliente == null) return;
-        Async.ejecutar(() -> direccionService.obtenerPorCliente(cliente.getId()), lista -> {
-            cbDireccionEntrega.setItems(FXCollections.observableArrayList(lista));
-            if (!lista.isEmpty()) cbDireccionEntrega.getSelectionModel().selectFirst();
-        }, error -> lblMensaje.setText(Async.mensaje(error)));
     }
 
     private void configurarTabla() {
-        colCodigo.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getProducto().getCodigo()));
-        colProducto.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getProducto().getNombre()));
-        colCantidad.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getCantidad()));
-        colPrecioUnit.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getPrecioUnitario()));
-        colSubtotal.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getSubtotal()));
+        colCodigo.setCellValueFactory(cell ->
+                new SimpleStringProperty(cell.getValue().getProducto().getCodigo()));
+        colProducto.setCellValueFactory(cell ->
+                new SimpleStringProperty(cell.getValue().getProducto().getNombre()));
+        colCantidad.setCellValueFactory(cell ->
+                new SimpleObjectProperty<>(cell.getValue().getCantidad()));
+        colPrecioUnit.setCellValueFactory(cell ->
+                new SimpleObjectProperty<>(cell.getValue().getPrecioUnitario()));
+        colSubtotal.setCellValueFactory(cell ->
+                new SimpleObjectProperty<>(cell.getValue().getSubtotal()));
+
         tblDetalles.setItems(detallesObservable);
     }
 
@@ -191,24 +166,27 @@ public class NuevoPedidoController {
             return;
         }
 
-        Async.ejecutar(() -> productoService.buscarPorCodigo(codigo), encontrado -> {
-            if (encontrado == null) {
-                productoSeleccionado = null;
-                lblInfoProducto.setText("No existe ningún producto con el código: " + codigo.toUpperCase());
-            } else {
-                productoSeleccionado = encontrado;
-                lblInfoProducto.setText(String.format("%s — Precio: $%s | Stock disponible: %d",
-                        encontrado.getNombre(), encontrado.getPrecioUnitario(), encontrado.getCantidad()));
-            }
-        }, error -> lblInfoProducto.setText(Async.mensaje(error)));
+        Producto encontrado = productoService.buscarPorCodigo(codigo);
+        if (encontrado == null) {
+            productoSeleccionado = null;
+            lblInfoProducto.setText("No existe ningún producto con el código: " + codigo.toUpperCase());
+        } else {
+            productoSeleccionado = encontrado;
+            lblInfoProducto.setText(String.format("%s — Precio: $%s | Stock disponible: %d",
+                    encontrado.getNombre(), encontrado.getPrecioUnitario(), encontrado.getCantidad()));
+        }
     }
 
     private void agregarProductoAlPedido() {
         lblMensaje.setText("");
 
-        if (productoSeleccionado == null
-                || !productoSeleccionado.getCodigo().equalsIgnoreCase(txtCodigoProducto.getText().trim())) {
-            lblMensaje.setText("Busque primero un código de producto válido (botón Buscar o Enter).");
+        String codigoEscrito = txtCodigoProducto.getText().trim();
+        if (productoSeleccionado == null || !productoSeleccionado.getCodigo().equalsIgnoreCase(codigoEscrito)) {
+            buscarProducto();
+        }
+
+        if (productoSeleccionado == null) {
+            lblMensaje.setText("Debe buscar y seleccionar un código de producto válido.");
             return;
         }
 
@@ -226,23 +204,29 @@ public class NuevoPedidoController {
 
         DetallePedido existente = detallesObservable.stream()
                 .filter(d -> d.getProducto().getId().equals(productoSeleccionado.getId()))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
 
-        int cantidadTotal = cantidad + (existente != null ? existente.getCantidad() : 0);
-        if (cantidadTotal > productoSeleccionado.getCantidad()) {
+        int cantidadTotalSolicitada = cantidad + (existente != null ? existente.getCantidad() : 0);
+        if (cantidadTotalSolicitada > productoSeleccionado.getCantidad()) {
             lblMensaje.setText("Stock insuficiente. Disponible: " + productoSeleccionado.getCantidad());
             return;
         }
 
         if (existente != null) {
-            existente.setCantidad(cantidadTotal);
+            existente.setCantidad(cantidadTotalSolicitada);
             existente.calcularSubtotal();
-            pedidoActual.recalcularTotal();      // ya no se re-agrega y quita el detalle
+            pedidoActual.agregarDetalle(existente);
+            pedidoActual.getDetalles().remove(pedidoActual.getDetalles().size() - 1);
             tblDetalles.refresh();
         } else {
-            DetallePedido nuevo = new DetallePedido(productoSeleccionado, cantidad);
-            pedidoActual.agregarDetalle(nuevo);
-            detallesObservable.add(nuevo);
+            DetallePedido nuevoDetalle = new DetallePedido();
+            nuevoDetalle.setProducto(productoSeleccionado);
+            nuevoDetalle.setCantidad(cantidad);
+            nuevoDetalle.setPrecioUnitario(productoSeleccionado.getPrecioUnitario());
+
+            pedidoActual.agregarDetalle(nuevoDetalle);
+            detallesObservable.add(nuevoDetalle);
         }
 
         actualizarTotalVisual();
@@ -257,53 +241,110 @@ public class NuevoPedidoController {
     private void quitarDetalleSeleccionado() {
         DetallePedido seleccionado = tblDetalles.getSelectionModel().getSelectedItem();
         if (seleccionado == null) return;
+
         pedidoActual.removerDetalle(seleccionado);
         detallesObservable.remove(seleccionado);
         actualizarTotalVisual();
     }
 
     private void actualizarTotalVisual() {
-        lblTotal.setText("Total: $" + pedidoActual.getPrecioTotal());
+        BigDecimal total = pedidoActual.getPrecioTotal() != null ? pedidoActual.getPrecioTotal() : BigDecimal.ZERO;
+        lblTotal.setText("Total: $" + total);
     }
 
     private void guardarPedido() {
         lblMensaje.setText("");
 
         Cliente cliente = cbCliente.getSelectionModel().getSelectedItem();
-        Direccion direccion = cbDireccionEntrega.getValue();
-        Colaborador colaborador = cbColaborador.getValue();   // puede ser null
+        Colaborador colaborador = cbColaborador.getValue();
         LocalDate fechaEntrega = dpFechaEntrega.getValue();
         String descripcion = txtDescripcion.getText().trim();
 
-        if (cliente == null) { lblMensaje.setText("Seleccione un cliente válido de la lista."); return; }
-        if (direccion == null) { lblMensaje.setText("Seleccione la dirección de entrega."); return; }
+        if (cliente == null) {
+            lblMensaje.setText("Seleccione un cliente válido de la lista.");
+            return;
+        }
+        if (colaborador == null) {
+            lblMensaje.setText("Seleccione un colaborador.");
+            return;
+        }
         if (fechaEntrega == null || fechaEntrega.isBefore(LocalDate.now())) {
             lblMensaje.setText("Seleccione una fecha de entrega válida (hoy o posterior).");
             return;
         }
-        if (descripcion.isEmpty()) { lblMensaje.setText("Ingrese una descripción para el pedido."); return; }
-        if (descripcion.length() > 150) { lblMensaje.setText("La descripción no puede superar los 150 caracteres."); return; }
-        if (detallesObservable.isEmpty()) { lblMensaje.setText("Debe agregar al menos un producto al pedido."); return; }
+        if (descripcion.isEmpty()) {
+            lblMensaje.setText("Ingrese una descripción para el pedido.");
+            return;
+        }
+        if (descripcion.length() > 150) {
+            lblMensaje.setText("La descripción no puede superar los 150 caracteres.");
+            return;
+        }
+        if (detallesObservable.isEmpty()) {
+            lblMensaje.setText("Debe agregar al menos un producto válido al pedido.");
+            return;
+        }
 
-        pedidoActual.setCliente(cliente);
-        pedidoActual.setColaborador(colaborador);
-        pedidoActual.setDireccionEntrega(direccion);
-        pedidoActual.setFechaPedido(LocalDate.now());
-        pedidoActual.setFechaEntrega(fechaEntrega);
-        pedidoActual.setDescripcion(descripcion);
-        // el estado inicial (PENDIENTE) ya viene por defecto en la entidad
+        try {
+            pedidoActual.setCliente(cliente);
+            pedidoActual.setColaborador(colaborador);
+            pedidoActual.setFechaPedido(LocalDate.now());
+            pedidoActual.setFechaEntrega(fechaEntrega);
+            pedidoActual.setDescripcion(descripcion);
+            pedidoActual.setEstado(EstadoPedido.PENDIENTE);
 
-        btnGuardar.setDisable(true);
-        Async.ejecutar(() -> pedidoService.registrarPedido(pedidoActual), guardado -> {
-            Ui.info("Pedido Registrado", "El pedido fue registrado y el inventario fue actualizado correctamente.");
+            pedidoService.registrarPedido(pedidoActual);
+
+            Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+            alerta.setTitle("Pedido Registrado");
+            alerta.setHeaderText(null);
+            alerta.setContentText("El pedido fue registrado y el inventario fue actualizado correctamente.");
+            alerta.showAndWait();
+
             cerrarVentana();
-        }, error -> {
-            btnGuardar.setDisable(false);
-            lblMensaje.setText("Error al registrar el pedido: " + Async.mensaje(error));
-        });
+        } catch (Exception e) {
+            lblMensaje.setText("Error al registrar el pedido: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private void cerrarVentana() {
-        ((Stage) btnCancelar.getScene().getWindow()).close();
+        Stage stage = (Stage) btnCancelar.getScene().getWindow();
+        stage.close();
+    }
+
+    private void inicializarCampoCodigo() {
+        txtCodigoProducto.setText("BUN-");
+        txtCodigoProducto.setTextFormatter(new TextFormatter<>(change -> {
+            String nuevoTexto = change.getControlNewText();
+
+            // Si seleccionan todo y escriben solo números (ej. "002"), antepone "BUN-"
+            if (nuevoTexto.matches("\\d+")) {
+                String completo = "BUN-" + nuevoTexto;
+                change.setRange(0, change.getControlText().length());
+                change.setText(completo);
+                change.setCaretPosition(completo.length());
+                change.setAnchor(completo.length());
+                return change;
+            }
+
+            // Evita que se borre el prefijo "BUN-" con Backspace
+            if (nuevoTexto.length() < 4 || !nuevoTexto.substring(0, 4).equalsIgnoreCase("BUN-")) {
+                return null;
+            }
+
+            // Si pegan "BUN-002" teniendo ya "BUN-", limpia el duplicado
+            if (nuevoTexto.toUpperCase().startsWith("BUN-BUN-")) {
+                String limpio = "BUN-" + nuevoTexto.substring(8).toUpperCase();
+                change.setRange(0, change.getControlText().length());
+                change.setText(limpio);
+                change.setCaretPosition(limpio.length());
+                change.setAnchor(limpio.length());
+                return change;
+            }
+
+            change.setText(change.getText().toUpperCase());
+            return change;
+        }));
     }
 }
