@@ -3,15 +3,23 @@ package ni.edu.uam.proyectofinalpae.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "direcciones") @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class Direccion {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 150)
+    @Column(nullable = false, length = 150)
     private String nombre;
 
-    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "id_cliente", nullable = false)
+    @Column(precision = 9, scale = 6)
+    private BigDecimal latitud;
+
+    @Column(precision = 9, scale = 6)
+    private BigDecimal longitud;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;
 }

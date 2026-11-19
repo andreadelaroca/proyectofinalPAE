@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.TextField?>
 <VBox prefHeight="520.0" prefWidth="840.0" spacing="18.0"
       stylesheets="@../styles/global.css"
       xmlns="http://javafx.com/javafx/17"
@@ -22,6 +23,8 @@
             <children>
                 <Label styleClass="titulo-vista" text="Gestión de Productos" />
                 <Region HBox.hgrow="ALWAYS" />
+                <TextField fx:id="txtBuscar" prefWidth="250.0" promptText="Buscar por código, nombre o marca..." />
+                <Button fx:id="btnRefrescar" mnemonicParsing="false" styleClass="btn-secundario" text="Refrescar" />
                 <Button fx:id="btnNuevoProducto" mnemonicParsing="false" styleClass="btn-primario" text="Nuevo Producto" />
             </children>
         </HBox>

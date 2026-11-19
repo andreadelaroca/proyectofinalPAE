@@ -1,9 +1,11 @@
 package ni.edu.uam.proyectofinalpae.controller;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -14,6 +16,7 @@ import ni.edu.uam.proyectofinalpae.service.ProductoService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 public class NuevoPedidoController {
 
@@ -53,6 +56,7 @@ public class NuevoPedidoController {
         lblMensaje.setText("");
         dpFechaEntrega.setValue(LocalDate.now().plusDays(3));
         txtCantidad.setText("1");
+        inicializarCampoCodigo();
 
         configurarCombos();
         configurarTabla();
@@ -70,14 +74,57 @@ public class NuevoPedidoController {
     }
 
     private void configurarCombos() {
-        cbCliente.setItems(FXCollections.observableArrayList(pedidoService.obtenerClientes()));
-        cbCliente.setConverter(new StringConverter<>() {
+        List<Cliente> todosLosClientes = pedidoService.obtenerClientes();
+        FilteredList<Cliente> clientesFiltrados = new FilteredList<>(
+                FXCollections.observableArrayList(todosLosClientes), p -> true
+        );
+
+        cbCliente.setEditable(true);
+        cbCliente.setVisibleRowCount(6);
+        cbCliente.setItems(clientesFiltrados);
+
+        StringConverter<Cliente> clienteConverter = new StringConverter<>() {
             @Override
             public String toString(Cliente c) {
                 return c == null ? "" : c.getNombres() + " (" + c.getUsername() + ")";
             }
+
             @Override
-            public Cliente fromString(String s) { return null; }
+            public Cliente fromString(String texto) {
+                if (texto == null || texto.isBlank()) return null;
+                return todosLosClientes.stream()
+                        .filter(c -> toString(c).equalsIgnoreCase(texto.trim()))
+                        .findFirst()
+                        .orElse(null);
+            }
+        };
+        cbCliente.setConverter(clienteConverter);
+
+        cbCliente.getEditor().textProperty().addListener((obs, textoAnterior, textoNuevo) -> {
+            final TextField editor = cbCliente.getEditor();
+            final Cliente seleccionado = cbCliente.getSelectionModel().getSelectedItem();
+
+            Platform.runLater(() -> {
+                if (seleccionado != null && clienteConverter.toString(seleccionado).equals(textoNuevo)) {
+                    return;
+                }
+
+                if (seleccionado != null) {
+                    cbCliente.getSelectionModel().clearSelection();
+                }
+
+                String filtro = (textoNuevo == null) ? "" : textoNuevo.toLowerCase().trim();
+                clientesFiltrados.setPredicate(cliente -> {
+                    if (filtro.isEmpty()) return true;
+                    return clienteConverter.toString(cliente).toLowerCase().contains(filtro);
+                });
+
+                if (!clientesFiltrados.isEmpty() && editor.isFocused()) {
+                    cbCliente.show();
+                } else {
+                    cbCliente.hide();
+                }
+            });
         });
 
         cbColaborador.setItems(FXCollections.observableArrayList(pedidoService.obtenerColaboradores()));
@@ -86,8 +133,11 @@ public class NuevoPedidoController {
             public String toString(Colaborador c) {
                 return c == null ? "" : c.getNombres() + " (" + c.getUsername() + ")";
             }
+
             @Override
-            public Colaborador fromString(String s) { return null; }
+            public Colaborador fromString(String s) {
+                return null;
+            }
         });
     }
 
@@ -110,9 +160,9 @@ public class NuevoPedidoController {
         lblMensaje.setText("");
         String codigo = txtCodigoProducto.getText().trim();
 
-        if (codigo.isEmpty()) {
+        if (codigo.isEmpty() || codigo.equalsIgnoreCase("BUN-")) {
             productoSeleccionado = null;
-            lblInfoProducto.setText("Ingrese un código de producto (ej. BUN-001).");
+            lblInfoProducto.setText("Complete el número del código (ej. BUN-001).");
             return;
         }
 
@@ -130,7 +180,6 @@ public class NuevoPedidoController {
     private void agregarProductoAlPedido() {
         lblMensaje.setText("");
 
-        // Si escribió un código nuevo y dio directo a Agregar sin pulsar Buscar, lo busca primero
         String codigoEscrito = txtCodigoProducto.getText().trim();
         if (productoSeleccionado == null || !productoSeleccionado.getCodigo().equalsIgnoreCase(codigoEscrito)) {
             buscarProducto();
@@ -153,7 +202,6 @@ public class NuevoPedidoController {
             return;
         }
 
-        // Verifica si el producto ya está en la lista para sumar cantidades
         DetallePedido existente = detallesObservable.stream()
                 .filter(d -> d.getProducto().getId().equals(productoSeleccionado.getId()))
                 .findFirst()
@@ -168,8 +216,7 @@ public class NuevoPedidoController {
         if (existente != null) {
             existente.setCantidad(cantidadTotalSolicitada);
             existente.calcularSubtotal();
-            pedidoActual.agregarDetalle(existente); // Recalcula total
-            // Evita duplicar la referencia en pedidoActual.getDetalles()
+            pedidoActual.agregarDetalle(existente);
             pedidoActual.getDetalles().remove(pedidoActual.getDetalles().size() - 1);
             tblDetalles.refresh();
         } else {
@@ -183,7 +230,9 @@ public class NuevoPedidoController {
         }
 
         actualizarTotalVisual();
-        txtCodigoProducto.clear();
+        txtCodigoProducto.setText("BUN-");
+        txtCodigoProducto.positionCaret(4);
+        txtCodigoProducto.requestFocus();
         txtCantidad.setText("1");
         productoSeleccionado = null;
         lblInfoProducto.setText("Producto agregado. Ingrese otro código o guarde el pedido.");
@@ -206,13 +255,13 @@ public class NuevoPedidoController {
     private void guardarPedido() {
         lblMensaje.setText("");
 
-        Cliente cliente = cbCliente.getValue();
+        Cliente cliente = cbCliente.getSelectionModel().getSelectedItem();
         Colaborador colaborador = cbColaborador.getValue();
         LocalDate fechaEntrega = dpFechaEntrega.getValue();
         String descripcion = txtDescripcion.getText().trim();
 
         if (cliente == null) {
-            lblMensaje.setText("Seleccione un cliente.");
+            lblMensaje.setText("Seleccione un cliente válido de la lista.");
             return;
         }
         if (colaborador == null) {
@@ -262,5 +311,40 @@ public class NuevoPedidoController {
     private void cerrarVentana() {
         Stage stage = (Stage) btnCancelar.getScene().getWindow();
         stage.close();
+    }
+
+    private void inicializarCampoCodigo() {
+        txtCodigoProducto.setText("BUN-");
+        txtCodigoProducto.setTextFormatter(new TextFormatter<>(change -> {
+            String nuevoTexto = change.getControlNewText();
+
+            // Si seleccionan todo y escriben solo números (ej. "002"), antepone "BUN-"
+            if (nuevoTexto.matches("\\d+")) {
+                String completo = "BUN-" + nuevoTexto;
+                change.setRange(0, change.getControlText().length());
+                change.setText(completo);
+                change.setCaretPosition(completo.length());
+                change.setAnchor(completo.length());
+                return change;
+            }
+
+            // Evita que se borre el prefijo "BUN-" con Backspace
+            if (nuevoTexto.length() < 4 || !nuevoTexto.substring(0, 4).equalsIgnoreCase("BUN-")) {
+                return null;
+            }
+
+            // Si pegan "BUN-002" teniendo ya "BUN-", limpia el duplicado
+            if (nuevoTexto.toUpperCase().startsWith("BUN-BUN-")) {
+                String limpio = "BUN-" + nuevoTexto.substring(8).toUpperCase();
+                change.setRange(0, change.getControlText().length());
+                change.setText(limpio);
+                change.setCaretPosition(limpio.length());
+                change.setAnchor(limpio.length());
+                return change;
+            }
+
+            change.setText(change.getText().toUpperCase());
+            return change;
+        }));
     }
 }

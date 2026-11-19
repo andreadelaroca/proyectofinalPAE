@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,6 +16,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ni.edu.uam.proyectofinalpae.model.Producto;
 import ni.edu.uam.proyectofinalpae.service.ProductoService;
+import javafx.concurrent.Task;
+import java.util.List;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -30,6 +33,10 @@ public class ProductoController {
     @FXML private TableColumn<Producto, Integer> colCantidad;
     @FXML private TableColumn<Producto, String> colColor;
     @FXML private TableColumn<Producto, String> colDescripcion;
+    @FXML private Button btnRefrescar;
+    @FXML private TextField txtBuscar;
+
+    private FilteredList<Producto> listaFiltrada;
 
     private final ProductoService productoService = new ProductoService();
     private final ObservableList<Producto> listaProductos = FXCollections.observableArrayList();
@@ -39,6 +46,11 @@ public class ProductoController {
         configurarColumnas();
         cargarProductos();
         btnNuevoProducto.setOnAction(e -> abrirNuevoProducto());
+        btnRefrescar.setOnAction(e -> cargarProductos());
+
+        listaFiltrada = new FilteredList<>(listaProductos, p -> true);
+        tblProductos.setItems(listaFiltrada);
+        configurarFiltro();
     }
 
     private void configurarColumnas() {
@@ -89,8 +101,32 @@ public class ProductoController {
     }
 
     private void cargarProductos() {
-        listaProductos.setAll(productoService.obtenerTodos());
-        tblProductos.setItems(listaProductos);
+        tblProductos.setPlaceholder(new Label("Cargando productos..."));
+        btnRefrescar.setDisable(true);
+
+        Task<List<Producto>> tarea = new Task<>() {
+            @Override
+            protected List<Producto> call() {
+                return productoService.obtenerTodos();
+            }
+        };
+
+        tarea.setOnSucceeded(e -> {
+            listaProductos.setAll(tarea.getValue());
+            tblProductos.setItems(listaProductos);
+            tblProductos.setPlaceholder(new Label("No hay productos registrados."));
+            btnRefrescar.setDisable(false);
+        });
+
+        tarea.setOnFailed(e -> {
+            tblProductos.setPlaceholder(new Label("Error al cargar los productos."));
+            btnRefrescar.setDisable(false);
+            tarea.getException().printStackTrace();
+        });
+
+        Thread hilo = new Thread(tarea);
+        hilo.setDaemon(true);
+        hilo.start();
     }
 
     private void abrirNuevoProducto() {
@@ -124,5 +160,17 @@ public class ProductoController {
             alerta.showAndWait();
             e.printStackTrace();
         }
+    }
+
+    private void configurarFiltro() {
+        txtBuscar.textProperty().addListener((obs, anterior, nuevo) -> {
+            String filtro = (nuevo == null) ? "" : nuevo.toLowerCase().trim();
+            listaFiltrada.setPredicate(prod -> {
+                if (filtro.isEmpty()) return true;
+                return (prod.getCodigo() != null && prod.getCodigo().toLowerCase().contains(filtro))
+                        || (prod.getNombre() != null && prod.getNombre().toLowerCase().contains(filtro))
+                        || (prod.getMarca() != null && prod.getMarca().toLowerCase().contains(filtro));
+            });
+        });
     }
 }

@@ -1,75 +1,54 @@
 package ni.edu.uam.proyectofinalpae.service;
 
-import ni.edu.uam.proyectofinalpae.config.HibernateUtil;
 import ni.edu.uam.proyectofinalpae.model.Colaborador;
 import ni.edu.uam.proyectofinalpae.repository.GenericRepository;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import ni.edu.uam.proyectofinalpae.util.NegocioException;
+import ni.edu.uam.proyectofinalpae.util.Tx;
+
 import java.util.List;
 
 public class ColaboradorService {
-    private final GenericRepository<Colaborador, Long> repository;
+    private final GenericRepository<Colaborador, Long> repository = new GenericRepository<>(Colaborador.class);
+    private final UsuarioService usuarioService = new UsuarioService();
 
-    public ColaboradorService() {
-        this.repository = new GenericRepository<>(Colaborador.class);
+    public String registrar(Colaborador colaborador, String passwordPlano) {
+        return Tx.run("Error al registrar el colaborador", s -> {
+            String codigo = UsuarioService.prepararRegistro(s, colaborador, passwordPlano);
+            repository.save(s, colaborador);
+            return codigo;
+        });
     }
 
-    public void guardar(Colaborador colaborador) {
-        Transaction tx = null;
-        try (Session session = HibernateUtil.factory().openSession()) {
-            tx = session.beginTransaction();
-            repository.save(session, colaborador);
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();
-            throw new RuntimeException("Error al guardar el colaborador", e);
-        }
-    }
-
-    public void actualizar(Colaborador colaborador) {
-        Transaction tx = null;
-        try (Session session = HibernateUtil.factory().openSession()) {
-            tx = session.beginTransaction();
-            repository.update(session, colaborador);
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();
-            throw new RuntimeException("Error al actualizar el colaborador", e);
-        }
+    public Colaborador actualizar(Colaborador colaborador) {
+        return Tx.run("Error al actualizar el colaborador", s -> repository.update(s, colaborador));
     }
 
     public void eliminar(Colaborador colaborador) {
-        Transaction tx = null;
-        try (Session session = HibernateUtil.factory().openSession()) {
-            tx = session.beginTransaction();
-            repository.delete(session, colaborador);
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();
-            throw new RuntimeException("Error al eliminar el colaborador", e);
-        }
+        Tx.exec("Error al eliminar el colaborador", s -> {
+            Long pedidos = s.createQuery("SELECT COUNT(p.id) FROM Pedido p WHERE p.colaborador.id = :id", Long.class)
+                    .setParameter("id", colaborador.getId()).uniqueResult();
+            Long ventas = s.createQuery("SELECT COUNT(v.id) FROM Venta v WHERE v.colaborador.id = :id", Long.class)
+                    .setParameter("id", colaborador.getId()).uniqueResult();
+            if (pedidos > 0 || ventas > 0) {
+                throw new NegocioException("El colaborador tiene pedidos o ventas asociados. Desactívalo en lugar de eliminarlo.");
+            }
+            repository.delete(s, colaborador);
+        });
     }
 
     public Colaborador buscarPorId(Long id) {
-        try (Session session = HibernateUtil.factory().openSession()) {
-            return repository.findById(session, id);
-        }
+        return Tx.read(s -> repository.findById(s, id));
     }
 
     public List<Colaborador> obtenerTodos() {
-        try (Session session = HibernateUtil.factory().openSession()) {
-            return repository.findAll(session);
-        }
+        return Tx.read(s -> repository.findAll(s));
     }
 
-    public Colaborador autenticar(String username, String password) {
-        try (Session session = HibernateUtil.factory().openSession()) {
-            return session.createQuery(
-                            "FROM Colaborador c WHERE c.username = :user AND c.password = :pass",
-                            Colaborador.class)
-                    .setParameter("user", username)
-                    .setParameter("pass", password)
-                    .uniqueResult();
-        }
+    public boolean existeUsername(String username) {
+        return usuarioService.existeUsername(username);
+    }
+
+    public boolean existeCorreo(String correo) {
+        return usuarioService.existeCorreo(correo);
     }
 }
