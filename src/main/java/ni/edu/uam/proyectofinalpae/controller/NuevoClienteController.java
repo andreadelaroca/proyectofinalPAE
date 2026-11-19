@@ -1,12 +1,17 @@
 package ni.edu.uam.proyectofinalpae.controller;
 
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import ni.edu.uam.proyectofinalpae.model.Cliente;
 import ni.edu.uam.proyectofinalpae.model.Direccion;
 import ni.edu.uam.proyectofinalpae.service.ClienteService;
+import ni.edu.uam.proyectofinalpae.util.Async;
+import ni.edu.uam.proyectofinalpae.util.Validador;
 
 public class NuevoClienteController {
 
@@ -18,6 +23,8 @@ public class NuevoClienteController {
     @FXML private PasswordField pfConfirmarPassword;
     @FXML private TextField txtCorreo;
     @FXML private TextArea txtDireccion;
+    @FXML private Button btnUbicarMapa;   // NUEVO: marcar la dirección en OpenStreetMap (opcional)
+    @FXML private Label lblUbicacion;     // NUEVO
 
     @FXML private Label lblMensaje;
     @FXML private Button btnCancelar;
@@ -25,16 +32,29 @@ public class NuevoClienteController {
 
     private final ClienteService clienteService = new ClienteService();
     private Cliente clienteCreado;
+    private MapaDireccionController.Ubicacion ubicacion;
+
+    private record Resultado(Cliente cliente, String codigo) {}
 
     @FXML
     public void initialize() {
         lblMensaje.setText("");
+        lblUbicacion.setText("Sin ubicar en el mapa (opcional).");
         btnCancelar.setOnAction(e -> cerrarVentana());
         btnGuardar.setOnAction(e -> guardarCliente());
+        btnUbicarMapa.setOnAction(e -> ubicarEnMapa());
     }
 
     public Cliente getClienteCreado() {
         return clienteCreado;
+    }
+
+    private void ubicarEnMapa() {
+        MapaDireccionController.seleccionar(btnUbicarMapa.getScene().getWindow(), txtDireccion.getText().trim())
+                .ifPresent(u -> {
+                    ubicacion = u;
+                    lblUbicacion.setText("Ubicación marcada: " + u.latitud() + ", " + u.longitud());
+                });
     }
 
     private void guardarCliente() {
@@ -44,97 +64,53 @@ public class NuevoClienteController {
         String apellidos = txtApellidos.getText().trim();
         String username = txtUsername.getText().trim();
         String telefono = txtTelefono.getText().trim();
-        String password = pfPassword.getText();
-        String confirmar = pfConfirmarPassword.getText();
         String correo = txtCorreo.getText().trim();
         String direccionTexto = txtDireccion.getText().trim();
+        String password = pfPassword.getText();
 
-        if (nombres.isEmpty() || apellidos.isEmpty() || username.isEmpty()
-                || telefono.isEmpty() || password.isEmpty() || correo.isEmpty() || direccionTexto.isEmpty()) {
-            lblMensaje.setText("Complete todos los campos obligatorios.");
-            return;
-        }
-        if (nombres.length() > 40 || apellidos.length() > 40) {
-            lblMensaje.setText("Nombres y apellidos no pueden superar los 40 caracteres.");
-            return;
-        }
-        if (username.length() > 20 || username.contains(" ")) {
-            lblMensaje.setText("El usuario debe tener máximo 20 caracteres y no contener espacios.");
-            return;
-        }
-        if (telefono.length() > 20) {
-            lblMensaje.setText("El teléfono no puede superar los 20 caracteres.");
-            return;
-        }
-        if (password.length() < 4) {
-            lblMensaje.setText("La contraseña debe tener al menos 4 caracteres.");
-            return;
-        }
-        if (!password.equals(confirmar)) {
-            lblMensaje.setText("Las contraseñas no coinciden.");
-            return;
-        }
-        if (correo.length() > 60 || !correo.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
-            lblMensaje.setText("Ingrese un correo electrónico válido (máx. 60 caracteres).");
-            return;
-        }
-        if (direccionTexto.length() > 150) {
-            lblMensaje.setText("La dirección no puede superar los 150 caracteres.");
+        String error = Validador.validarCuenta(nombres, apellidos, username, telefono, correo,
+                password, pfConfirmarPassword.getText());
+        if (error == null && direccionTexto.isEmpty()) error = "Ingrese la dirección del cliente.";
+        if (error == null && direccionTexto.length() > 150) error = "La dirección no puede superar los 150 caracteres.";
+        if (error != null) {
+            lblMensaje.setText(error);
             return;
         }
 
         btnGuardar.setDisable(true);
+        MapaDireccionController.Ubicacion ubi = ubicacion;
 
-        Task<Cliente> tareaGuardar = new Task<>() {
-            @Override
-            protected Cliente call() {
-                if (clienteService.existeUsername(username)) {
-                    throw new IllegalArgumentException("El nombre de usuario '" + username + "' ya está registrado.");
-                }
+        Async.ejecutar(() -> {
+            Cliente nuevo = new Cliente();
+            nuevo.setNombres(nombres);
+            nuevo.setApellidos(apellidos);
+            nuevo.setUsername(username);
+            nuevo.setCorreo(correo);
+            nuevo.setTelefono(telefono);
 
-                Cliente nuevo = new Cliente();
-                nuevo.setNombres(nombres);
-                nuevo.setApellidos(apellidos);
-                nuevo.setUsername(username);
-                nuevo.setPassword(password);
-                nuevo.setCorreo(correo);
-                nuevo.setTelefono(telefono);
-
-                Direccion direccion = new Direccion();
-                direccion.setNombre(direccionTexto);
-                nuevo.agregarDireccion(direccion);
-
-                clienteService.guardar(nuevo);
-                return nuevo;
+            Direccion direccion = new Direccion();
+            direccion.setNombre(direccionTexto);
+            if (ubi != null) {
+                direccion.setLatitud(ubi.latitud());
+                direccion.setLongitud(ubi.longitud());
             }
-        };
+            nuevo.agregarDireccion(direccion);
 
-        tareaGuardar.setOnSucceeded(e -> {
+            String codigo = clienteService.registrar(nuevo, password); // hashea la contraseña y genera el código
+            return new Resultado(nuevo, codigo);
+        }, resultado -> {
             btnGuardar.setDisable(false);
-            clienteCreado = tareaGuardar.getValue();
-
-            Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-            alerta.setTitle("Cliente Registrado");
-            alerta.setHeaderText(null);
-            alerta.setContentText("El cliente " + clienteCreado.getNombres() + " fue registrado correctamente.");
-            alerta.showAndWait();
-
+            clienteCreado = resultado.cliente();
+            // Envía el código por SMTP y pide confirmarlo; si lo cierra, queda pendiente de verificar.
+            VerificacionController.mostrar(btnGuardar.getScene().getWindow(), username, correo, resultado.codigo());
             cerrarVentana();
-        });
-
-        tareaGuardar.setOnFailed(e -> {
+        }, e -> {
             btnGuardar.setDisable(false);
-            Throwable error = tareaGuardar.getException();
-            lblMensaje.setText(error != null ? error.getMessage() : "Error al guardar el cliente.");
+            lblMensaje.setText(Async.mensaje(e));
         });
-
-        Thread hilo = new Thread(tareaGuardar);
-        hilo.setDaemon(true);
-        hilo.start();
     }
 
     private void cerrarVentana() {
-        Stage stage = (Stage) btnCancelar.getScene().getWindow();
-        stage.close();
+        ((Stage) btnCancelar.getScene().getWindow()).close();
     }
 }

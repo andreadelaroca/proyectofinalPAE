@@ -6,23 +6,25 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import ni.edu.uam.proyectofinalpae.model.Producto;
 import ni.edu.uam.proyectofinalpae.service.ProductoService;
-import javafx.concurrent.Task;
-import java.util.List;
+import ni.edu.uam.proyectofinalpae.util.Async;
+import ni.edu.uam.proyectofinalpae.util.Ui;
+import ni.edu.uam.proyectofinalpae.util.Vistas;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 
-public class ProductoController {
+/** Antes: ProductoController (renombrado para coincidir con productos-view.fxml). */
+public class ProductosController {
 
     @FXML private Button btnNuevoProducto;
     @FXML private TableView<Producto> tblProductos;
@@ -36,39 +38,34 @@ public class ProductoController {
     @FXML private Button btnRefrescar;
     @FXML private TextField txtBuscar;
 
-    private FilteredList<Producto> listaFiltrada;
-
     private final ProductoService productoService = new ProductoService();
     private final ObservableList<Producto> listaProductos = FXCollections.observableArrayList();
+    private FilteredList<Producto> listaFiltrada;
 
     @FXML
     public void initialize() {
         configurarColumnas();
-        cargarProductos();
-        btnNuevoProducto.setOnAction(e -> abrirNuevoProducto());
-        btnRefrescar.setOnAction(e -> cargarProductos());
 
         listaFiltrada = new FilteredList<>(listaProductos, p -> true);
         tblProductos.setItems(listaFiltrada);
         configurarFiltro();
+
+        btnNuevoProducto.setOnAction(e -> abrirNuevoProducto());
+        btnRefrescar.setOnAction(e -> cargarProductos());
+
+        cargarProductos();
     }
 
     private void configurarColumnas() {
-        colCodigo.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getCodigo()));
-        colNombre.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getNombre()));
-        colMarca.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getMarca()));
-        colPrecio.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue().getPrecioUnitario()));
-        colCantidad.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue().getCantidad()));
-        colDescripcion.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getDescripcion()));
-
-        colColor.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getColor()));
+        colCodigo.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getCodigo()));
+        colNombre.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getNombre()));
+        // marca ahora es una entidad (Producto.marca -> Marca)
+        colMarca.setCellValueFactory(cell -> new SimpleStringProperty(
+                cell.getValue().getMarca() == null ? "" : cell.getValue().getMarca().getNombre()));
+        colPrecio.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getPrecioUnitario()));
+        colCantidad.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getCantidad()));
+        colDescripcion.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDescripcion()));
+        colColor.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getColor()));
 
         // Muestra una pequeña muestra visual del color junto a su código hexadecimal
         colColor.setCellFactory(column -> new TableCell<>() {
@@ -104,61 +101,31 @@ public class ProductoController {
         tblProductos.setPlaceholder(new Label("Cargando productos..."));
         btnRefrescar.setDisable(true);
 
-        Task<List<Producto>> tarea = new Task<>() {
-            @Override
-            protected List<Producto> call() {
-                return productoService.obtenerTodos();
-            }
-        };
-
-        tarea.setOnSucceeded(e -> {
-            listaProductos.setAll(tarea.getValue());
-            tblProductos.setItems(listaProductos);
+        // CORREGIDO: ya no se hace tblProductos.setItems(listaProductos), que anulaba el filtro de búsqueda.
+        Async.ejecutar(productoService::obtenerTodos, lista -> {
+            listaProductos.setAll(lista);
             tblProductos.setPlaceholder(new Label("No hay productos registrados."));
             btnRefrescar.setDisable(false);
-        });
-
-        tarea.setOnFailed(e -> {
+        }, error -> {
             tblProductos.setPlaceholder(new Label("Error al cargar los productos."));
             btnRefrescar.setDisable(false);
-            tarea.getException().printStackTrace();
+            Async.mensaje(error);
         });
-
-        Thread hilo = new Thread(tarea);
-        hilo.setDaemon(true);
-        hilo.start();
     }
 
     private void abrirNuevoProducto() {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/ni/edu/uam/proyectofinalpae/fxml/nuevo-producto-view.fxml")
-            );
-            Parent root = loader.load();
+            Vistas.Vista<NuevoProductoController> vista = Vistas.cargar(Vistas.NUEVO_PRODUCTO);
+            Vistas.mostrarModal(vista, "BunBun Hub - Nuevo Producto", btnNuevoProducto.getScene().getWindow());
 
-            NuevoProductoController controller = loader.getController();
-
-            Stage modal = new Stage();
-            modal.setTitle("BunBun Hub - Nuevo Producto");
-            modal.setScene(new Scene(root));
-            modal.initOwner(btnNuevoProducto.getScene().getWindow());
-            modal.initModality(Modality.WINDOW_MODAL);
-            modal.setResizable(false);
-            modal.showAndWait();
-
-            // Si se registró un producto, se agrega directo en memoria sin recargar toda la BD
-            Producto creado = controller.getProductoGuardado();
+            Producto creado = vista.controller().getProductoGuardado();
             if (creado != null) {
                 listaProductos.add(creado);
                 tblProductos.getSelectionModel().select(creado);
             }
         } catch (IOException e) {
-            Alert alerta = new Alert(Alert.AlertType.ERROR);
-            alerta.setTitle("Error");
-            alerta.setHeaderText(null);
-            alerta.setContentText("No se pudo abrir el formulario de nuevo producto.");
-            alerta.showAndWait();
             e.printStackTrace();
+            Ui.error("Error", "No se pudo abrir el formulario de nuevo producto.");
         }
     }
 
@@ -167,9 +134,10 @@ public class ProductoController {
             String filtro = (nuevo == null) ? "" : nuevo.toLowerCase().trim();
             listaFiltrada.setPredicate(prod -> {
                 if (filtro.isEmpty()) return true;
+                String marca = prod.getMarca() == null ? "" : prod.getMarca().getNombre().toLowerCase();
                 return (prod.getCodigo() != null && prod.getCodigo().toLowerCase().contains(filtro))
                         || (prod.getNombre() != null && prod.getNombre().toLowerCase().contains(filtro))
-                        || (prod.getMarca() != null && prod.getMarca().toLowerCase().contains(filtro));
+                        || marca.contains(filtro);
             });
         });
     }

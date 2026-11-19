@@ -5,25 +5,27 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import ni.edu.uam.proyectofinalpae.model.Cliente;
+import ni.edu.uam.proyectofinalpae.model.Direccion;
 import ni.edu.uam.proyectofinalpae.service.ClienteService;
+import ni.edu.uam.proyectofinalpae.util.Async;
+import ni.edu.uam.proyectofinalpae.util.Ui;
+import ni.edu.uam.proyectofinalpae.util.Vistas;
 
 import java.io.IOException;
-import java.util.List;
 
 public class ClientesController {
 
     @FXML private TextField txtBuscar;
     @FXML private Button btnRefrescar;
     @FXML private Button btnNuevoCliente;
+    @FXML private Button btnVerMapa;   // NUEVO: ver la dirección del cliente seleccionado en OpenStreetMap
 
     @FXML private TableView<Cliente> tblClientes;
     @FXML private TableColumn<Cliente, Long> colId;
@@ -43,8 +45,10 @@ public class ClientesController {
         configurarTabla();
         configurarFiltro();
 
+        btnVerMapa.disableProperty().bind(tblClientes.getSelectionModel().selectedItemProperty().isNull());
         btnRefrescar.setOnAction(e -> cargarClientes());
         btnNuevoCliente.setOnAction(e -> abrirNuevoCliente());
+        btnVerMapa.setOnAction(e -> verEnMapa());
 
         cargarClientes();
     }
@@ -73,62 +77,48 @@ public class ClientesController {
             String filtro = (nuevo == null) ? "" : nuevo.toLowerCase().trim();
             listaFiltrada.setPredicate(cli -> {
                 if (filtro.isEmpty()) return true;
-                return (cli.getNombres() != null && cli.getNombres().toLowerCase().contains(filtro))
-                        || (cli.getApellidos() != null && cli.getApellidos().toLowerCase().contains(filtro))
-                        || (cli.getUsername() != null && cli.getUsername().toLowerCase().contains(filtro))
-                        || (cli.getCorreo() != null && cli.getCorreo().toLowerCase().contains(filtro));
+                return contiene(cli.getNombres(), filtro) || contiene(cli.getApellidos(), filtro)
+                        || contiene(cli.getUsername(), filtro) || contiene(cli.getCorreo(), filtro);
             });
         });
     }
 
+    private boolean contiene(String texto, String filtro) {
+        return texto != null && texto.toLowerCase().contains(filtro);
+    }
+
     private void cargarClientes() {
         tblClientes.setPlaceholder(new Label("Cargando clientes..."));
-
-        Task<List<Cliente>> tarea = new Task<>() {
-            @Override
-            protected List<Cliente> call() {
-                return clienteService.obtenerTodos();
-            }
-        };
-
-        tarea.setOnSucceeded(e -> {
-            listaClientes.setAll(tarea.getValue());
+        Async.ejecutar(clienteService::obtenerTodos, lista -> {
+            listaClientes.setAll(lista);
             tblClientes.setPlaceholder(new Label("No hay clientes registrados."));
-        });
-
-        tarea.setOnFailed(e -> {
+        }, error -> {
             tblClientes.setPlaceholder(new Label("Error al cargar los clientes."));
-            tarea.getException().printStackTrace();
+            Async.mensaje(error);
         });
-
-        Thread hilo = new Thread(tarea);
-        hilo.setDaemon(true);
-        hilo.start();
     }
 
     private void abrirNuevoCliente() {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/ni/edu/uam/proyectofinalpae/fxml/nuevo-cliente-view.fxml")
-            );
-            Parent root = loader.load();
-            NuevoClienteController controller = loader.getController();
+            Vistas.Vista<NuevoClienteController> vista = Vistas.cargar(Vistas.NUEVO_CLIENTE);
+            Vistas.mostrarModal(vista, "BunBun Hub - Nuevo Cliente", btnNuevoCliente.getScene().getWindow());
 
-            Stage modal = new Stage();
-            modal.setTitle("BunBun Hub - Nuevo Cliente");
-            modal.setScene(new Scene(root));
-            modal.initOwner(btnNuevoCliente.getScene().getWindow());
-            modal.initModality(Modality.WINDOW_MODAL);
-            modal.setResizable(false);
-            modal.showAndWait();
-
-            if (controller.getClienteCreado() != null) {
-                listaClientes.add(controller.getClienteCreado());
-            }
+            Cliente creado = vista.controller().getClienteCreado();
+            if (creado != null) listaClientes.add(creado);
         } catch (IOException e) {
             e.printStackTrace();
-            Alert alerta = new Alert(Alert.AlertType.ERROR, "No se pudo abrir el formulario de cliente.");
-            alerta.showAndWait();
+            Ui.error("Error", "No se pudo abrir el formulario de cliente.");
         }
+    }
+
+    private void verEnMapa() {
+        Cliente cliente = tblClientes.getSelectionModel().getSelectedItem();
+        if (cliente == null) return;
+        if (cliente.getDirecciones() == null || cliente.getDirecciones().isEmpty()) {
+            Ui.advertencia("Sin dirección", "Este cliente no tiene direcciones registradas.");
+            return;
+        }
+        Direccion d = cliente.getDirecciones().get(0);
+        MapaDireccionController.ver(btnVerMapa.getScene().getWindow(), d.getNombre(), d.getLatitud(), d.getLongitud());
     }
 }
