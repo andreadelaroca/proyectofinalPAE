@@ -6,16 +6,14 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity @Table(name = "colaboradores") @Getter @Setter
-@AllArgsConstructor @NoArgsConstructor
+@Entity @Table(name = "colaboradores") @Getter @Setter @PrimaryKeyJoinColumn(name = "id") @NoArgsConstructor
 public class Colaborador extends Usuario {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(nullable = false, length = 120)
     private String direccion;
 
-    @OneToMany(mappedBy = "colaborador", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "colaborador")
     private List<Pedido> pedidos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "colaborador")
+    private List<Venta> ventas = new ArrayList<>();
 }

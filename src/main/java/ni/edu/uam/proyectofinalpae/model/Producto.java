@@ -6,13 +6,9 @@ import lombok.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "productos")
-@Getter @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "productos")  @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class Producto {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true, length = 20)
@@ -21,8 +17,8 @@ public class Producto {
     @Column(nullable = false, length = 70)
     private String nombre;
 
-    @OneToMany(mappedBy = "producto")
-    private Proveedor proveedor;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "id_marca", nullable = false)
+    private Marca marca;
 
     @Column(nullable = false, length = 120)
     private String descripcion;

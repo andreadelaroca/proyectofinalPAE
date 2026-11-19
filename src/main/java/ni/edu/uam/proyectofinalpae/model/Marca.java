@@ -4,11 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "proveedores") @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor(access =  AccessLevel.PROTECTED)
-public class Proveedor {
+@Table(name = "marcas") @Getter @Setter @AllArgsConstructor @NoArgsConstructor(access =  AccessLevel.PROTECTED)
+public class Marca {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
