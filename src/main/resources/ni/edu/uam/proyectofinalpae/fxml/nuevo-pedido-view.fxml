@@ -1,95 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<VBox prefHeight="620.0" prefWidth="720.0" spacing="14.0"
-      stylesheets="@../styles/global.css"
-      xmlns="http://javafx.com/javafx/17"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="ni.edu.uam.proyectofinalpae.controller.NuevoPedidoController">
-    <padding>
-        <Insets bottom="22.0" left="28.0" right="28.0" top="20.0" />
-    </padding>
-    <children>
-        <Label styleClass="titulo-vista" text="Nuevo Pedido" />
-
-        <!-- Datos generales del pedido -->
-        <HBox spacing="12.0">
-            <children>
-                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                    <children>
-                        <Label styleClass="label-campo" text="Cliente" />
-                        <ComboBox fx:id="cbCliente" maxWidth="1.7976931348623157E308" promptText="Seleccione un cliente..." />
-                    </children>
-                </VBox>
-                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                    <children>
-                        <Label styleClass="label-campo" text="Colaborador asignado" />
-                        <ComboBox fx:id="cbColaborador" maxWidth="1.7976931348623157E308" promptText="Seleccione un colaborador..." />
-                    </children>
-                </VBox>
-                <VBox spacing="5.0">
-                    <children>
-                        <Label styleClass="label-campo" text="Fecha de Entrega" />
-                        <DatePicker fx:id="dpFechaEntrega" prefWidth="155.0" />
-                    </children>
-                </VBox>
-            </children>
-        </HBox>
-
-        <VBox spacing="5.0">
-            <children>
-                <Label styleClass="label-campo" text="Descripción / Notas del pedido" />
-                <TextField fx:id="txtDescripcion" promptText="Ej. Empaque para regalo y tarjeta personalizada (máx. 150 caracteres)" />
-            </children>
-        </VBox>
-
-        <Separator />
-
-        <!-- Búsqueda y agregado de productos por código BUN-XXX -->
-        <VBox spacing="6.0">
-            <children>
-                <Label styleClass="label-campo" text="Agregar producto por código" />
-                <HBox alignment="CENTER_LEFT" spacing="10.0">
-                    <children>
-                        <TextField fx:id="txtCodigoProducto" prefWidth="130.0" promptText="Ej. BUN-001" />
-                        <Button fx:id="btnBuscarProducto" mnemonicParsing="false" styleClass="btn-secundario" text="Buscar" />
-                        <TextField fx:id="txtCantidad" prefWidth="85.0" promptText="Cant." />
-                        <Button fx:id="btnAgregarProducto" mnemonicParsing="false" styleClass="btn-primario" text="Agregar" />
-                        <Region HBox.hgrow="ALWAYS" />
-                        <Button fx:id="btnQuitarProducto" mnemonicParsing="false" styleClass="btn-secundario" text="Quitar fila" />
-                    </children>
-                </HBox>
-                <Label fx:id="lblInfoProducto" text="Ingrese un código existente (BUN-XXX) y presione Buscar." />
-            </children>
-        </VBox>
-
-        <!-- Tabla de detalles del pedido -->
-        <TableView fx:id="tblDetalles" prefHeight="200.0" VBox.vgrow="ALWAYS">
-            <columns>
-                <TableColumn fx:id="colCodigo" prefWidth="95.0" text="Código" />
-                <TableColumn fx:id="colProducto" prefWidth="230.0" text="Producto" />
-                <TableColumn fx:id="colCantidad" prefWidth="80.0" text="Cantidad" />
-                <TableColumn fx:id="colPrecioUnit" prefWidth="105.0" text="Precio Unit." />
-                <TableColumn fx:id="colSubtotal" prefWidth="110.0" text="Subtotal" />
-            </columns>
-            <columnResizePolicy>
-                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-            </columnResizePolicy>
-        </TableView>
-
-        <Label fx:id="lblMensaje" maxWidth="1.7976931348623157E308" styleClass="mensaje-error" wrapText="true" />
-
-        <!-- Total y botones finales -->
-        <HBox alignment="CENTER_LEFT" spacing="12.0">
-            <children>
-                <Label fx:id="lblTotal" styleClass="titulo-card" text="Total: $0.00" />
-                <Region HBox.hgrow="ALWAYS" />
-                <Button fx:id="btnCancelar" cancelButton="true" mnemonicParsing="false" styleClass="btn-secundario" text="Cancelar" />
-                <Button fx:id="btnGuardar" defaultButton="true" mnemonicParsing="false" styleClass="btn-primario" text="Registrar Pedido" />
-            </children>
-        </HBox>
-    </children>
-</VBox>
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.NuevoPedidoController" fitToWidth="true">
+    <content><VBox spacing="9" prefWidth="780" style="-fx-padding: 20;">
+        <Label text="Nuevo Pedido" style="-fx-font-size: 20;"/>
+        <ComboBox fx:id="cbCliente" promptText="cbCliente"/><ComboBox fx:id="cbColaborador" promptText="cbColaborador"/><DatePicker fx:id="dpFechaEntrega" promptText="dpFechaEntrega"/><TextField fx:id="txtDescripcion" promptText="txtDescripcion"/>
+        <HBox spacing="10"><TextField fx:id="txtCodigoProducto" promptText="txtCodigoProducto"/><Button fx:id="btnBuscarProducto" text="Buscar producto"/><TextField fx:id="txtCantidad" promptText="txtCantidad"/><Button fx:id="btnAgregarProducto" text="Agregar"/></HBox>
+        <Label fx:id="lblInfoProducto"/><TableView fx:id="tblDetalles" prefHeight="230"><columns><TableColumn fx:id="colCodigo" text="Código" prefWidth="110"/><TableColumn fx:id="colProducto" text="Producto" prefWidth="110"/><TableColumn fx:id="colCantidad" text="Cantidad" prefWidth="110"/><TableColumn fx:id="colPrecioUnit" text="Precio" prefWidth="110"/><TableColumn fx:id="colSubtotal" text="Subtotal" prefWidth="110"/></columns></TableView>
+        <Button fx:id="btnQuitarProducto" text="Quitar seleccionado"/><Label fx:id="lblTotal"/><Label fx:id="lblMensaje"/>
+        <HBox spacing="10"><Button fx:id="btnGuardar" text="Guardar pedido"/><Button fx:id="btnCancelar" text="Cancelar"/></HBox>
+    </VBox></content></ScrollPane>

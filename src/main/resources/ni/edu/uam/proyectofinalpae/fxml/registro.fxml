@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.RegistroController" fitToWidth="true" fitToHeight="true"><content><VBox  spacing="9" alignment="TOP_LEFT" prefWidth="800" style="-fx-padding: 24;" >
+    <Label text="Registro de cliente" style="-fx-font-size: 17px; -fx-font-weight: bold;" /><Button text="Abrir formulario de registro" onAction="#registroCliente" /><Button text="Volver al login" onAction="#volverLogin" />
+</VBox></content></ScrollPane>

@@ -1,142 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-
-<VBox prefHeight="580.0" prefWidth="860.0" spacing="25.0" stylesheets="@../styles/global.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.MainAdminController">
-    <padding>
-        <Insets bottom="25.0" left="30.0" right="30.0" top="25.0" />
-    </padding>
-    <children>
-        <!-- Encabezado -->
-        <HBox alignment="CENTER_LEFT" spacing="10.0">
-            <children>
-                <VBox spacing="4.0">
-                    <children>
-                        <Label styleClass="titulo-vista" text="Panel de Administración" />
-                        <Label text="Seleccione el módulo que desea abrir en una nueva ventana" />
-                    </children>
-                </VBox>
-                <Region HBox.hgrow="ALWAYS" />
-                <Button fx:id="btnCerrarSesion" mnemonicParsing="false" onAction="#cerrarSesion" styleClass="btn-secundario" text="Cerrar Sesión" />
-            </children>
-        </HBox>
-
-        <!-- Contenedor centrado verticalmente; las tarjetas solo crecen a lo ancho -->
-        <VBox alignment="CENTER" spacing="20.0" VBox.vgrow="ALWAYS">
-            <children>
-                <!-- Fila 1: Pedidos, Clientes, Informes -->
-                <HBox alignment="CENTER" spacing="20.0">
-                    <children>
-                        <!-- Módulo Pedidos -->
-                        <VBox alignment="CENTER" maxHeight="230.0" onMouseClicked="#abrirPedidos" onMouseEntered="#oscurecerTarjeta" onMouseExited="#aclararTarjeta" prefHeight="220.0" prefWidth="240.0" spacing="12.0" styleClass="modulo-card" HBox.hgrow="ALWAYS">
-                            <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                            </padding>
-                            <children>
-                                <ImageView fitHeight="64.0" fitWidth="64.0"
-                                           onMouseClicked="#abrirPedidos"
-                                           onMouseEntered="#agrandarIcono"
-                                           onMouseExited="#restaurarIcono"
-                                           pickOnBounds="true" preserveRatio="true" styleClass="icono-modulo">
-                                    <image>
-                                        <Image url="@../icons/shopping-bag.png" />
-                                    </image>
-                                </ImageView>
-                                <Label styleClass="titulo-card" text="Pedidos" />
-                                <Label alignment="CENTER" text="Crear nuevos pedidos, consultar historial y actualizar estados." textAlignment="CENTER" wrapText="true" />
-                            </children>
-                        </VBox>
-
-                        <!-- Módulo Clientes -->
-                        <VBox alignment="CENTER" maxHeight="230.0" onMouseClicked="#abrirClientes" onMouseEntered="#oscurecerTarjeta" onMouseExited="#aclararTarjeta" prefHeight="220.0" prefWidth="240.0" spacing="12.0" styleClass="modulo-card" HBox.hgrow="ALWAYS">
-                            <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                            </padding>
-                            <children>
-                                <ImageView fitHeight="64.0" fitWidth="64.0"
-                                           onMouseClicked="#abrirClientes"
-                                           onMouseEntered="#agrandarIcono"
-                                           onMouseExited="#restaurarIcono"
-                                           pickOnBounds="true" preserveRatio="true" styleClass="icono-modulo">
-                                    <image>
-                                        <Image url="@../icons/customer.png" />
-                                    </image>
-                                </ImageView>
-                                <Label styleClass="titulo-card" text="Clientes" />
-                                <Label alignment="CENTER" text="Registrar nuevos clientes y administrar su información de contacto." textAlignment="CENTER" wrapText="true" />
-                            </children>
-                        </VBox>
-
-                        <!-- Módulo Informes -->
-                        <VBox alignment="CENTER" maxHeight="230.0" onMouseClicked="#abrirInformes" onMouseEntered="#oscurecerTarjeta" onMouseExited="#aclararTarjeta" prefHeight="220.0" prefWidth="240.0" spacing="12.0" styleClass="modulo-card" HBox.hgrow="ALWAYS">
-                            <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                            </padding>
-                            <children>
-                                <ImageView fitHeight="64.0" fitWidth="64.0"
-                                           onMouseClicked="#abrirInformes"
-                                           onMouseEntered="#agrandarIcono"
-                                           onMouseExited="#restaurarIcono"
-                                           pickOnBounds="true" preserveRatio="true" styleClass="icono-modulo">
-                                    <image>
-                                        <Image url="@../icons/report.png" />
-                                    </image>
-                                </ImageView>
-                                <Label styleClass="titulo-card" text="Informes" />
-                                <Label alignment="CENTER" text="Filtrar por rango de fechas y generar reportes del sistema." textAlignment="CENTER" wrapText="true" />
-                            </children>
-                        </VBox>
-                    </children>
-                </HBox>
-
-                <!-- Fila 2: Productos, Colaboradores -->
-                <HBox alignment="CENTER" spacing="20.0">
-                    <children>
-                        <!-- Módulo Productos -->
-                        <VBox alignment="CENTER" maxHeight="230.0" onMouseClicked="#abrirProductos" onMouseEntered="#oscurecerTarjeta" onMouseExited="#aclararTarjeta" prefHeight="220.0" prefWidth="240.0" spacing="12.0" styleClass="modulo-card" HBox.hgrow="ALWAYS">
-                            <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                            </padding>
-                            <children>
-                                <ImageView fitHeight="64.0" fitWidth="64.0"
-                                           onMouseClicked="#abrirProductos"
-                                           onMouseEntered="#agrandarIcono"
-                                           onMouseExited="#restaurarIcono"
-                                           pickOnBounds="true" preserveRatio="true" styleClass="icono-modulo">
-                                    <image>
-                                        <Image url="@../icons/product.png" />
-                                    </image>
-                                </ImageView>
-                                <Label styleClass="titulo-card" text="Productos" />
-                                <Label alignment="CENTER" text="Consultar catálogo de crochet, precios, stock y registrar nuevos artículos." textAlignment="CENTER" wrapText="true" />
-                            </children>
-                        </VBox>
-
-                        <!-- Módulo Colaboradores -->
-                        <VBox alignment="CENTER" maxHeight="230.0" onMouseClicked="#abrirColaboradores" onMouseEntered="#oscurecerTarjeta" onMouseExited="#aclararTarjeta" prefHeight="220.0" prefWidth="240.0" spacing="12.0" styleClass="modulo-card" HBox.hgrow="ALWAYS">
-                            <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                            </padding>
-                            <children>
-                                <ImageView fitHeight="64.0" fitWidth="64.0"
-                                           onMouseClicked="#abrirColaboradores"
-                                           onMouseEntered="#agrandarIcono"
-                                           onMouseExited="#restaurarIcono"
-                                           pickOnBounds="true" preserveRatio="true" styleClass="icono-modulo">
-                                    <image>
-                                        <Image url="@../icons/collaborator.png" />
-                                    </image>
-                                </ImageView>
-                                <Label styleClass="titulo-card" text="Colaboradores" />
-                                <Label alignment="CENTER" text="Registrar nuevos administradores y gestionar accesos al panel." textAlignment="CENTER" wrapText="true" />
-                            </children>
-                        </VBox>
-                    </children>
-                </HBox>
-            </children>
-        </VBox>
-    </children>
-</VBox>
+<?import javafx.geometry.*?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.MainAdminController" fitToWidth="true" fitToHeight="true"><content><VBox  spacing="9" alignment="TOP_LEFT" prefWidth="800" style="-fx-padding: 24;" >
+    <Label text="Administración - Pedidos" style="-fx-font-size: 17px; -fx-font-weight: bold;" />
+    <TableView fx:id="tblPedidos" prefHeight="240"><columns>
+        <TableColumn fx:id="colIdPedido" text="ID" prefWidth="110" />
+        <TableColumn fx:id="colFecha" text="Fecha" prefWidth="110" />
+        <TableColumn fx:id="colEstado" text="Estado" prefWidth="110" />
+        <TableColumn fx:id="colTotal" text="Total" prefWidth="110" />
+        <TableColumn fx:id="colDescripcion" text="Descripción" prefWidth="110" />
+        <TableColumn fx:id="colCliente" text="Cliente" prefWidth="110" />
+        <TableColumn fx:id="colColaborador" text="Colaborador" prefWidth="110" />
+    </columns></TableView><HBox spacing="10">
+    <Button text="Nuevo pedido" onAction="#nuevoPedido"/>
+    <Button text="Cambiar estado" onAction="#actualizarEstado"/>
+    <Button text="Nuevo colaborador" onAction="#abrirColaboradores"/>
+    <Button text="Productos" onAction="#abrirProductos"/><Button text="Ventas" onAction="#abrirVentas"/>
+</HBox><Label text="Registrar cliente con SMTP" style="-fx-font-size: 17px; -fx-font-weight: bold;" /><TextField fx:id="txtRegUsuario" promptText="Usuario" maxWidth="400" /><PasswordField fx:id="txtRegPassword" promptText="Contraseña (mínimo 8)" maxWidth="400" /><TextField fx:id="txtPrimerNombre" promptText="Nombres" maxWidth="400" /><TextField fx:id="txtApellido" promptText="Apellidos" maxWidth="400" /><TextField fx:id="txtEmail" promptText="Correo" maxWidth="400" /><TextField fx:id="txtTelefono" promptText="Teléfono" maxWidth="400" /><TextField fx:id="txtDireccion" promptText="Dirección" maxWidth="400" /><Button fx:id="btnMapa" text="Elegir en OpenStreetMap" /><HBox spacing="10"><Button text="Registrar cliente" onAction="#guardarCliente" /><Button text="Limpiar" onAction="#limpiarFormularioCliente" /></HBox><Label text="Informes JasperReports - PDF de pedidos" style="-fx-font-size: 17px; -fx-font-weight: bold;" /><HBox spacing="10"><Label text="Desde"/><DatePicker fx:id="dpFechaInicio"/><Label text="Hasta"/><DatePicker fx:id="dpFechaFinal"/></HBox><ComboBox fx:id="cbTipoInforme" promptText="Tipo de informe" /><Button text="Generar PDF" onAction="#generarInforme" /><TableView fx:id="tblInformes" visible="false"><columns><TableColumn fx:id="colConcepto" /><TableColumn fx:id="colValor" /></columns></TableView>
+</VBox></content></ScrollPane>
