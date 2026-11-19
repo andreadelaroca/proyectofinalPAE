@@ -125,9 +125,7 @@ public class MainAdminController {
 
     @FXML
     private void abrirColaboradores() {
-        // Lógica pendiente para el módulo de colaboradores
-        mostrarAlerta(Alert.AlertType.INFORMATION, "Módulo en desarrollo",
-                "La gestión de colaboradores estará disponible próximamente.");
+        abrirVentanaMaximizada("colaboradores-view.fxml", "BunBun Hub - Gestión de Colaboradores");
     }
 
     private void animarEscala(Node nodo, double escalaDestino) {

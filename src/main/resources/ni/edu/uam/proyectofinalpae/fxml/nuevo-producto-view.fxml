@@ -1,27 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ColorPicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<VBox prefWidth="500.0" spacing="14.0"
+<VBox prefHeight="600.0" prefWidth="720.0" spacing="16.0"
       stylesheets="@../styles/global.css"
       xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="ni.edu.uam.proyectofinalpae.controller.NuevoProductoController">
     <padding>
-        <Insets bottom="24.0" left="28.0" right="28.0" top="22.0" />
+        <Insets bottom="22.0" left="28.0" right="28.0" top="20.0" />
     </padding>
     <children>
         <Label styleClass="titulo-vista" text="Nuevo Producto" />
 
         <!-- Código automático y Marca -->
-        <HBox spacing="12.0">
+        <HBox spacing="14.0">
             <children>
                 <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                     <children>
@@ -47,15 +42,17 @@
         </VBox>
 
         <!-- Descripción -->
-        <VBox spacing="5.0">
+        <VBox spacing="5.0" VBox.vgrow="ALWAYS">
             <children>
                 <Label styleClass="label-campo" text="Descripción" />
-                <TextArea fx:id="txtDescripcion" prefRowCount="2" promptText="Detalle de materiales, tamaño o acabado (máx. 120 caracteres)" wrapText="true" />
+                <TextArea fx:id="txtDescripcion" prefRowCount="4"
+                          promptText="Detalle de materiales, tamaño o acabado (máx. 120 caracteres)"
+                          wrapText="true" VBox.vgrow="ALWAYS" />
             </children>
         </VBox>
 
         <!-- Precio, Stock y Color -->
-        <HBox spacing="12.0">
+        <HBox spacing="14.0">
             <children>
                 <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                     <children>
@@ -69,7 +66,7 @@
                         <TextField fx:id="txtCantidad" promptText="0" />
                     </children>
                 </VBox>
-                <VBox spacing="5.0">
+                <VBox prefWidth="180.0" spacing="5.0">
                     <children>
                         <Label styleClass="label-campo" text="Color" />
                         <ColorPicker fx:id="cpColor" maxWidth="1.7976931348623157E308" />
@@ -82,7 +79,7 @@
         <VBox spacing="5.0">
             <children>
                 <Label styleClass="label-campo" text="Imagen del producto" />
-                <HBox spacing="8.0">
+                <HBox spacing="10.0">
                     <children>
                         <TextField fx:id="txtRutaImagen" promptText="/images/producto.png" HBox.hgrow="ALWAYS" />
                         <Button fx:id="btnExaminar" mnemonicParsing="false" styleClass="btn-secundario" text="Examinar..." />
@@ -93,11 +90,8 @@
 
         <Label fx:id="lblMensaje" maxWidth="1.7976931348623157E308" styleClass="mensaje-error" wrapText="true" />
 
-        <!-- Botones de acción -->
+        <!-- Botones finales -->
         <HBox alignment="CENTER_RIGHT" spacing="12.0">
-            <padding>
-                <Insets top="6.0" />
-            </padding>
             <children>
                 <Button fx:id="btnCancelar" cancelButton="true" mnemonicParsing="false" styleClass="btn-secundario" text="Cancelar" />
                 <Button fx:id="btnGuardar" defaultButton="true" mnemonicParsing="false" styleClass="btn-primario" text="Guardar Producto" />

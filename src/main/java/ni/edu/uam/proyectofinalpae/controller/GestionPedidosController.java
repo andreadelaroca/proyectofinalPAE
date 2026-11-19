@@ -110,10 +110,11 @@ public class GestionPedidosController {
             Parent root = loader.load();
 
             Stage modal = new Stage();
-            modal.setTitle("Nuevo Pedido");
+            modal.setTitle("BunBun Hub - Nuevo Pedido");
             modal.setScene(new Scene(root));
             modal.initOwner(btnNuevoPedido.getScene().getWindow());
             modal.initModality(Modality.WINDOW_MODAL);
+            modal.setResizable(false); // Bloquea el redimensionamiento
             modal.showAndWait();
 
             // Recarga la tabla al cerrar la ventana modal para mostrar el nuevo pedido

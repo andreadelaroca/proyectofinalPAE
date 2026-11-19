@@ -72,4 +72,15 @@ public class ColaboradorService {
                     .uniqueResult();
         }
     }
+
+    public boolean existeUsername(String username) {
+        try (Session session = HibernateUtil.factory().openSession()) {
+            Long count = session.createQuery(
+                            "SELECT COUNT(c.id) FROM Colaborador c WHERE LOWER(c.username) = LOWER(:user)",
+                            Long.class)
+                    .setParameter("user", username.trim())
+                    .uniqueResult();
+            return count != null && count > 0;
+        }
+    }
 }

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.service.spi.InjectService;
 
-@MappedSuperclass @Getter @Setter @AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@MappedSuperclass @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class Usuario {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

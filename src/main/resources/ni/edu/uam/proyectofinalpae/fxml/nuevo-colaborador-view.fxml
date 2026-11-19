@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="600.0" prefWidth="720.0" spacing="15.0"
+      stylesheets="@../styles/global.css"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ni.edu.uam.proyectofinalpae.controller.NuevoColaboradorController">
+    <padding>
+        <Insets bottom="22.0" left="28.0" right="28.0" top="20.0" />
+    </padding>
+    <children>
+        <Label styleClass="titulo-vista" text="Nuevo Colaborador" />
+
+        <!-- Nombres y Apellidos -->
+        <HBox spacing="14.0">
+            <children>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label styleClass="label-campo" text="Nombres" />
+                        <TextField fx:id="txtNombres" promptText="Ej. María José" />
+                    </children>
+                </VBox>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label styleClass="label-campo" text="Apellidos" />
+                        <TextField fx:id="txtApellidos" promptText="Ej. López Mendoza" />
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+
+        <!-- Usuario y Teléfono -->
+        <HBox spacing="14.0">
+            <children>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label styleClass="label-campo" text="Nombre de usuario" />
+                        <TextField fx:id="txtUsername" promptText="Máx. 20 caracteres (ej. mlopez)" />
+                    </children>
+                </VBox>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label styleClass="label-campo" text="Teléfono" />
+                        <TextField fx:id="txtTelefono" promptText="Ej. 8888-0000" />
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+
+        <!-- Contraseña y Confirmación -->
+        <HBox spacing="14.0">
+            <children>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label styleClass="label-campo" text="Contraseña" />
+                        <PasswordField fx:id="pfPassword" promptText="Mínimo 4 caracteres" />
+                    </children>
+                </VBox>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label styleClass="label-campo" text="Confirmar contraseña" />
+                        <PasswordField fx:id="pfConfirmarPassword" promptText="Repita la contraseña" />
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+
+        <!-- Correo electrónico -->
+        <VBox spacing="5.0">
+            <children>
+                <Label styleClass="label-campo" text="Correo electrónico" />
+                <TextField fx:id="txtCorreo" promptText="ejemplo@bunbun.com" />
+            </children>
+        </VBox>
+
+        <!-- Dirección -->
+        <VBox spacing="5.0" VBox.vgrow="ALWAYS">
+            <children>
+                <Label styleClass="label-campo" text="Dirección" />
+                <TextArea fx:id="txtDireccion" prefRowCount="3"
+                          promptText="Dirección domiciliar (máx. 120 caracteres)"
+                          wrapText="true" VBox.vgrow="ALWAYS" />
+            </children>
+        </VBox>
+
+        <Label fx:id="lblMensaje" maxWidth="1.7976931348623157E308" styleClass="mensaje-error" wrapText="true" />
+
+        <!-- Botones finales -->
+        <HBox alignment="CENTER_RIGHT" spacing="12.0">
+            <children>
+                <Button fx:id="btnCancelar" cancelButton="true" mnemonicParsing="false" styleClass="btn-secundario" text="Cancelar" />
+                <Button fx:id="btnGuardar" defaultButton="true" mnemonicParsing="false" styleClass="btn-primario" text="Guardar Colaborador" />
+            </children>
+        </HBox>
+    </children>
+</VBox>
