@@ -87,6 +87,7 @@ public class MainAdminController {
             Stage loginStage = new Stage();
             loginStage.setTitle("Inicio de Sesión");
             loginStage.setScene(new Scene(root));
+            loginStage.setMaximized(true);
             loginStage.show();
 
             Stage ventanaActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
