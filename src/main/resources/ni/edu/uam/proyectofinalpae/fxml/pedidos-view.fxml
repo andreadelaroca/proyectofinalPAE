@@ -13,8 +13,10 @@
             <children>
                 <Label styleClass="titulo-vista" text="Gestión de Pedidos" />
                 <Region HBox.hgrow="ALWAYS" />
-                <Button fx:id="btnNuevoPedido" mnemonicParsing="false" styleClass="btn-primario" text="Nuevo Pedido" />
+                <TextField fx:id="txtBuscar" prefWidth="260.0" promptText="Buscar por ID, cliente, colaborador o estado..." />
+                <Button fx:id="btnRefrescar" mnemonicParsing="false" styleClass="btn-secundario" text="Refrescar" />
                 <Button fx:id="btnActualizarEstado" mnemonicParsing="false" styleClass="btn-secundario" text="Actualizar Estado" />
+                <Button fx:id="btnNuevoPedido" mnemonicParsing="false" styleClass="btn-primario" text="Nuevo Pedido" />
             </children>
         </HBox>
         <TableView fx:id="tblPedidos" VBox.vgrow="ALWAYS">

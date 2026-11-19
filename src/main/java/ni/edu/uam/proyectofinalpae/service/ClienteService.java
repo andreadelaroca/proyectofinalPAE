@@ -5,6 +5,7 @@ import ni.edu.uam.proyectofinalpae.model.Cliente;
 import ni.edu.uam.proyectofinalpae.repository.GenericRepository;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
 import java.util.List;
 
 public class ClienteService {
@@ -46,7 +47,21 @@ public class ClienteService {
 
     public List<Cliente> obtenerTodos() {
         try (Session session = HibernateUtil.factory().openSession()) {
-            return repository.findAll(session);
+            return session.createQuery(
+                    "SELECT DISTINCT c FROM Cliente c LEFT JOIN FETCH c.direcciones ORDER BY c.id ASC",
+                    Cliente.class
+            ).list();
+        }
+    }
+
+    public boolean existeUsername(String username) {
+        try (Session session = HibernateUtil.factory().openSession()) {
+            Long count = session.createQuery(
+                            "SELECT COUNT(c.id) FROM Cliente c WHERE LOWER(c.username) = LOWER(:user)",
+                            Long.class)
+                    .setParameter("user", username.trim())
+                    .uniqueResult();
+            return count != null && count > 0;
         }
     }
 }
