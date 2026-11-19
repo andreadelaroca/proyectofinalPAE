@@ -1,24 +1,142 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 
-<TabPane prefHeight="540.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
-    <tabs>
-        <Tab text="Pedidos">
-            <content>
-                <fx:include fx:id="pedidosTab" source="pedidos-view.fxml" />
-            </content>
-        </Tab>
-        <Tab text="Clientes">
-            <content>
-                <fx:include fx:id="clientesTab" source="clientes-view.fxml" />
-            </content>
-        </Tab>
-        <Tab text="Informes">
-            <content>
-                <fx:include fx:id="informesTab" source="informes-view.fxml" />
-            </content>
-        </Tab>
-    </tabs>
-</TabPane>
+<VBox prefHeight="580.0" prefWidth="860.0" spacing="25.0" stylesheets="@../styles/global.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.MainAdminController">
+    <padding>
+        <Insets bottom="25.0" left="30.0" right="30.0" top="25.0" />
+    </padding>
+    <children>
+        <!-- Encabezado -->
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <children>
+                <VBox spacing="4.0">
+                    <children>
+                        <Label styleClass="titulo-vista" text="Panel de Administración" />
+                        <Label text="Seleccione el módulo que desea abrir en una nueva ventana" />
+                    </children>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="btnCerrarSesion" mnemonicParsing="false" onAction="#cerrarSesion" styleClass="btn-secundario" text="Cerrar Sesión" />
+            </children>
+        </HBox>
+
+        <!-- Contenedor centrado verticalmente; las tarjetas solo crecen a lo ancho -->
+        <VBox alignment="CENTER" spacing="20.0" VBox.vgrow="ALWAYS">
+            <children>
+                <!-- Fila 1: Pedidos, Clientes, Informes -->
+                <HBox alignment="CENTER" spacing="20.0">
+                    <children>
+                        <!-- Módulo Pedidos -->
+                        <VBox alignment="CENTER" maxHeight="230.0" onMouseClicked="#abrirPedidos" onMouseEntered="#oscurecerTarjeta" onMouseExited="#aclararTarjeta" prefHeight="220.0" prefWidth="240.0" spacing="12.0" styleClass="modulo-card" HBox.hgrow="ALWAYS">
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                            <children>
+                                <ImageView fitHeight="64.0" fitWidth="64.0"
+                                           onMouseClicked="#abrirPedidos"
+                                           onMouseEntered="#agrandarIcono"
+                                           onMouseExited="#restaurarIcono"
+                                           pickOnBounds="true" preserveRatio="true" styleClass="icono-modulo">
+                                    <image>
+                                        <Image url="@../icons/shopping-bag.png" />
+                                    </image>
+                                </ImageView>
+                                <Label styleClass="titulo-card" text="Pedidos" />
+                                <Label alignment="CENTER" text="Crear nuevos pedidos, consultar historial y actualizar estados." textAlignment="CENTER" wrapText="true" />
+                            </children>
+                        </VBox>
+
+                        <!-- Módulo Clientes -->
+                        <VBox alignment="CENTER" maxHeight="230.0" onMouseClicked="#abrirClientes" onMouseEntered="#oscurecerTarjeta" onMouseExited="#aclararTarjeta" prefHeight="220.0" prefWidth="240.0" spacing="12.0" styleClass="modulo-card" HBox.hgrow="ALWAYS">
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                            <children>
+                                <ImageView fitHeight="64.0" fitWidth="64.0"
+                                           onMouseClicked="#abrirClientes"
+                                           onMouseEntered="#agrandarIcono"
+                                           onMouseExited="#restaurarIcono"
+                                           pickOnBounds="true" preserveRatio="true" styleClass="icono-modulo">
+                                    <image>
+                                        <Image url="@../icons/customer.png" />
+                                    </image>
+                                </ImageView>
+                                <Label styleClass="titulo-card" text="Clientes" />
+                                <Label alignment="CENTER" text="Registrar nuevos clientes y administrar su información de contacto." textAlignment="CENTER" wrapText="true" />
+                            </children>
+                        </VBox>
+
+                        <!-- Módulo Informes -->
+                        <VBox alignment="CENTER" maxHeight="230.0" onMouseClicked="#abrirInformes" onMouseEntered="#oscurecerTarjeta" onMouseExited="#aclararTarjeta" prefHeight="220.0" prefWidth="240.0" spacing="12.0" styleClass="modulo-card" HBox.hgrow="ALWAYS">
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                            <children>
+                                <ImageView fitHeight="64.0" fitWidth="64.0"
+                                           onMouseClicked="#abrirInformes"
+                                           onMouseEntered="#agrandarIcono"
+                                           onMouseExited="#restaurarIcono"
+                                           pickOnBounds="true" preserveRatio="true" styleClass="icono-modulo">
+                                    <image>
+                                        <Image url="@../icons/report.png" />
+                                    </image>
+                                </ImageView>
+                                <Label styleClass="titulo-card" text="Informes" />
+                                <Label alignment="CENTER" text="Filtrar por rango de fechas y generar reportes del sistema." textAlignment="CENTER" wrapText="true" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <!-- Fila 2: Productos, Colaboradores -->
+                <HBox alignment="CENTER" spacing="20.0">
+                    <children>
+                        <!-- Módulo Productos -->
+                        <VBox alignment="CENTER" maxHeight="230.0" onMouseClicked="#abrirProductos" onMouseEntered="#oscurecerTarjeta" onMouseExited="#aclararTarjeta" prefHeight="220.0" prefWidth="240.0" spacing="12.0" styleClass="modulo-card" HBox.hgrow="ALWAYS">
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                            <children>
+                                <ImageView fitHeight="64.0" fitWidth="64.0"
+                                           onMouseClicked="#abrirProductos"
+                                           onMouseEntered="#agrandarIcono"
+                                           onMouseExited="#restaurarIcono"
+                                           pickOnBounds="true" preserveRatio="true" styleClass="icono-modulo">
+                                    <image>
+                                        <Image url="@../icons/product.png" />
+                                    </image>
+                                </ImageView>
+                                <Label styleClass="titulo-card" text="Productos" />
+                                <Label alignment="CENTER" text="Consultar catálogo de crochet, precios, stock y registrar nuevos artículos." textAlignment="CENTER" wrapText="true" />
+                            </children>
+                        </VBox>
+
+                        <!-- Módulo Colaboradores -->
+                        <VBox alignment="CENTER" maxHeight="230.0" onMouseClicked="#abrirColaboradores" onMouseEntered="#oscurecerTarjeta" onMouseExited="#aclararTarjeta" prefHeight="220.0" prefWidth="240.0" spacing="12.0" styleClass="modulo-card" HBox.hgrow="ALWAYS">
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                            <children>
+                                <ImageView fitHeight="64.0" fitWidth="64.0"
+                                           onMouseClicked="#abrirColaboradores"
+                                           onMouseEntered="#agrandarIcono"
+                                           onMouseExited="#restaurarIcono"
+                                           pickOnBounds="true" preserveRatio="true" styleClass="icono-modulo">
+                                    <image>
+                                        <Image url="@../icons/collaborator.png" />
+                                    </image>
+                                </ImageView>
+                                <Label styleClass="titulo-card" text="Colaboradores" />
+                                <Label alignment="CENTER" text="Registrar nuevos administradores y gestionar accesos al panel." textAlignment="CENTER" wrapText="true" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</VBox>

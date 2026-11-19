@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="600.0" prefWidth="720.0" spacing="16.0"
+      stylesheets="@../styles/global.css"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ni.edu.uam.proyectofinalpae.controller.NuevoProductoController">
+    <padding>
+        <Insets bottom="22.0" left="28.0" right="28.0" top="20.0" />
+    </padding>
+    <children>
+        <Label styleClass="titulo-vista" text="Nuevo Producto" />
+
+        <!-- Código automático y Marca -->
+        <HBox spacing="14.0">
+            <children>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label styleClass="label-campo" text="Código (Automático)" />
+                        <TextField fx:id="txtCodigo" editable="false" focusTraversable="false" />
+                    </children>
+                </VBox>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label styleClass="label-campo" text="Marca" />
+                        <TextField fx:id="txtMarca" promptText="BunBun" />
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+
+        <!-- Nombre -->
+        <VBox spacing="5.0">
+            <children>
+                <Label styleClass="label-campo" text="Nombre del producto" />
+                <TextField fx:id="txtNombre" promptText="Ej. Ramo de Lirios Tejidos" />
+            </children>
+        </VBox>
+
+        <!-- Descripción -->
+        <VBox spacing="5.0" VBox.vgrow="ALWAYS">
+            <children>
+                <Label styleClass="label-campo" text="Descripción" />
+                <TextArea fx:id="txtDescripcion" prefRowCount="4"
+                          promptText="Detalle de materiales, tamaño o acabado (máx. 120 caracteres)"
+                          wrapText="true" VBox.vgrow="ALWAYS" />
+            </children>
+        </VBox>
+
+        <!-- Precio, Stock y Color -->
+        <HBox spacing="14.0">
+            <children>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label styleClass="label-campo" text="Precio Unitario ($)" />
+                        <TextField fx:id="txtPrecio" promptText="0.00" />
+                    </children>
+                </VBox>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label styleClass="label-campo" text="Cantidad (Stock)" />
+                        <TextField fx:id="txtCantidad" promptText="0" />
+                    </children>
+                </VBox>
+                <VBox prefWidth="180.0" spacing="5.0">
+                    <children>
+                        <Label styleClass="label-campo" text="Color" />
+                        <ColorPicker fx:id="cpColor" maxWidth="1.7976931348623157E308" />
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+
+        <!-- Ruta de imagen -->
+        <VBox spacing="5.0">
+            <children>
+                <Label styleClass="label-campo" text="Imagen del producto" />
+                <HBox spacing="10.0">
+                    <children>
+                        <TextField fx:id="txtRutaImagen" promptText="/images/producto.png" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="btnExaminar" mnemonicParsing="false" styleClass="btn-secundario" text="Examinar..." />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+
+        <Label fx:id="lblMensaje" maxWidth="1.7976931348623157E308" styleClass="mensaje-error" wrapText="true" />
+
+        <!-- Botones finales -->
+        <HBox alignment="CENTER_RIGHT" spacing="12.0">
+            <children>
+                <Button fx:id="btnCancelar" cancelButton="true" mnemonicParsing="false" styleClass="btn-secundario" text="Cancelar" />
+                <Button fx:id="btnGuardar" defaultButton="true" mnemonicParsing="false" styleClass="btn-primario" text="Guardar Producto" />
+            </children>
+        </HBox>
+    </children>
+</VBox>

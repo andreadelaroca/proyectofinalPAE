@@ -23,14 +23,14 @@ public class MainAdminController implements Initializable {
     @FXML private TableView<Pedido> tblPedidos;
     @FXML private TableColumn<Pedido, Long> colIdPedido;
     @FXML private TableColumn<Pedido, String> colFecha;
-    @FXML private TableColumn<Pedido, String> colEstado;
+    @FXML private TableColumn<Pedido, String> colEstado; // TODO: Agregar atributo estado a la clase Pedido
     @FXML private TableColumn<Pedido, String> colTotal;
     @FXML private TableColumn<Pedido, String> colDescripcion;
     @FXML private TableColumn<Pedido, String> colCliente;
     @FXML private TableColumn<Pedido, String> colColaborador;
 
-    @FXML private TextField txtRegUsuario;
-    @FXML private PasswordField txtRegPassword;
+    @FXML private TextField txtRegUsuario;   // TODO: Agregar atributo usuario en Cliente
+    @FXML private PasswordField txtRegPassword; // TODO: Agregar atributo password en Cliente
     @FXML private TextField txtPrimerNombre;
     @FXML private TextField txtApellido;
     @FXML private TextField txtEmail;
@@ -40,7 +40,7 @@ public class MainAdminController implements Initializable {
     @FXML private DatePicker dpFechaInicio;
     @FXML private DatePicker dpFechaFinal;
     @FXML private ComboBox<String> cbTipoInforme;
-    @FXML private TableView<?> tblInformes;
+    @FXML private TableView<?> tblInformes; // Tipo genérico temporal, ajustarlo a un DTO de reportes
     @FXML private TableColumn<?, ?> colConcepto;
     @FXML private TableColumn<?, ?> colValor;
 

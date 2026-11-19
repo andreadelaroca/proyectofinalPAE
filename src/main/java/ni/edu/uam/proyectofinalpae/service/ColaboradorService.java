@@ -61,4 +61,26 @@ public class ColaboradorService {
             return repository.findAll(session);
         }
     }
+
+    public Colaborador autenticar(String username, String password) {
+        try (Session session = HibernateUtil.factory().openSession()) {
+            return session.createQuery(
+                            "FROM Colaborador c WHERE c.username = :user AND c.password = :pass",
+                            Colaborador.class)
+                    .setParameter("user", username)
+                    .setParameter("pass", password)
+                    .uniqueResult();
+        }
+    }
+
+    public boolean existeUsername(String username) {
+        try (Session session = HibernateUtil.factory().openSession()) {
+            Long count = session.createQuery(
+                            "SELECT COUNT(c.id) FROM Colaborador c WHERE LOWER(c.username) = LOWER(:user)",
+                            Long.class)
+                    .setParameter("user", username.trim())
+                    .uniqueResult();
+            return count != null && count > 0;
+        }
+    }
 }

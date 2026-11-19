@@ -1,41 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<VBox prefHeight="500.0" prefWidth="800.0" spacing="12.0" stylesheets="@../styles/global.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="520.0" prefWidth="840.0" spacing="18.0" stylesheets="@../styles/global.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.GestionPedidosController">
     <padding>
-        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+        <Insets bottom="24.0" left="28.0" right="28.0" top="22.0" />
     </padding>
     <children>
-        <HBox alignment="CENTER_LEFT" spacing="10.0">
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
             <children>
-                <Label text="Gestión de Pedidos">
-                    <font>
-                        <Font name="System Bold" size="18.0" />
-                    </font>
-                </Label>
+                <Label styleClass="titulo-vista" text="Gestión de Pedidos" />
                 <Region HBox.hgrow="ALWAYS" />
-                <Button fx:id="btnNuevoPedido" mnemonicParsing="false" text="Nuevo Pedido" />
-                <Button fx:id="btnActualizarEstado" mnemonicParsing="false" text="Actualizar Estado" />
+                <TextField fx:id="txtBuscar" prefWidth="260.0" promptText="Buscar por ID, cliente, colaborador o estado..." />
+                <Button fx:id="btnRefrescar" mnemonicParsing="false" styleClass="btn-secundario" text="Refrescar" />
+                <Button fx:id="btnActualizarEstado" mnemonicParsing="false" styleClass="btn-secundario" text="Actualizar Estado" />
+                <Button fx:id="btnNuevoPedido" mnemonicParsing="false" styleClass="btn-primario" text="Nuevo Pedido" />
             </children>
         </HBox>
         <TableView fx:id="tblPedidos" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="colIdPedido" prefWidth="75.0" text="ID Pedido" />
-                <TableColumn fx:id="colFechaCompra" prefWidth="105.0" text="Fecha Compra" />
-                <TableColumn fx:id="colEstado" prefWidth="110.0" text="Estado" />
-                <TableColumn fx:id="colTotal" prefWidth="80.0" text="Total" />
-                <TableColumn fx:id="colDescripcion" prefWidth="175.0" text="Descripción" />
-                <TableColumn fx:id="colUsuarioCliente" prefWidth="110.0" text="Usuario Cliente" />
-                <TableColumn fx:id="colUsuarioColaborador" prefWidth="115.0" text="Usuario Colaborador" />
+                <TableColumn fx:id="colIdPedido" prefWidth="92.0" text="ID Pedido" />
+                <TableColumn fx:id="colFechaCompra" prefWidth="120.0" text="Fecha Compra" />
+                <TableColumn fx:id="colEstado" prefWidth="79.0" text="Estado" />
+                <TableColumn fx:id="colTotal" prefWidth="65.0" text="Total" />
+                <TableColumn fx:id="colDescripcion" prefWidth="189.0" text="Descripción" />
+                <TableColumn fx:id="colUsuarioCliente" prefWidth="113.0" text="Cliente" />
+                <TableColumn fx:id="colUsuarioColaborador" prefWidth="125.0" text="Colaborador" />
             </columns>
         </TableView>
     </children>

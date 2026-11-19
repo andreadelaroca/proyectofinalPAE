@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity @Table(name = "colaboradores") @Getter @Setter
-@AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor @NoArgsConstructor
 public class Colaborador extends Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
