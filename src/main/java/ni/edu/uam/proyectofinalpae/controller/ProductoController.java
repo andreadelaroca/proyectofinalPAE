@@ -198,6 +198,9 @@ public class ProductoController {
             String filtro = (nuevo == null) ? "" : nuevo.toLowerCase().trim();
             listaFiltrada.setPredicate(prod -> {
                 if (filtro.isEmpty()) return true;
+                String nombreMarca = (prod.getMarca() != null && prod.getMarca().getNombre() != null)
+                        ? prod.getMarca().getNombre().toLowerCase()
+                        : "";
                 return (prod.getCodigo() != null && prod.getCodigo().toLowerCase().contains(filtro))
                         || (prod.getNombre() != null && prod.getNombre().toLowerCase().contains(filtro))
                         || (prod.getMarca() != null && prod.getMarca().getNombre().toLowerCase().contains(filtro));

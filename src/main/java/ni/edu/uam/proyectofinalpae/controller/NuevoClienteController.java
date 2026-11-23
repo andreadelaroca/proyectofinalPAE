@@ -7,6 +7,8 @@ import javafx.stage.Stage;
 import ni.edu.uam.proyectofinalpae.model.Cliente;
 import ni.edu.uam.proyectofinalpae.model.Direccion;
 import ni.edu.uam.proyectofinalpae.service.ClienteService;
+import ni.edu.uam.proyectofinalpae.util.NegocioException;
+import ni.edu.uam.proyectofinalpae.util.PasswordUtil;
 
 public class NuevoClienteController {
 
@@ -31,6 +33,7 @@ public class NuevoClienteController {
     private Cliente clienteCreado;
     private Cliente clienteEdicion;
     private boolean guardadoExitoso = false;
+    private String codigoVerificacionGenerado;
 
     @FXML
     public void initialize() {
@@ -80,7 +83,7 @@ public class NuevoClienteController {
         String telefono = txtTelefono.getText().trim();
         String password = pfPassword.getText();
         String confirmar = pfConfirmarPassword.getText();
-        String correo = txtCorreo.getText().trim();
+        String correo = txtCorreo.getText().trim().toLowerCase();
         String direccionTexto = txtDireccion.getText().trim();
 
         if (nombres.isEmpty() || apellidos.isEmpty() || username.isEmpty()
@@ -129,13 +132,19 @@ public class NuevoClienteController {
         }
 
         btnGuardar.setDisable(true);
+        codigoVerificacionGenerado = null;
 
         Task<Cliente> tareaGuardar = new Task<>() {
             @Override
             protected Cliente call() {
                 boolean cambioUsername = !esEdicion || !username.equalsIgnoreCase(clienteEdicion.getUsername());
                 if (cambioUsername && clienteService.existeUsername(username)) {
-                    throw new IllegalArgumentException("El nombre de usuario '" + username + "' ya está registrado.");
+                    throw new NegocioException("El nombre de usuario '" + username + "' ya está registrado.");
+                }
+
+                boolean cambioCorreo = !esEdicion || !correo.equalsIgnoreCase(clienteEdicion.getCorreo());
+                if (cambioCorreo && clienteService.existeCorreo(correo)) {
+                    throw new NegocioException("Ese correo ya está registrado.");
                 }
 
                 Cliente target = esEdicion ? clienteEdicion : new Cliente();
@@ -144,10 +153,6 @@ public class NuevoClienteController {
                 target.setUsername(username);
                 target.setCorreo(correo);
                 target.setTelefono(telefono);
-
-                if (!password.isEmpty()) {
-                    target.setPassword(password);
-                }
 
                 if (target.getDirecciones() != null && !target.getDirecciones().isEmpty()) {
                     target.getDirecciones().get(0).setNombre(direccionTexto);
@@ -162,12 +167,13 @@ public class NuevoClienteController {
                 }
 
                 if (esEdicion) {
-                    clienteService.actualizar(target);
+                    if (!password.isEmpty()) {
+                        target.setPasswordHash(PasswordUtil.hash(password));
+                    }
+                    return clienteService.actualizar(target);
                 } else {
                     clienteService.registrar(target, password);
                 }
-
-                return target;
             }
         };
 

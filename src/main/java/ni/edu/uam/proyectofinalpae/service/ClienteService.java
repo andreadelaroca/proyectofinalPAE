@@ -19,7 +19,10 @@ public class ClienteService {
     }
 
     public Cliente actualizar(Cliente cliente) {
-        return Tx.run("Error al actualizar el cliente", s -> repository.update(s, cliente));
+        return Tx.run("Error al actualizar el cliente", s -> {
+            repository.update(s, cliente);
+            return cliente;
+        });
     }
 
     public Cliente buscarPorId(Long id) {

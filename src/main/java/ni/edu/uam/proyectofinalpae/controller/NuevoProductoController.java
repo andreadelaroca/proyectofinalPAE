@@ -6,18 +6,22 @@ import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
+import ni.edu.uam.proyectofinalpae.model.Marca;
 import ni.edu.uam.proyectofinalpae.model.Producto;
+import ni.edu.uam.proyectofinalpae.service.MarcaService;
 import ni.edu.uam.proyectofinalpae.service.ProductoService;
 import ni.edu.uam.proyectofinalpae.service.MarcaService;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.List;
 
 public class NuevoProductoController {
 
     @FXML private Label lblTitulo;
     @FXML private TextField txtCodigo;
-    @FXML private TextField txtMarca;
+    @FXML private ComboBox<Marca> cbMarca;
     @FXML private TextField txtNombre;
     @FXML private TextArea txtDescripcion;
     @FXML private TextField txtPrecio;
@@ -30,6 +34,8 @@ public class NuevoProductoController {
     @FXML private Button btnGuardar;
 
     private final ProductoService productoService = new ProductoService();
+    private final MarcaService marcaService = new MarcaService();
+
     private Producto productoGuardado;
     private Producto productoEdicion;
     private boolean guardadoExitoso = false;
@@ -37,34 +43,92 @@ public class NuevoProductoController {
     @FXML
     public void initialize() {
         lblMensaje.setText("");
-        txtMarca.setText("BunBun");
         cpColor.setValue(Color.web("#C8D9E6"));
         txtCodigo.setText("Calculando...");
 
+        configurarComboMarca();
+        cargarMarcasAsync();
+        cargarSiguienteCodigoAsync();
+
+        btnExaminar.setOnAction(e -> seleccionarImagen());
+        btnCancelar.setOnAction(e -> cerrarVentana());
+        btnGuardar.setOnAction(e -> guardarProducto());
+    }
+
+    private void configurarComboMarca() {
+        cbMarca.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Marca marca) {
+                return marca != null ? marca.getNombre() : "";
+            }
+
+            @Override
+            public Marca fromString(String string) {
+                return null;
+            }
+        });
+    }
+
+    private void cargarMarcasAsync() {
+        Task<List<Marca>> tareaMarcas = new Task<>() {
+            @Override
+            protected List<Marca> call() {
+                return marcaService.obtenerTodas();
+            }
+        };
+
+        tareaMarcas.setOnSucceeded(e -> {
+            List<Marca> marcas = tareaMarcas.getValue();
+            cbMarca.getItems().setAll(marcas);
+
+            if (productoEdicion != null && productoEdicion.getMarca() != null) {
+                Long idMarcaActual = productoEdicion.getMarca().getId();
+                marcas.stream()
+                        .filter(m -> m.getId() != null && m.getId().equals(idMarcaActual))
+                        .findFirst()
+                        .ifPresent(cbMarca::setValue);
+            } else {
+                // Selecciona "BunBun" por defecto si existe en el catálogo
+                marcas.stream()
+                        .filter(m -> m.getNombre() != null && m.getNombre().equalsIgnoreCase("BunBun"))
+                        .findFirst()
+                        .ifPresent(cbMarca::setValue);
+            }
+        });
+
+        tareaMarcas.setOnFailed(e -> {
+            lblMensaje.setText("No se pudieron cargar las marcas disponibles.");
+            tareaMarcas.getException().printStackTrace();
+        });
+
+        Thread hilo = new Thread(tareaMarcas);
+        hilo.setDaemon(true);
+        hilo.start();
+    }
+
+    private void cargarSiguienteCodigoAsync() {
         Task<String> tareaCodigo = new Task<>() {
             @Override
             protected String call() {
                 return productoService.obtenerSiguienteCodigo();
             }
         };
+
         tareaCodigo.setOnSucceeded(e -> {
-            // Solo asigna el código automático si no se cargó un producto para editar
             if (productoEdicion == null) {
                 txtCodigo.setText(tareaCodigo.getValue());
             }
         });
+
         tareaCodigo.setOnFailed(e -> {
             if (productoEdicion == null) {
                 txtCodigo.setText("BUN-AUTO");
             }
         });
+
         Thread hilo = new Thread(tareaCodigo);
         hilo.setDaemon(true);
         hilo.start();
-
-        btnExaminar.setOnAction(e -> seleccionarImagen());
-        btnCancelar.setOnAction(e -> cerrarVentana());
-        btnGuardar.setOnAction(e -> guardarProducto());
     }
 
     public void cargarProductoParaEditar(Producto producto) {
@@ -75,12 +139,15 @@ public class NuevoProductoController {
         btnGuardar.setText("Guardar Cambios");
 
         txtCodigo.setText(producto.getCodigo());
-        txtMarca.setText(producto.getMarca());
         txtNombre.setText(producto.getNombre());
         txtDescripcion.setText(producto.getDescripcion());
         txtPrecio.setText(producto.getPrecioUnitario() != null ? producto.getPrecioUnitario().toPlainString() : "");
         txtCantidad.setText(producto.getCantidad() != null ? String.valueOf(producto.getCantidad()) : "0");
         txtRutaImagen.setText(producto.getRutaImagen());
+
+        if (producto.getMarca() != null) {
+            cbMarca.setValue(producto.getMarca());
+        }
 
         if (producto.getColor() != null && !producto.getColor().isBlank()) {
             try {
@@ -110,25 +177,24 @@ public class NuevoProductoController {
 
         boolean esEdicion = (productoEdicion != null);
 
+        Marca marcaSeleccionada = cbMarca.getValue();
         String nombre = txtNombre.getText().trim();
-        String marca = txtMarca.getText().trim();
         String descripcion = txtDescripcion.getText().trim();
         String precioTxt = txtPrecio.getText().trim();
         String cantidadTxt = txtCantidad.getText().trim();
         String rutaImagen = txtRutaImagen.getText().trim();
 
-        if (nombre.isEmpty() || marca.isEmpty() || descripcion.isEmpty()
+        if (marcaSeleccionada == null) {
+            lblMensaje.setText("Seleccione una marca para el producto.");
+            return;
+        }
+        if (nombre.isEmpty() || descripcion.isEmpty()
                 || precioTxt.isEmpty() || cantidadTxt.isEmpty() || rutaImagen.isEmpty()) {
             lblMensaje.setText("Todos los campos son obligatorios.");
             return;
         }
-
         if (nombre.length() > 70) {
             lblMensaje.setText("El nombre no puede superar los 70 caracteres.");
-            return;
-        }
-        if (marca.length() > 30) {
-            lblMensaje.setText("La marca no puede superar los 30 caracteres.");
             return;
         }
         if (descripcion.length() > 120) {
@@ -166,8 +232,8 @@ public class NuevoProductoController {
             @Override
             protected Producto call() {
                 Producto target = esEdicion ? productoEdicion : new Producto();
+                target.setMarca(marcaSeleccionada);
                 target.setNombre(nombre);
-                target.setMarca(marca);
                 target.setDescripcion(descripcion);
                 target.setPrecioUnitario(precio);
                 target.setCantidad(cantidad);
@@ -175,8 +241,7 @@ public class NuevoProductoController {
                 target.setRutaImagen(rutaImagen);
 
                 if (esEdicion) {
-                    productoService.actualizarProducto(target);
-                    return target;
+                    return productoService.actualizar(target);
                 } else {
                     return productoService.registrarProducto(target);
                 }
@@ -204,8 +269,9 @@ public class NuevoProductoController {
 
         tareaGuardar.setOnFailed(e -> {
             btnGuardar.setDisable(false);
-            lblMensaje.setText("Error al guardar el producto en la base de datos.");
-            tareaGuardar.getException().printStackTrace();
+            Throwable error = tareaGuardar.getException();
+            lblMensaje.setText(error != null ? error.getMessage() : "Error al guardar el producto en la base de datos.");
+            if (error != null) error.printStackTrace();
         });
 
         Thread hilo = new Thread(tareaGuardar);
