@@ -7,6 +7,9 @@ module ni.edu.uam.proyectofinalpae {
     requires java.naming;
     requires java.sql;
     requires bcrypt;
+    requires net.sf.jasperreports.core;
+    requires jakarta.mail;
+    requires javafx.web;
 
     opens ni.edu.uam.proyectofinalpae to javafx.fxml;
     exports ni.edu.uam.proyectofinalpae;
