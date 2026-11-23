@@ -11,6 +11,18 @@ import java.util.List;
 public class MarcaService {
     private final GenericRepository<Marca, Long> repository = new GenericRepository<>(Marca.class);
 
+    public Marca obtenerOCrear(String nombre) {
+        if (nombre == null || nombre.isBlank()) throw new NegocioException("Nombre de marca obligatorio.");
+        return Tx.run("Error al buscar marca", s -> {
+            Marca existente = s.createQuery("FROM Marca m WHERE LOWER(m.nombre) = LOWER(:n)", Marca.class)
+                    .setParameter("n", nombre.trim()).setMaxResults(1).uniqueResult();
+            if (existente != null) return existente;
+            Marca nueva = new Marca(null, nombre.trim());
+            repository.save(s, nueva);
+            return nueva;
+        });
+    }
+
     public void guardar(Marca marca) {
         Tx.exec("Error al guardar la marca", s -> {
             validarNombreUnico(s, marca);

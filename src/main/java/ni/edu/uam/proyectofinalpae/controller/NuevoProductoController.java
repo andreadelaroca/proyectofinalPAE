@@ -11,6 +11,7 @@ import ni.edu.uam.proyectofinalpae.model.Marca;
 import ni.edu.uam.proyectofinalpae.model.Producto;
 import ni.edu.uam.proyectofinalpae.service.MarcaService;
 import ni.edu.uam.proyectofinalpae.service.ProductoService;
+import ni.edu.uam.proyectofinalpae.service.MarcaService;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -227,7 +228,6 @@ public class NuevoProductoController {
 
         btnGuardar.setDisable(true);
         String hexColor = colorAHex(cpColor.getValue());
-
         Task<Producto> tareaGuardar = new Task<>() {
             @Override
             protected Producto call() {

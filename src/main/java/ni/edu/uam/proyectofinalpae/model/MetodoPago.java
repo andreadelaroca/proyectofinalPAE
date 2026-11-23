@@ -1,5 +1,12 @@
 package ni.edu.uam.proyectofinalpae.model;
 
 public enum MetodoPago {
-    EFECTIVO, TARJETA, TRANSFERENCIA
+    EFECTIVO("Efectivo"), TARJETA("Tarjeta"), TRANSFERENCIA("Transferencia");
+
+    private final String etiqueta;
+
+    MetodoPago(String etiqueta) { this.etiqueta = etiqueta; }
+
+    @Override
+    public String toString() { return etiqueta; }
 }

@@ -68,12 +68,8 @@ public class ProductoController {
                 new SimpleStringProperty(cell.getValue().getCodigo()));
         colNombre.setCellValueFactory(cell ->
                 new SimpleStringProperty(cell.getValue().getNombre()));
-        colMarca.setCellValueFactory(cell -> {
-            var marca = cell.getValue().getMarca();
-            return new SimpleStringProperty(
-                    marca != null && marca.getNombre() != null ? marca.getNombre() : "Sin marca"
-            );
-        });
+        colMarca.setCellValueFactory(cell ->
+                new SimpleStringProperty(cell.getValue().getMarca().getNombre()));
         colPrecio.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue().getPrecioUnitario()));
         colCantidad.setCellValueFactory(cell ->
@@ -207,7 +203,7 @@ public class ProductoController {
                         : "";
                 return (prod.getCodigo() != null && prod.getCodigo().toLowerCase().contains(filtro))
                         || (prod.getNombre() != null && prod.getNombre().toLowerCase().contains(filtro))
-                        || nombreMarca.contains(filtro);
+                        || (prod.getMarca() != null && prod.getMarca().getNombre().toLowerCase().contains(filtro));
             });
         });
     }

@@ -13,6 +13,9 @@ import ni.edu.uam.proyectofinalpae.model.Direccion;
 import ni.edu.uam.proyectofinalpae.model.Pedido;
 import ni.edu.uam.proyectofinalpae.service.ClienteService;
 import ni.edu.uam.proyectofinalpae.service.PedidoService;
+import ni.edu.uam.proyectofinalpae.report.ReporteService;
+import javafx.stage.FileChooser;
+import java.io.File;
 import static ni.edu.uam.proyectofinalpae.util.Utils.*;
 
 import java.net.URL;
@@ -36,6 +39,9 @@ public class MainAdminController implements Initializable {
     @FXML private TextField txtEmail;
     @FXML private TextField txtTelefono;
     @FXML private TextField txtDireccion;
+    @FXML private Button btnMapa;
+    private java.math.BigDecimal latitudSeleccionada;
+    private java.math.BigDecimal longitudSeleccionada;
 
     @FXML private DatePicker dpFechaInicio;
     @FXML private DatePicker dpFechaFinal;
@@ -54,12 +60,21 @@ public class MainAdminController implements Initializable {
         configurarTablaPedidos();
         cargarDatosPedidos();
 
-        cbTipoInforme.setItems(FXCollections.observableArrayList("Beneficios", "Demanda de Productos", "Mejores Clientes"));
+        if (btnMapa != null) btnMapa.setOnAction(e ->
+                ni.edu.uam.proyectofinalpae.map.MapaDireccionDialog.seleccionar(
+                                btnMapa.getScene().getWindow(), latitudSeleccionada, longitudSeleccionada)
+                        .ifPresent(c -> {
+                            latitudSeleccionada = c.latitud();
+                            longitudSeleccionada = c.longitud();
+                            btnMapa.setText("Coordenadas: " + latitudSeleccionada + ", " + longitudSeleccionada);
+                        }));
+        cbTipoInforme.setItems(FXCollections.observableArrayList("Pedidos"));
     }
 
     private void configurarTablaPedidos() {
         colIdPedido.setCellValueFactory(new PropertyValueFactory<>("id"));
         colFecha.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFechaPedido().toString()));
+        colEstado.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEstado().name()));
         colTotal.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPrecioTotal().toString()));
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 
@@ -82,15 +97,21 @@ public class MainAdminController implements Initializable {
 
     @FXML
     void nuevoPedido(ActionEvent event) {
-        mostrarAlerta(Alert.AlertType.INFORMATION, "Nuevo Pedido", "Funcionalidad de abrir formulario de pedido en construcción.");
+        abrirFormulario("nuevo-pedido-view.fxml", "Nuevo pedido");
     }
 
     @FXML
     void actualizarEstado(ActionEvent event) {
         Pedido pedidoSeleccionado = tblPedidos.getSelectionModel().getSelectedItem();
         if (pedidoSeleccionado != null) {
-            // TODO: Implementar lógica de cambio de estado cuando se agregue al modelo
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Actualizar Estado", "Falta agregar el campo 'estado' en la entidad Pedido.");
+            var estados = java.util.List.of(ni.edu.uam.proyectofinalpae.model.EstadoPedido.values());
+            ChoiceDialog<ni.edu.uam.proyectofinalpae.model.EstadoPedido> dialogo =
+                    new ChoiceDialog<>(pedidoSeleccionado.getEstado(), estados);
+            dialogo.setHeaderText("Actualizar pedido #" + pedidoSeleccionado.getId());
+            dialogo.showAndWait().ifPresent(estado -> {
+                pedidoService.actualizarEstado(pedidoSeleccionado.getId(), estado);
+                cargarDatosPedidos();
+            });
         } else {
             mostrarAlerta(Alert.AlertType.WARNING, "Selección requerida", "Debe seleccionar un pedido de la tabla.");
         }
@@ -104,6 +125,7 @@ public class MainAdminController implements Initializable {
                 return;
             }
             Cliente nuevoCliente = new Cliente();
+            nuevoCliente.setUsername(txtRegUsuario.getText());
             nuevoCliente.setNombres(txtPrimerNombre.getText());
             nuevoCliente.setApellidos(txtApellido.getText());
             nuevoCliente.setCorreo(txtEmail.getText());
@@ -112,11 +134,14 @@ public class MainAdminController implements Initializable {
             if (!txtDireccion.getText().isEmpty()) {
                 Direccion direccion = new Direccion();
                 direccion.setNombre(txtDireccion.getText());
+                direccion.setLatitud(latitudSeleccionada);
+                direccion.setLongitud(longitudSeleccionada);
                 // El método agregarDireccion hace el enlace bidireccional (this)
                 nuevoCliente.agregarDireccion(direccion);
             }
 
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "Cliente registrado correctamente.");
+            clienteService.registrar(nuevoCliente, txtRegPassword.getText());
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "Cliente registrado. Revisa el correo para verificarlo.");
             limpiarFormularioCliente(null);
 
         } catch (Exception e) {
@@ -134,6 +159,9 @@ public class MainAdminController implements Initializable {
         txtEmail.clear();
         txtTelefono.clear();
         txtDireccion.clear();
+        latitudSeleccionada = null;
+        longitudSeleccionada = null;
+        if (btnMapa != null) btnMapa.setText("Elegir en OpenStreetMap");
     }
 
     @FXML
@@ -143,10 +171,87 @@ public class MainAdminController implements Initializable {
             return;
         }
 
-        // TODO: Implementar consultas HQL personalizadas en los Repositories para obtener
-        mostrarAlerta(Alert.AlertType.INFORMATION, "Generar Informe",
-                "Generando informe de " + cbTipoInforme.getValue() + " del " + dpFechaInicio.getValue() + " al " + dpFechaFinal.getValue());
+        if (dpFechaFinal.getValue().isBefore(dpFechaInicio.getValue())) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Rango inválido", "La fecha final es anterior a la inicial.");
+            return;
+        }
+        FileChooser selector = new FileChooser();
+        selector.setTitle("Guardar informe de pedidos");
+        selector.setInitialFileName("pedidos.pdf");
+        selector.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF", "*.pdf"));
+        File destino = selector.showSaveDialog(tblPedidos.getScene().getWindow());
+        if (destino == null) return;
+        try {
+            new ReporteService().exportarPedidos(dpFechaInicio.getValue(), dpFechaFinal.getValue(), destino.toPath());
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Informe generado", "PDF guardado en: " + destino);
+        } catch (Exception ex) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error JasperReports", ex.getMessage());
+        }
     }
+
+    @FXML private void abrirVentas(ActionEvent e) {
+        abrirFormulario("ventas-view.fxml", "Historial de ventas");
+    }
+
+    @FXML private void abrirColaboradores(ActionEvent e) {
+        abrirFormulario("nuevo-colaborador-view.fxml", "Nuevo colaborador");
+    }
+
+    @FXML private void abrirProductos(ActionEvent e) {
+        abrirFormulario("producto-view.fxml", "Productos");
+    }
+
+
+    private void abrirFormulario(String archivo, String titulo) {
+        try {
+            java.net.URL ruta = getClass().getResource(
+                    "/ni/edu/uam/proyectofinalpae/fxml/" + archivo
+            );
+
+            if (ruta == null) {
+                throw new IllegalArgumentException(
+                        "Recurso inexistente: " + archivo
+                );
+            }
+
+            javafx.fxml.FXMLLoader loader =
+                    new javafx.fxml.FXMLLoader(ruta);
+
+            javafx.scene.Parent pantalla = loader.load();
+
+            javafx.stage.Stage ventana =
+                    new javafx.stage.Stage();
+
+            ventana.initOwner(
+                    tblPedidos.getScene().getWindow()
+            );
+
+            ventana.initModality(
+                    javafx.stage.Modality.WINDOW_MODAL
+            );
+
+            ventana.setTitle(titulo);
+
+            javafx.scene.Scene escena =
+                    new javafx.scene.Scene(pantalla, 900, 650);
+
+            ni.edu.uam.proyectofinalpae.util.SceneManager
+                    .aplicarEstilos(escena);
+
+            ventana.setScene(escena);
+            ventana.showAndWait();
+
+            cargarDatosPedidos();
+
+        } catch (Exception ex) {
+            mostrarAlerta(
+                    Alert.AlertType.ERROR,
+                    "No se pudo abrir el formulario",
+                    ex.getMessage()
+            );
+        }
+    }
+
 
     public void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alert = new Alert(tipo);
@@ -155,4 +260,12 @@ public class MainAdminController implements Initializable {
         alert.setContentText(mensaje);
         alert.showAndWait();
     }
+
+
+    @FXML
+    private void cerrarSesion() {
+        ni.edu.uam.proyectofinalpae.util.SceneManager
+                .volverLogin();
+    }
+
 }

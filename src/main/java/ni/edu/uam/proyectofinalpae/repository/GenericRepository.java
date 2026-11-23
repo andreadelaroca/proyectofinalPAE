@@ -1,6 +1,7 @@
 package ni.edu.uam.proyectofinalpae.repository;
 
 import org.hibernate.Session;
+
 import java.util.List;
 
 public class GenericRepository<T, ID> {
@@ -14,12 +15,12 @@ public class GenericRepository<T, ID> {
         session.persist(entity);
     }
 
-    public void update(Session session, T entity) {
-        session.merge(entity);
+    public T update(Session session, T entity) {
+        return session.merge(entity);
     }
 
     public void delete(Session session, T entity) {
-        session.remove(entity);
+        session.remove(session.contains(entity) ? entity : session.merge(entity));
     }
 
     public T findById(Session session, ID id) {

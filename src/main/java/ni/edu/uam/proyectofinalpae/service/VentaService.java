@@ -15,6 +15,11 @@ import java.util.UUID;
 public class VentaService {
     private final GenericRepository<Venta, Long> repository = new GenericRepository<>(Venta.class);
 
+    /**
+     * Registra la venta: valida, descuenta stock, calcula totales y asigna el número de factura.
+     * Si la venta viene de un pedido, el stock ya se descontó al crear el pedido, así que NO se
+     * vuelve a descontar; el pedido pasa a ENTREGADO.
+     */
     public Venta registrarVenta(Venta venta) {
         return Tx.run("Error al registrar la venta", s -> {
             if (venta.getDetalles().isEmpty()) throw new NegocioException("La venta debe tener al menos un producto.");
@@ -38,6 +43,7 @@ public class VentaService {
         });
     }
 
+    /** Anula la venta y, si descontó stock al venderse, lo devuelve. */
     public void anularVenta(Long idVenta) {
         Tx.exec("Error al anular la venta", s -> {
             Venta v = cargarCompleta(s, idVenta);
@@ -55,6 +61,7 @@ public class VentaService {
                 Venta.class).list());
     }
 
+    /** Ideal para reportes Jasper por periodo (ambas fechas inclusive). */
     public List<Venta> obtenerPorRango(LocalDate desde, LocalDate hasta) {
         return Tx.read(s -> s.createQuery(
                         "SELECT v FROM Venta v JOIN FETCH v.colaborador LEFT JOIN FETCH v.cliente " +
@@ -64,9 +71,24 @@ public class VentaService {
                 .list());
     }
 
+    /** Venta con líneas y productos: factura individual en Jasper. */
     public Venta obtenerCompleta(Long idVenta) {
         return Tx.read(s -> cargarCompleta(s, idVenta));
     }
+
+    /** Filas [nombres, apellidos, totalComprado] de ventas completadas en el rango. */
+    public List<Object[]> mejoresClientes(LocalDate desde, LocalDate hasta, int limite) {
+        return Tx.read(s -> s.createQuery(
+                        "SELECT c.nombres, c.apellidos, SUM(v.total) FROM Venta v JOIN v.cliente c " +
+                                "WHERE v.estado = :estado AND v.fecha >= :desde AND v.fecha < :hasta " +
+                                "GROUP BY c.id, c.nombres, c.apellidos ORDER BY SUM(v.total) DESC", Object[].class)
+                .setParameter("estado", EstadoVenta.COMPLETADA)
+                .setParameter("desde", desde.atStartOfDay())
+                .setParameter("hasta", hasta.plusDays(1).atStartOfDay())
+                .setMaxResults(limite).list());
+    }
+
+    // ---------- helpers ----------
 
     private Venta cargarCompleta(Session s, Long id) {
         Venta v = s.createQuery(

@@ -24,6 +24,7 @@ public class ClientesController {
     @FXML private Button btnRefrescar;
     @FXML private Button btnEditarCliente;
     @FXML private Button btnNuevoCliente;
+    @FXML private Button btnVerMapa;
 
     @FXML private TableView<Cliente> tblClientes;
     @FXML private TableColumn<Cliente, String> colNombres;
@@ -49,7 +50,6 @@ public class ClientesController {
         btnRefrescar.setOnAction(e -> cargarClientes());
         btnEditarCliente.setOnAction(e -> abrirModalCliente(tblClientes.getSelectionModel().getSelectedItem()));
         btnNuevoCliente.setOnAction(e -> abrirModalCliente(null));
-
         cargarClientes();
 
         tblClientes.getColumns().forEach(col -> col.setReorderable(false));
@@ -163,5 +163,21 @@ public class ClientesController {
                     tblClientes.getSelectionModel().selectedItemProperty().isNull()
             );
         }
+    }
+    private void verEnMapa() {
+        Cliente cliente = tblClientes.getSelectionModel().getSelectedItem();
+        if (cliente == null) return;
+        if (cliente.getDirecciones() == null || cliente.getDirecciones().isEmpty()) {
+            new Alert(Alert.AlertType.WARNING, "El cliente no tiene direcciones registradas.").showAndWait();
+            return;
+        }
+        var direccion = cliente.getDirecciones().get(0);
+        if (direccion.getLatitud() == null || direccion.getLongitud() == null) {
+            new Alert(Alert.AlertType.WARNING, "Esta dirección no tiene coordenadas registradas.").showAndWait();
+            return;
+        }
+        ni.edu.uam.proyectofinalpae.map.MapaDireccionDialog.ver(
+                btnVerMapa.getScene().getWindow(), direccion.getNombre(),
+                direccion.getLatitud(), direccion.getLongitud());
     }
 }
