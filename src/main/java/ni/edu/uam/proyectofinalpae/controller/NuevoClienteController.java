@@ -174,6 +174,7 @@ public class NuevoClienteController {
                 } else {
                     clienteService.registrar(target, password);
                 }
+                return target;
             }
         };
 

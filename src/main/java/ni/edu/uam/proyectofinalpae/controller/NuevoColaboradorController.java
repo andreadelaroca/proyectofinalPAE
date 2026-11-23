@@ -147,6 +147,7 @@ public class NuevoColaboradorController {
                 } else {
                     colaboradorService.registrar(target, password);
                 }
+                return target;
             }
         };
 
