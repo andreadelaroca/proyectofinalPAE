@@ -15,6 +15,8 @@ import ni.edu.uam.proyectofinalpae.service.ClienteService;
 import ni.edu.uam.proyectofinalpae.service.PedidoService;
 import ni.edu.uam.proyectofinalpae.report.ReporteService;
 import javafx.stage.FileChooser;
+import ni.edu.uam.proyectofinalpae.util.SceneManager;
+
 import java.io.File;
 import static ni.edu.uam.proyectofinalpae.util.Utils.*;
 
@@ -266,6 +268,14 @@ public class MainAdminController implements Initializable {
     private void cerrarSesion() {
         ni.edu.uam.proyectofinalpae.util.SceneManager
                 .volverLogin();
+    }
+
+    @FXML
+    public void abrirRegistro() {
+        SceneManager.abrirVentana(
+                "/ni/edu/uam/proyectofinalpae/fxml/nuevo-cliente-view.fxml",
+                "BunBun Hub - Registro"
+        );
     }
 
 }

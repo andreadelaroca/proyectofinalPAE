@@ -115,7 +115,7 @@ public class LoginController {
     @FXML
     public void abrirRegistro() {
         SceneManager.abrirVentana(
-                "/ni/edu/uam/proyectofinalpae/fxml/registro.fxml",
+                "/ni/edu/uam/proyectofinalpae/fxml/nuevo-cliente-view.fxml",
                 "BunBun Hub - Registro"
         );
     }
