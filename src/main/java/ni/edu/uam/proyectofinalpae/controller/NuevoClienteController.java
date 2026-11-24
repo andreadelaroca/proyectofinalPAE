@@ -176,7 +176,6 @@ public class NuevoClienteController {
                     clienteService.registrar(target, password);
                     return target;
                 }
-                return target;
             }
         };
 

@@ -149,7 +149,6 @@ public class NuevoColaboradorController {
                     colaboradorService.registrar(target, password);
                     return target;
                 }
-                return target;
             }
         };
 

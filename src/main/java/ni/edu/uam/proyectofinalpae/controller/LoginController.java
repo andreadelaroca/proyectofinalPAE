@@ -54,7 +54,7 @@ public class LoginController {
                 );
             } else {
                 SceneManager.abrirVentana(
-                        "/ni/edu/uam/proyectofinalpae/fxml/cliente_home.fxml",
+                        "/ni/edu/uam/proyectofinalpae/fxml/clientes-view.fxml",
                         "BunBun Hub - Cliente"
                 );
             }
