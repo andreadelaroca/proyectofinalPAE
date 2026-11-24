@@ -3,7 +3,9 @@ package ni.edu.uam.proyectofinalpae.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import ni.edu.uam.proyectofinalpae.model.Cliente;
 import ni.edu.uam.proyectofinalpae.model.Colaborador;
+import ni.edu.uam.proyectofinalpae.service.ClienteService;
 import ni.edu.uam.proyectofinalpae.service.UsuarioService;
 import ni.edu.uam.proyectofinalpae.util.SceneManager;
 
@@ -52,11 +54,14 @@ public class LoginController {
                         "/ni/edu/uam/proyectofinalpae/fxml/main-admin.fxml",
                         "BunBun Hub - Administración"
                 );
-            } else {
-                SceneManager.abrirVentana(
+            } else if (autenticado instanceof Cliente cliente) {
+                // Se recarga con sus direcciones para poder editar el perfil sin LazyInitializationException
+                Cliente completo = new ClienteService().buscarConDirecciones(cliente.getId());
+                ClienteHomeController home = SceneManager.abrirVentana(
                         "/ni/edu/uam/proyectofinalpae/fxml/cliente-home-view.fxml",
                         "BunBun Hub - Cliente"
                 );
+                home.setCliente(completo != null ? completo : cliente);
             }
 
         } catch (RuntimeException ex) {

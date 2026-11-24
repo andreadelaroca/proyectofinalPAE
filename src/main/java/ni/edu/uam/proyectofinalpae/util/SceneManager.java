@@ -37,7 +37,8 @@ public final class SceneManager {
         }
     }
 
-    public static void abrirVentana(
+    /** Carga la vista en la ventana principal y devuelve su controlador. */
+    public static <T> T abrirVentana(
             String rutaFxml,
             String titulo
     ) {
@@ -79,6 +80,7 @@ public final class SceneManager {
             stagePrincipal.setTitle(titulo);
             stagePrincipal.setScene(escena);
             stagePrincipal.show();
+            return loader.getController();
 
         } catch (IOException e) {
             throw new IllegalStateException(
