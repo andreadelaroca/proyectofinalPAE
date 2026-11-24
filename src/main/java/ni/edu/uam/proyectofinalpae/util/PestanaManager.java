@@ -115,6 +115,7 @@ public final class PestanaManager {
             modal.initOwner(owner);
             modal.initModality(Modality.WINDOW_MODAL);
         }
+        SceneManager.pantallaCompleta(modal);
         modal.showAndWait();
     }
 }
