@@ -29,6 +29,15 @@ public class ClienteService {
         return Tx.read(s -> repository.findById(s, id));
     }
 
+    /** Cliente con sus direcciones ya cargadas (para usarlo fuera de la sesión de Hibernate). */
+    public Cliente buscarConDirecciones(Long id) {
+        return Tx.read(s -> s.createQuery(
+                        "SELECT DISTINCT c FROM Cliente c LEFT JOIN FETCH c.direcciones WHERE c.id = :id",
+                        Cliente.class)
+                .setParameter("id", id)
+                .uniqueResult());
+    }
+
     public List<Cliente> obtenerTodos() {
         return Tx.read(s -> s.createQuery(
                 "SELECT DISTINCT c FROM Cliente c LEFT JOIN FETCH c.direcciones ORDER BY c.id ASC",
