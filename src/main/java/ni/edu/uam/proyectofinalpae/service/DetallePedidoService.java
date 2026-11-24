@@ -1,64 +1,30 @@
 package ni.edu.uam.proyectofinalpae.service;
 
-import ni.edu.uam.proyectofinalpae.config.HibernateUtil;
 import ni.edu.uam.proyectofinalpae.model.DetallePedido;
 import ni.edu.uam.proyectofinalpae.repository.GenericRepository;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import ni.edu.uam.proyectofinalpae.util.Tx;
+
 import java.util.List;
 
+/**
+ * Solo lectura: modificar o borrar líneas sueltas rompería el stock reservado y el total del pedido.
+ * Las líneas se gestionan mediante Pedido.agregarDetalle + PedidoService.registrarPedido.
+ */
 public class DetallePedidoService {
-    private final GenericRepository<DetallePedido, Long> repository;
-
-    public DetallePedidoService() {
-        this.repository = new GenericRepository<>(DetallePedido.class);
-    }
-
-    public void guardar(DetallePedido detalle) {
-        Transaction tx = null;
-        try (Session session = HibernateUtil.factory().openSession()) {
-            tx = session.beginTransaction();
-            repository.save(session, detalle);
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();
-            throw new RuntimeException("Error al guardar el detalle del pedido", e);
-        }
-    }
-
-    public void actualizar(DetallePedido detalle) {
-        Transaction tx = null;
-        try (Session session = HibernateUtil.factory().openSession()) {
-            tx = session.beginTransaction();
-            repository.update(session, detalle);
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();
-            throw new RuntimeException("Error al actualizar el detalle del pedido", e);
-        }
-    }
-
-    public void eliminar(DetallePedido detalle) {
-        Transaction tx = null;
-        try (Session session = HibernateUtil.factory().openSession()) {
-            tx = session.beginTransaction();
-            repository.delete(session, detalle);
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();
-            throw new RuntimeException("Error al eliminar el detalle del pedido", e);
-        }
-    }
+    private final GenericRepository<DetallePedido, Long> repository = new GenericRepository<>(DetallePedido.class);
 
     public DetallePedido buscarPorId(Long id) {
-        try (Session session = HibernateUtil.factory().openSession()) {
-            return repository.findById(session, id);
-        }
+        return Tx.read(s -> repository.findById(s, id));
+    }
+
+    public List<DetallePedido> obtenerPorPedido(Long idPedido) {
+        return Tx.read(s -> s.createQuery(
+                        "SELECT d FROM DetallePedido d JOIN FETCH d.producto WHERE d.pedido.id = :id ORDER BY d.id",
+                        DetallePedido.class)
+                .setParameter("id", idPedido).list());
     }
 
     public List<DetallePedido> obtenerTodos() {
-        try (Session session = HibernateUtil.factory().openSession()) {
-            return repository.findAll(session);
-        }
+        return Tx.read(repository::findAll);
     }
 }

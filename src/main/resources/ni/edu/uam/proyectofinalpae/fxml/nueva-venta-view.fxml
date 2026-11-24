@@ -3,6 +3,7 @@
 <?import javafx.scene.layout.*?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.NuevaVentaController" spacing="10" style="-fx-padding: 24;" stylesheets="@../styles/global.css">
     <Label text="Nueva venta" styleClass="titulo-vista"/>
+    <Label text="Pedido a facturar (opcional: vacío = venta directa)" styleClass="label-campo"/><ComboBox fx:id="cbPedido" maxWidth="Infinity"/>
     <Label text="Cliente (opcional: vacío = consumidor final)" styleClass="label-campo"/><ComboBox fx:id="cbCliente" maxWidth="Infinity"/>
     <Label text="Colaborador" styleClass="label-campo"/><ComboBox fx:id="cbColaborador" maxWidth="Infinity"/>
     <Label text="Método de pago" styleClass="label-campo"/><ComboBox fx:id="cbMetodoPago" maxWidth="Infinity"/>

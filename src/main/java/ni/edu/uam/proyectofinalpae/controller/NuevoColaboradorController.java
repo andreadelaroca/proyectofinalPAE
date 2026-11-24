@@ -20,6 +20,7 @@ public class NuevoColaboradorController {
     @FXML private PasswordField pfPassword;
     @FXML private PasswordField pfConfirmarPassword;
     @FXML private TextField txtCorreo;
+    @FXML private TextArea txtDireccion;
 
     @FXML private Label lblMensaje;
     @FXML private Button btnCancelar;
@@ -50,6 +51,7 @@ public class NuevoColaboradorController {
         txtUsername.setText(colaborador.getUsername());
         txtTelefono.setText(colaborador.getTelefono());
         txtCorreo.setText(colaborador.getCorreo());
+        txtDireccion.setText(colaborador.getDireccion());
 
         pfPassword.setPromptText("Dejar vacío para mantener contraseña actual");
         pfConfirmarPassword.setPromptText("Repetir solo si desea cambiarla");
@@ -75,9 +77,10 @@ public class NuevoColaboradorController {
         String password = pfPassword.getText();
         String confirmar = pfConfirmarPassword.getText();
         String correo = txtCorreo.getText().trim().toLowerCase();
+        String direccion = txtDireccion.getText().trim();
 
         if (nombres.isEmpty() || apellidos.isEmpty() || username.isEmpty()
-                || telefono.isEmpty() || correo.isEmpty()) {
+                || telefono.isEmpty() || correo.isEmpty() || direccion.isEmpty()) {
             lblMensaje.setText("Complete todos los campos obligatorios.");
             return;
         }
@@ -139,6 +142,7 @@ public class NuevoColaboradorController {
                 target.setUsername(username);
                 target.setCorreo(correo);
                 target.setTelefono(telefono);
+                target.setDireccion(direccion);
 
                 if (esEdicion) {
                     if (!password.isEmpty()) {

@@ -3,6 +3,7 @@ package ni.edu.uam.proyectofinalpae.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import ni.edu.uam.proyectofinalpae.model.Cliente;
 import ni.edu.uam.proyectofinalpae.model.Colaborador;
 import ni.edu.uam.proyectofinalpae.service.UsuarioService;
 import ni.edu.uam.proyectofinalpae.util.SceneManager;

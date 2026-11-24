@@ -36,13 +36,14 @@ public class PedidoService {
 
     public void actualizarEstado(Long idPedido, EstadoPedido nuevoEstado) {
         if (nuevoEstado == EstadoPedido.CANCELADO) {
-            cancelarPedido(idPedido);   // cancelar siempre pasa por aquí para no perder el stock
+            cancelarPedido(idPedido);
             return;
         }
         Tx.exec("Error al actualizar el estado del pedido", s -> {
             Pedido p = s.get(Pedido.class, idPedido);
             if (p == null) throw new NegocioException("El pedido no existe.");
             if (p.getEstado() == EstadoPedido.CANCELADO) throw new NegocioException("Un pedido cancelado no se puede reactivar.");
+            if (p.getEstado() == EstadoPedido.ENTREGADO) throw new NegocioException("Un pedido entregado no se puede modificar.");
             p.setEstado(nuevoEstado);
         });
     }
@@ -60,6 +61,16 @@ public class PedidoService {
         return Tx.read(s -> s.createQuery(
                 "SELECT p FROM Pedido p JOIN FETCH p.cliente LEFT JOIN FETCH p.colaborador " +
                         "LEFT JOIN FETCH p.direccionEntrega ORDER BY p.id DESC", Pedido.class).list());
+    }
+
+    public List<Pedido> obtenerPendientesDeFacturar() {
+        return Tx.read(s -> s.createQuery(
+                        "SELECT DISTINCT p FROM Pedido p JOIN FETCH p.cliente LEFT JOIN FETCH p.colaborador " +
+                                "LEFT JOIN FETCH p.detalles d LEFT JOIN FETCH d.producto " +
+                                "WHERE p.estado NOT IN (:entregado, :cancelado) ORDER BY p.id DESC", Pedido.class)
+                .setParameter("entregado", EstadoPedido.ENTREGADO)
+                .setParameter("cancelado", EstadoPedido.CANCELADO)
+                .list());
     }
 
     public List<Pedido> obtenerPorCliente(Long idCliente) {
