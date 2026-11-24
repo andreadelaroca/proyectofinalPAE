@@ -16,7 +16,22 @@
     <Button text="Cerrar sesión" onAction="#cerrarSesion" styleClass="btn-secundario"/>
     <Button text="Nuevo pedido" onAction="#nuevoPedido"/>
     <Button text="Cambiar estado" onAction="#actualizarEstado"/>
-    <Button text="Nuevo colaborador" onAction="#abrirColaboradores"/>
-    <Button text="Productos" onAction="#abrirProductos"/><Button text="Ventas" onAction="#abrirVentas"/>
-</HBox><Label text="Registrar cliente con SMTP" style="-fx-font-size: 17px; -fx-font-weight: bold;" /><TextField fx:id="txtRegUsuario" promptText="Usuario" maxWidth="400" /><PasswordField fx:id="txtRegPassword" promptText="Contraseña (mínimo 8)" maxWidth="400" /><TextField fx:id="txtPrimerNombre" promptText="Nombres" maxWidth="400" /><TextField fx:id="txtApellido" promptText="Apellidos" maxWidth="400" /><TextField fx:id="txtEmail" promptText="Correo" maxWidth="400" /><TextField fx:id="txtTelefono" promptText="Teléfono" maxWidth="400" /><TextField fx:id="txtDireccion" promptText="Dirección" maxWidth="400" /><Button fx:id="btnMapa" text="Elegir en OpenStreetMap" /><HBox spacing="10"><Button text="Registrar cliente" onAction="#guardarCliente" /><Button text="Limpiar" onAction="#limpiarFormularioCliente" /></HBox><Label text="Informes JasperReports - PDF de pedidos" style="-fx-font-size: 17px; -fx-font-weight: bold;" /><HBox spacing="10"><Label text="Desde"/><DatePicker fx:id="dpFechaInicio"/><Label text="Hasta"/><DatePicker fx:id="dpFechaFinal"/></HBox><ComboBox fx:id="cbTipoInforme" promptText="Tipo de informe" /><Button text="Generar PDF" onAction="#generarInforme" /><TableView fx:id="tblInformes" visible="false"><columns><TableColumn fx:id="colConcepto" /><TableColumn fx:id="colValor" /></columns></TableView>
+    <Button text="Registrar colaborador" onAction="#abrirColaboradores"/>
+    <Button text="Registrar cliente" onAction="#abrirRegistro"/>
+    <Button text="Productos" onAction="#abrirProductos"/>
+    <Button text="Ventas" onAction="#abrirVentas"/>
+</HBox>
+    <Label text="Informes JasperReports - PDF de pedidos" style="-fx-font-size: 17px; -fx-font-weight: bold;" />
+    <HBox spacing="10"><Label text="Desde"/>
+        <DatePicker fx:id="dpFechaInicio"/>
+        <Label text="Hasta"/>
+        <DatePicker fx:id="dpFechaFinal"/>
+    </HBox>
+    <ComboBox fx:id="cbTipoInforme" promptText="Tipo de informe" />
+    <Button text="Generar PDF" onAction="#generarInforme" />
+    <TableView fx:id="tblInformes" visible="false">
+        <columns><TableColumn fx:id="colConcepto" />
+            <TableColumn fx:id="colValor" />
+        </columns>
+    </TableView>
 </VBox></content></ScrollPane>
