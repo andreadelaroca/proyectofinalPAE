@@ -26,6 +26,7 @@ public class CorreoService {
         String clave = config("SMTP_PASSWORD", "");
         String remitente = config("SMTP_FROM", usuario);
         String puerto = config("SMTP_PORT", "587");
+        System.out.println("SMTP_HOST=" + host + " | USER vacío=" + usuario.isBlank());
         boolean ssl = Boolean.parseBoolean(config("SMTP_SSL", "false"));
         if (host.isBlank() || usuario.isBlank() || clave.isBlank() || remitente.isBlank()) {
             throw new NegocioException("SMTP sin configurar. Define SMTP_HOST, SMTP_USER, SMTP_PASSWORD y SMTP_FROM.");
@@ -55,6 +56,7 @@ public class CorreoService {
                     StandardCharsets.UTF_8.name());
             Transport.send(mensaje);
         } catch (MessagingException ex) {
+            ex.printStackTrace();
             throw new NegocioException("Cuenta guardada, pero no se pudo enviar el código SMTP. "
                     + "Verifica configuración y usa Reenviar código.");
         }

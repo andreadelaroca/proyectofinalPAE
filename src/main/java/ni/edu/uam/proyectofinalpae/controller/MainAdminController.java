@@ -25,4 +25,13 @@ public class MainAdminController {
         PestanaManager.desregistrar();
         SceneManager.volverLogin();
     }
+
+    @FXML
+    public void abrirRegistro() {
+        SceneManager.abrirVentana(
+                "/ni/edu/uam/proyectofinalpae/fxml/nuevo-cliente-view.fxml",
+                "BunBun Hub - Registro"
+        );
+    }
+
 }

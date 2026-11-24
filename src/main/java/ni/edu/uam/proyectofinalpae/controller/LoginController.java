@@ -54,7 +54,7 @@ public class LoginController {
                 );
             } else {
                 SceneManager.abrirVentana(
-                        "/ni/edu/uam/proyectofinalpae/fxml/cliente_home.fxml",
+                        "/ni/edu/uam/proyectofinalpae/fxml/cliente-home-view.fxml",
                         "BunBun Hub - Cliente"
                 );
             }
@@ -115,7 +115,7 @@ public class LoginController {
     @FXML
     public void abrirRegistro() {
         SceneManager.abrirVentana(
-                "/ni/edu/uam/proyectofinalpae/fxml/registro.fxml",
+                "/ni/edu/uam/proyectofinalpae/fxml/nuevo-cliente-view.fxml",
                 "BunBun Hub - Registro"
         );
     }

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="600.0" prefWidth="980.0" spacing="20.0"
+      stylesheets="@../styles/global.css"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ni.edu.uam.proyectofinalpae.controller.ClienteHomeController">
+    <padding>
+        <Insets bottom="25.0" left="30.0" right="30.0" top="25.0" />
+    </padding>
+    <children>
+        <!-- Encabezado -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <children>
+                <Label fx:id="lblBienvenida" styleClass="titulo-vista" text="Bienvenido" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="btnEditarPerfil" mnemonicParsing="false" onAction="#editarPerfil" styleClass="btn-primario" text="Editar mi perfil" />
+                <Button fx:id="btnSalir" mnemonicParsing="false" onAction="#cerrarSesion" styleClass="btn-secundario" text="Salir" />
+            </children>
+        </HBox>
+
+        <!-- Resumen de datos del cliente (solo lectura) -->
+        <HBox spacing="30.0">
+            <children>
+                <Label fx:id="lblNombre" text="Nombre: -" />
+                <Label fx:id="lblUsername" text="Usuario: -" />
+                <Label fx:id="lblCorreo" text="Correo: -" />
+                <Label fx:id="lblTelefono" text="Teléfono: -" />
+            </children>
+        </HBox>
+
+        <!-- Pedidos -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <children>
+                <Label styleClass="titulo-vista" text="Mis pedidos" />
+                <Region HBox.hgrow="ALWAYS" />
+                <TextField fx:id="txtBuscar" prefWidth="250.0" promptText="Buscar por número o estado..." />
+                <Button fx:id="btnRefrescar" mnemonicParsing="false" onAction="#refrescar" styleClass="btn-secundario" text="Refrescar" />
+            </children>
+        </HBox>
+
+        <TableView fx:id="tblPedidos" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colNumero" prefWidth="100.0" text="N.º pedido" />
+                <TableColumn fx:id="colFecha" prefWidth="220.0" text="Fecha" />
+                <TableColumn fx:id="colEstado" prefWidth="180.0" text="Estado" />
+                <TableColumn fx:id="colTotal" prefWidth="140.0" text="Total" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+    </children>
+</VBox>
