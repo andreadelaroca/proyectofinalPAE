@@ -12,6 +12,7 @@ import javafx.stage.Window;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import ni.edu.uam.proyectofinalpae.util.SceneManager;
 
 /** Selector visual de ubicación OpenStreetMap: clic en el mapa, luego Guardar. */
 public final class MapaDireccionDialog {
@@ -79,6 +80,7 @@ public final class MapaDireccionDialog {
         botones.setStyle("-fx-padding: 10; -fx-alignment: center-left;");
         BorderPane contenido = new BorderPane(mapa); contenido.setBottom(botones);
         ventana.setScene(new Scene(contenido, 900, 650));
+        SceneManager.pantallaCompleta(ventana);
         ventana.showAndWait();
         return Optional.ofNullable(resultado.get());
     }
@@ -114,6 +116,7 @@ public final class MapaDireccionDialog {
         BorderPane panel = new BorderPane(web);
         panel.setBottom(pie);
         ventana.setScene(new Scene(panel, 850, 550));
+        SceneManager.pantallaCompleta(ventana);
         ventana.showAndWait();
     }
 }

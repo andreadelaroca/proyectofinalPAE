@@ -57,10 +57,18 @@ public final class SceneManager {
             FXMLLoader loader = new FXMLLoader(recurso);
             Parent root = loader.load();
 
-            // Respeta el tamaño preferido de la vista (p. ej. el panel admin con pestañas)
-            double ancho = Math.max(900, root.prefWidth(-1));
-            double alto = Math.max(600, root.prefHeight(-1));
-            Scene escena = new Scene(root, ancho, alto);
+            // Se reutiliza la escena de la ventana y solo se cambia su contenido:
+            // si se creara una Scene nueva sobre una ventana maximizada, conservaría
+            // su tamaño inicial y no ocuparía toda la pantalla.
+            Scene escena = stagePrincipal.getScene();
+            if (escena == null) {
+                double ancho = Math.max(900, root.prefWidth(-1));
+                double alto = Math.max(600, root.prefHeight(-1));
+                escena = new Scene(root, ancho, alto);
+            } else {
+                escena.setRoot(root);
+                escena.getStylesheets().clear();
+            }
             aplicarEstilos(escena);
 
             if (rutaFxml.endsWith("/login.fxml")
@@ -79,6 +87,7 @@ public final class SceneManager {
 
             stagePrincipal.setTitle(titulo);
             stagePrincipal.setScene(escena);
+            pantallaCompleta(stagePrincipal);
             stagePrincipal.show();
             return loader.getController();
 
@@ -88,6 +97,14 @@ public final class SceneManager {
                     e
             );
         }
+    }
+
+    /**
+     * Abre la ventana ocupando toda la pantalla (maximizada: conserva la barra de
+     * título y la barra de tareas). Llamar antes de show()/showAndWait().
+     */
+    public static void pantallaCompleta(Stage stage) {
+        stage.setMaximized(true);
     }
 
     public static void volverLogin() {

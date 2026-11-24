@@ -296,3 +296,57 @@
     -fx-background-insets: 0;
     -fx-padding: 0;
 }
+
+
+/* ==========================================================================
+   FORMULARIOS (nuevo-cliente-view y similares)
+   ========================================================================== */
+
+.scroll-vista,
+.scroll-vista > .viewport {
+    -fx-background-color: #C8D9E6;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.seccion-card {
+    -fx-effect: dropshadow(three-pass-box, rgba(47, 65, 86, 0.10), 12, 0, 0, 3);
+}
+
+.texto-ayuda {
+    -fx-text-fill: #567C8D;
+    -fx-font-size: 12.5px;
+}
+
+.mensaje-error {
+    -fx-text-fill: #B02A37;
+    -fx-font-weight: bold;
+}
+
+.text-area {
+    -fx-background-color: #CFD0C0;
+    -fx-background-radius: 14px;
+    -fx-border-color: transparent;
+    -fx-border-radius: 14px;
+    -fx-padding: 4px;
+}
+
+.text-area .scroll-pane,
+.text-area .scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.text-area .content {
+    -fx-background-color: transparent;
+    -fx-background-radius: 14px;
+    -fx-padding: 6px 10px;
+}
+
+.text-area:focused {
+    -fx-border-color: #567C8D;
+    -fx-border-width: 1.5px;
+}
+
+.text-area .text {
+    -fx-fill: #2F4156;
+}

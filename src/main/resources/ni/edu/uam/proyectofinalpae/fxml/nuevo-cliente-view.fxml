@@ -1,7 +1,136 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.*?>
-<ScrollPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.NuevoClienteController" fitToWidth="true" fitToHeight="true"><content><VBox  spacing="9" alignment="TOP_LEFT" prefWidth="800" style="-fx-padding: 24;" >
-    <Label text="Nuevo cliente" style="-fx-font-size: 17px; -fx-font-weight: bold;" /><TextField fx:id="txtNombres" promptText="Nombres" maxWidth="400" /><TextField fx:id="txtApellidos" promptText="Apellidos" maxWidth="400" /><TextField fx:id="txtUsername" promptText="Usuario" maxWidth="400" /><TextField fx:id="txtTelefono" promptText="Teléfono" maxWidth="400" /><TextField fx:id="txtCorreo" promptText="Correo electrónico" maxWidth="400" /><PasswordField fx:id="pfPassword" promptText="Contraseña (mínimo 8)" maxWidth="400" /><PasswordField fx:id="pfConfirmarPassword" promptText="Repetir contraseña" maxWidth="400" /><TextArea fx:id="txtDireccion" promptText="Dirección de entrega" maxWidth="400" /><Button text="Seleccionar coordenadas en OpenStreetMap" fx:id="btnMapa" /><HBox spacing="10"><Button text="Guardar" fx:id="btnGuardar" /><Button text="Cancelar" fx:id="btnCancelar" /></HBox><Label fx:id="lblMensaje" wrapText="true" />
-</VBox></content></ScrollPane>
+
+<ScrollPane fitToWidth="true" styleClass="scroll-vista"
+            stylesheets="@../styles/global.css"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ni.edu.uam.proyectofinalpae.controller.NuevoClienteController">
+    <content>
+        <!-- Contenedor centrado: el formulario no se estira de más en pantalla completa -->
+        <HBox alignment="TOP_CENTER">
+            <children>
+                <VBox maxWidth="820.0" prefWidth="820.0" spacing="18.0" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="28.0" left="30.0" right="30.0" top="24.0" />
+                    </padding>
+                    <children>
+                        <VBox spacing="4.0">
+                            <children>
+                                <Label fx:id="lblTitulo" styleClass="titulo-vista" text="Nuevo Cliente" />
+                                <Label styleClass="texto-ayuda" text="Los campos marcados con * son obligatorios." />
+                            </children>
+                        </VBox>
+
+                        <!-- Datos personales -->
+                        <VBox spacing="14.0" styleClass="seccion-card">
+                            <padding>
+                                <Insets bottom="20.0" left="22.0" right="22.0" top="18.0" />
+                            </padding>
+                            <children>
+                                <Label styleClass="subtitulo-seccion" text="Datos personales" />
+                                <GridPane hgap="16.0" vgap="12.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
+                                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
+                                    </columnConstraints>
+                                    <children>
+                                        <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                            <children>
+                                                <Label styleClass="label-campo" text="Nombres *" />
+                                                <TextField fx:id="txtNombres" promptText="Ej. María José" />
+                                            </children>
+                                        </VBox>
+                                        <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                            <children>
+                                                <Label styleClass="label-campo" text="Apellidos *" />
+                                                <TextField fx:id="txtApellidos" promptText="Ej. López Pérez" />
+                                            </children>
+                                        </VBox>
+                                        <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                            <children>
+                                                <Label styleClass="label-campo" text="Teléfono *" />
+                                                <TextField fx:id="txtTelefono" promptText="Ej. 88887777" />
+                                            </children>
+                                        </VBox>
+                                        <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                            <children>
+                                                <Label styleClass="label-campo" text="Correo electrónico *" />
+                                                <TextField fx:id="txtCorreo" promptText="nombre@correo.com" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </GridPane>
+                            </children>
+                        </VBox>
+
+                        <!-- Cuenta -->
+                        <VBox spacing="14.0" styleClass="seccion-card">
+                            <padding>
+                                <Insets bottom="20.0" left="22.0" right="22.0" top="18.0" />
+                            </padding>
+                            <children>
+                                <Label styleClass="subtitulo-seccion" text="Cuenta de acceso" />
+                                <GridPane hgap="16.0" vgap="12.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
+                                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
+                                    </columnConstraints>
+                                    <children>
+                                        <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0">
+                                            <children>
+                                                <Label styleClass="label-campo" text="Usuario *" />
+                                                <TextField fx:id="txtUsername" promptText="Nombre de usuario para iniciar sesión" />
+                                            </children>
+                                        </VBox>
+                                        <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                            <children>
+                                                <Label styleClass="label-campo" text="Contraseña *" />
+                                                <PasswordField fx:id="pfPassword" promptText="Mínimo 8 caracteres" />
+                                            </children>
+                                        </VBox>
+                                        <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                            <children>
+                                                <Label styleClass="label-campo" text="Confirmar contraseña *" />
+                                                <PasswordField fx:id="pfConfirmarPassword" promptText="Repita la contraseña" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </GridPane>
+                            </children>
+                        </VBox>
+
+                        <!-- Dirección -->
+                        <VBox spacing="12.0" styleClass="seccion-card">
+                            <padding>
+                                <Insets bottom="20.0" left="22.0" right="22.0" top="18.0" />
+                            </padding>
+                            <children>
+                                <Label styleClass="subtitulo-seccion" text="Dirección de entrega" />
+                                <Label styleClass="label-campo" text="Dirección *" />
+                                <TextArea fx:id="txtDireccion" prefRowCount="3" promptText="Barrio, calle, referencias..." wrapText="true" />
+                                <HBox alignment="CENTER_LEFT">
+                                    <children>
+                                        <Button fx:id="btnMapa" mnemonicParsing="false" styleClass="btn-secundario" text="Seleccionar ubicación en el mapa" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <Label fx:id="lblMensaje" maxWidth="1.7976931348623157E308" styleClass="mensaje-error" wrapText="true" />
+
+                        <HBox alignment="CENTER_RIGHT" spacing="12.0">
+                            <children>
+                                <Button fx:id="btnCancelar" mnemonicParsing="false" styleClass="btn-secundario" text="Cancelar" />
+                                <Button fx:id="btnGuardar" mnemonicParsing="false" styleClass="btn-primario" text="Registrar Cliente" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </content>
+</ScrollPane>
