@@ -18,7 +18,7 @@
                 <Label fx:id="lblBienvenida" styleClass="titulo-vista" text="Bienvenido" />
                 <Region HBox.hgrow="ALWAYS" />
                 <Button fx:id="btnEditarPerfil" mnemonicParsing="false" onAction="#editarPerfil" styleClass="btn-primario" text="Editar mi perfil" />
-                <Button fx:id="btnSalir" mnemonicParsing="false" onAction="#cerrarSesion" styleClass="btn-secundario" text="Salir" />
+                <Button fx:id="btnSalir" mnemonicParsing="false" onAction="#salir" styleClass="btn-secundario" text="Salir" />
             </children>
         </HBox>
 
