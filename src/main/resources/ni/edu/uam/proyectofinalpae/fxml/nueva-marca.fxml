@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefWidth="440.0" spacing="18.0"
+      stylesheets="@../styles/global.css"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ni.edu.uam.proyectofinalpae.controller.NuevaMarcaController">
+    <padding>
+        <Insets bottom="24.0" left="28.0" right="28.0" top="22.0" />
+    </padding>
+    <children>
+        <Label styleClass="titulo-vista" text="Nueva Marca" />
+
+        <VBox spacing="12.0" styleClass="seccion-card">
+            <padding>
+                <Insets bottom="18.0" left="18.0" right="18.0" top="18.0" />
+            </padding>
+            <children>
+                <Label styleClass="label-campo" text="Nombre de la marca *" />
+                <TextField fx:id="txtNombre" promptText="Ej. Sanrio, Bandai, Nintendo..." />
+                <Label fx:id="lblMensaje" style="-fx-text-fill: #B02A37; -fx-font-weight: bold;" wrapText="true" />
+            </children>
+        </VBox>
+
+        <HBox alignment="CENTER_RIGHT" spacing="12.0">
+            <children>
+                <Button fx:id="btnCancelar" mnemonicParsing="false" styleClass="btn-secundario" text="Cancelar" />
+                <Button fx:id="btnGuardar" mnemonicParsing="false" styleClass="btn-primario" text="Guardar Marca" />
+            </children>
+        </HBox>
+    </children>
+</VBox>

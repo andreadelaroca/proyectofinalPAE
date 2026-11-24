@@ -1,7 +1,10 @@
 package ni.edu.uam.proyectofinalpae.controller;
 
+import ni.edu.uam.proyectofinalpae.util.PestanaManager;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -11,7 +14,6 @@ import ni.edu.uam.proyectofinalpae.model.Marca;
 import ni.edu.uam.proyectofinalpae.model.Producto;
 import ni.edu.uam.proyectofinalpae.service.MarcaService;
 import ni.edu.uam.proyectofinalpae.service.ProductoService;
-import ni.edu.uam.proyectofinalpae.service.MarcaService;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -22,6 +24,7 @@ public class NuevoProductoController {
     @FXML private Label lblTitulo;
     @FXML private TextField txtCodigo;
     @FXML private ComboBox<Marca> cbMarca;
+    @FXML private Button btnNuevaMarca;
     @FXML private TextField txtNombre;
     @FXML private TextArea txtDescripcion;
     @FXML private TextField txtPrecio;
@@ -47,10 +50,14 @@ public class NuevoProductoController {
         txtCodigo.setText("Calculando...");
 
         configurarComboMarca();
-        cargarMarcasAsync();
+        cargarMarcasAsync(null);
         cargarSiguienteCodigoAsync();
 
         btnExaminar.setOnAction(e -> seleccionarImagen());
+        btnNuevaMarca.setOnAction(e -> abrirNuevaMarca());
+        // Recarga el catálogo al desplegar el combo: así aparecen las marcas
+        // registradas desde la pestaña "Marcas" mientras este formulario estaba abierto.
+        cbMarca.setOnShowing(e -> cargarMarcasAsync(cbMarca.getValue()));
         btnCancelar.setOnAction(e -> cerrarVentana());
         btnGuardar.setOnAction(e -> guardarProducto());
     }
@@ -69,7 +76,11 @@ public class NuevoProductoController {
         });
     }
 
-    private void cargarMarcasAsync() {
+    /**
+     * Carga las marcas desde la BD. Si {@code preferida} no es null se selecciona
+     * (por id); si no, se mantiene la del producto en edición o "BunBun" por defecto.
+     */
+    private void cargarMarcasAsync(Marca preferida) {
         Task<List<Marca>> tareaMarcas = new Task<>() {
             @Override
             protected List<Marca> call() {
@@ -81,7 +92,12 @@ public class NuevoProductoController {
             List<Marca> marcas = tareaMarcas.getValue();
             cbMarca.getItems().setAll(marcas);
 
-            if (productoEdicion != null && productoEdicion.getMarca() != null) {
+            if (preferida != null && preferida.getId() != null) {
+                marcas.stream()
+                        .filter(m -> preferida.getId().equals(m.getId()))
+                        .findFirst()
+                        .ifPresent(cbMarca::setValue);
+            } else if (productoEdicion != null && productoEdicion.getMarca() != null) {
                 Long idMarcaActual = productoEdicion.getMarca().getId();
                 marcas.stream()
                         .filter(m -> m.getId() != null && m.getId().equals(idMarcaActual))
@@ -104,6 +120,28 @@ public class NuevoProductoController {
         Thread hilo = new Thread(tareaMarcas);
         hilo.setDaemon(true);
         hilo.start();
+    }
+
+    /** Abre "Nueva marca" como pestaña y, al guardarla, la deja seleccionada en el combo. */
+    private void abrirNuevaMarca() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/ni/edu/uam/proyectofinalpae/fxml/nueva-marca.fxml"));
+            Parent root = loader.load();
+            NuevaMarcaController controller = loader.getController();
+
+            btnNuevaMarca.setDisable(true);
+            PestanaManager.abrir(root, "Nueva marca", btnNuevaMarca, () -> {
+                btnNuevaMarca.setDisable(false);
+                if (controller.isGuardadoExitoso() && controller.getMarcaCreada() != null) {
+                    cargarMarcasAsync(controller.getMarcaCreada());
+                }
+            });
+        } catch (Exception ex) {
+            btnNuevaMarca.setDisable(false);
+            lblMensaje.setText("No se pudo abrir el formulario de marca: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
     private void cargarSiguienteCodigoAsync() {
@@ -287,8 +325,7 @@ public class NuevoProductoController {
     }
 
     private void cerrarVentana() {
-        Stage stage = (Stage) btnCancelar.getScene().getWindow();
-        stage.close();
+        PestanaManager.cerrar(btnCancelar);
     }
 
     public Producto getProductoGuardado() {

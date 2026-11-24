@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+
 <VBox prefHeight="600.0" prefWidth="980.0" spacing="20.0"
       stylesheets="@../styles/global.css"
       xmlns="http://javafx.com/javafx/17"
@@ -12,7 +14,7 @@
     <children>
         <HBox alignment="CENTER_LEFT" spacing="12.0">
             <children>
-                <Label fx:id="lblTitulo" styleClass="titulo-vista" text="Nuevo Cliente" />
+                <Label fx:id="lblTitulo" styleClass="titulo-vista" text="Gestión de Clientes" />
                 <Region HBox.hgrow="ALWAYS" />
                 <TextField fx:id="txtBuscar" prefWidth="250.0" promptText="Buscar por nombre, usuario o correo..." />
                 <Button fx:id="btnRefrescar" mnemonicParsing="false" styleClass="btn-secundario" text="Refrescar" />

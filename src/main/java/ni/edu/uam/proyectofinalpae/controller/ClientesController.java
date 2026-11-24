@@ -1,5 +1,6 @@
 package ni.edu.uam.proyectofinalpae.controller;
 
+import ni.edu.uam.proyectofinalpae.util.PestanaManager;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -140,29 +141,27 @@ public class ClientesController {
                 controller.cargarClienteParaEditar(clienteAEditar);
             }
 
-            Stage modal = new Stage();
-            modal.setTitle(clienteAEditar == null ? "BunBun Hub - Nuevo Cliente" : "BunBun Hub - Editar Cliente");
-            modal.setScene(new Scene(root));
-            modal.initOwner(btnNuevoCliente.getScene().getWindow());
-            modal.initModality(Modality.WINDOW_MODAL);
-            modal.setResizable(false);
-            modal.showAndWait();
-
-            if (clienteAEditar == null && controller.getClienteCreado() != null) {
-                listaClientes.add(controller.getClienteCreado());
-            } else if (clienteAEditar != null && controller.isGuardadoExitoso()) {
-                tblClientes.refresh();
-            }
+            PestanaManager.abrir(root, clienteAEditar == null ? "Nuevo cliente" : "Editar cliente", btnNuevoCliente, () -> {
+                if (clienteAEditar == null && controller.getClienteCreado() != null) {
+                    listaClientes.add(controller.getClienteCreado());
+                } else if (clienteAEditar != null && controller.isGuardadoExitoso()) {
+                    tblClientes.refresh();
+                }
+                reactivarBotones();
+            });
         } catch (IOException e) {
             e.printStackTrace();
             Alert alerta = new Alert(Alert.AlertType.ERROR, "No se pudo abrir el formulario de cliente.");
             alerta.showAndWait();
-        } finally {
-            btnNuevoCliente.setDisable(false);
-            btnEditarCliente.disableProperty().bind(
-                    tblClientes.getSelectionModel().selectedItemProperty().isNull()
-            );
+            reactivarBotones();
         }
+    }
+
+    private void reactivarBotones() {
+        btnNuevoCliente.setDisable(false);
+        btnEditarCliente.disableProperty().bind(
+                tblClientes.getSelectionModel().selectedItemProperty().isNull()
+        );
     }
     private void verEnMapa() {
         Cliente cliente = tblClientes.getSelectionModel().getSelectedItem();
