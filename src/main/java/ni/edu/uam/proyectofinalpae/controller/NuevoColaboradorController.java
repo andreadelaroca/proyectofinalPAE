@@ -1,5 +1,6 @@
 package ni.edu.uam.proyectofinalpae.controller;
 
+import ni.edu.uam.proyectofinalpae.util.PestanaManager;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -146,6 +147,7 @@ public class NuevoColaboradorController {
                     return colaboradorService.actualizar(target);
                 } else {
                     colaboradorService.registrar(target, password);
+                    return target;
                 }
                 return target;
             }
@@ -182,7 +184,6 @@ public class NuevoColaboradorController {
     }
 
     private void cerrarVentana() {
-        Stage stage = (Stage) btnCancelar.getScene().getWindow();
-        stage.close();
+        PestanaManager.cerrar(btnCancelar);
     }
 }

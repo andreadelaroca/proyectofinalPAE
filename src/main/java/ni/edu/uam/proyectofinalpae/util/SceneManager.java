@@ -56,7 +56,10 @@ public final class SceneManager {
             FXMLLoader loader = new FXMLLoader(recurso);
             Parent root = loader.load();
 
-            Scene escena = new Scene(root, 900, 600);
+            // Respeta el tamaño preferido de la vista (p. ej. el panel admin con pestañas)
+            double ancho = Math.max(900, root.prefWidth(-1));
+            double alto = Math.max(600, root.prefHeight(-1));
+            Scene escena = new Scene(root, ancho, alto);
             aplicarEstilos(escena);
 
             if (rutaFxml.endsWith("/login.fxml")

@@ -1,5 +1,6 @@
 package ni.edu.uam.proyectofinalpae.controller;
 
+import ni.edu.uam.proyectofinalpae.util.PestanaManager;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -173,6 +174,7 @@ public class NuevoClienteController {
                     return clienteService.actualizar(target);
                 } else {
                     clienteService.registrar(target, password);
+                    return target;
                 }
                 return target;
             }
@@ -219,6 +221,10 @@ public class NuevoClienteController {
     }
 
     private void cerrarVentana() {
+        if (PestanaManager.estaEnPestana(btnCancelar)) {
+            PestanaManager.cerrar(btnCancelar);
+            return;
+        }
         Stage stage = (Stage) btnCancelar.getScene().getWindow();
         if (stage.getOwner() == null) {
             ni.edu.uam.proyectofinalpae.util.SceneManager.abrirVentana(

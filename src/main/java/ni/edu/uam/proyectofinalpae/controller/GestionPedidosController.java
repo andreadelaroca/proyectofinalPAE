@@ -1,5 +1,6 @@
 package ni.edu.uam.proyectofinalpae.controller;
 
+import ni.edu.uam.proyectofinalpae.util.PestanaManager;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -163,21 +164,15 @@ public class GestionPedidosController {
             );
             Parent root = loader.load();
 
-            Stage modal = new Stage();
-            modal.setTitle("BunBun Hub - Nuevo Pedido");
-            modal.setScene(new Scene(root));
-            modal.initOwner(btnNuevoPedido.getScene().getWindow());
-            modal.initModality(Modality.WINDOW_MODAL);
-            modal.setResizable(false);
-            modal.showAndWait();
-
-            cargarPedidos();
+            PestanaManager.abrir(root, "Nuevo pedido", btnNuevoPedido, () -> {
+                btnNuevoPedido.setDisable(false);
+                cargarPedidos();
+            });
         } catch (IOException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "No se pudo abrir la ventana de nuevo pedido.");
-            e.printStackTrace();
-        } finally {
             btnNuevoPedido.setDisable(false);
+            mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                    "No se pudo abrir el formulario de nuevo pedido.");
+            e.printStackTrace();
         }
     }
 

@@ -205,3 +205,94 @@
     -fx-opacity: 1.0;
     -fx-effect: dropshadow(three-pass-box, rgba(86, 124, 141, 0.45), 12, 0, 0, 4);
 }
+
+/* ==========================================================================
+   PANEL DE ADMINISTRACIÓN CON PESTAÑAS (main-admin.fxml)
+   ========================================================================== */
+
+.barra-superior {
+    -fx-background-color: #2F4156; /* Navy */
+    -fx-effect: dropshadow(three-pass-box, rgba(47, 65, 86, 0.25), 10, 0, 0, 2);
+}
+
+.barra-superior .titulo-barra {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.barra-superior .subtitulo-barra {
+    -fx-text-fill: #C8D9E6;
+    -fx-font-size: 13px;
+}
+
+.btn-barra {
+    -fx-background-color: transparent;
+    -fx-border-color: #C8D9E6;
+    -fx-text-fill: #FFFFFF;
+}
+
+.btn-barra:hover {
+    -fx-background-color: #567C8D; /* Teal */
+    -fx-border-color: #567C8D;
+}
+
+.tabs-admin {
+    -fx-background-color: #C8D9E6;
+    -fx-open-tab-animation: NONE;
+    -fx-close-tab-animation: NONE;
+}
+
+.tabs-admin > .tab-header-area {
+    -fx-padding: 10px 18px 0 18px;
+}
+
+.tabs-admin > .tab-header-area > .tab-header-background {
+    -fx-background-color: #C8D9E6;
+    -fx-border-color: transparent transparent #567C8D transparent;
+    -fx-border-width: 0 0 2px 0;
+}
+
+.tabs-admin > .tab-header-area > .headers-region > .tab {
+    -fx-background-color: #F5EFEB; /* Beige */
+    -fx-background-radius: 10px 10px 0 0;
+    -fx-padding: 6px 16px;
+    -fx-cursor: hand;
+}
+
+.tabs-admin > .tab-header-area > .headers-region > .tab:hover {
+    -fx-background-color: #E6DDD3;
+}
+
+.tabs-admin > .tab-header-area > .headers-region > .tab .tab-label {
+    -fx-text-fill: #2F4156;
+    -fx-font-weight: bold;
+}
+
+.tabs-admin > .tab-header-area > .headers-region > .tab:selected {
+    -fx-background-color: #2F4156; /* Navy */
+}
+
+.tabs-admin > .tab-header-area > .headers-region > .tab:selected .tab-label {
+    -fx-text-fill: #FFFFFF;
+}
+
+.tabs-admin > .tab-header-area > .headers-region > .tab:selected .tab-close-button {
+    -fx-background-color: #FFFFFF;
+}
+
+.tabs-admin > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
+    -fx-border-color: transparent;
+}
+
+.tabs-admin > .tab-content-area {
+    -fx-background-color: #C8D9E6;
+}
+
+/* Formularios abiertos como pestaña */
+.contenedor-pestana,
+.contenedor-pestana > .viewport {
+    -fx-background-color: #C8D9E6;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}

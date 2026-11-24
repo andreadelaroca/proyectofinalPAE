@@ -1,5 +1,6 @@
 package ni.edu.uam.proyectofinalpae.controller;
 
+import ni.edu.uam.proyectofinalpae.util.PestanaManager;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -163,34 +164,33 @@ public class ProductoController {
                 controller.cargarProductoParaEditar(productoAEditar);
             }
 
-            Stage modal = new Stage();
-            modal.setTitle(productoAEditar == null ? "BunBun Hub - Nuevo Producto" : "BunBun Hub - Editar Producto");
-            modal.setScene(new Scene(root));
-            modal.initOwner(btnNuevoProducto.getScene().getWindow());
-            modal.initModality(Modality.WINDOW_MODAL);
-            modal.setResizable(false);
-            modal.showAndWait();
-
-            if (productoAEditar == null && controller.getProductoGuardado() != null) {
-                Producto creado = controller.getProductoGuardado();
-                listaProductos.add(creado);
-                tblProductos.getSelectionModel().select(creado);
-            } else if (productoAEditar != null && controller.isGuardadoExitoso()) {
-                tblProductos.refresh();
-            }
+            PestanaManager.abrir(root, productoAEditar == null ? "Nuevo producto" : "Editar producto",
+                    btnNuevoProducto, () -> {
+                if (productoAEditar == null && controller.getProductoGuardado() != null) {
+                    Producto creado = controller.getProductoGuardado();
+                    listaProductos.add(creado);
+                    tblProductos.getSelectionModel().select(creado);
+                } else if (productoAEditar != null && controller.isGuardadoExitoso()) {
+                    tblProductos.refresh();
+                }
+                reactivarBotones();
+            });
         } catch (IOException e) {
+            reactivarBotones();
             Alert alerta = new Alert(Alert.AlertType.ERROR);
             alerta.setTitle("Error");
             alerta.setHeaderText(null);
             alerta.setContentText("No se pudo abrir el formulario de producto.");
             alerta.showAndWait();
             e.printStackTrace();
-        } finally {
-            btnNuevoProducto.setDisable(false);
-            btnEditarProducto.disableProperty().bind(
-                    tblProductos.getSelectionModel().selectedItemProperty().isNull()
-            );
         }
+    }
+
+    private void reactivarBotones() {
+        btnNuevoProducto.setDisable(false);
+        btnEditarProducto.disableProperty().bind(
+                tblProductos.getSelectionModel().selectedItemProperty().isNull()
+        );
     }
 
     private void configurarFiltro() {

@@ -1,10 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.VentaController" spacing="12" style="-fx-padding: 18;">
-    <Label text="Historial de ventas" style="-fx-font-size: 19px; -fx-font-weight: bold;" />
-    <HBox spacing="8"><TextField fx:id="txtBuscar" promptText="Buscar factura, cliente, colaborador o estado" HBox.hgrow="ALWAYS"/><Button fx:id="btnRefrescar" text="Actualizar"/><Button fx:id="btnNuevaVenta" text="Nueva venta"/><Button fx:id="btnAnular" text="Anular"/><Button fx:id="btnFactura" text="Factura PDF"/></HBox>
-    <TableView fx:id="tblVentas" VBox.vgrow="ALWAYS">
-        <columns><TableColumn fx:id="colNumeroFactura" text="Factura" prefWidth="105"/><TableColumn fx:id="colFecha" text="Fecha" prefWidth="115"/><TableColumn fx:id="colCliente" text="Cliente" prefWidth="130"/><TableColumn fx:id="colColaborador" text="Colaborador" prefWidth="130"/><TableColumn fx:id="colMetodoPago" text="Pago" prefWidth="100"/><TableColumn fx:id="colTotal" text="Total" prefWidth="90"/><TableColumn fx:id="colEstado" text="Estado" prefWidth="95"/></columns>
-    </TableView>
+
+<VBox prefHeight="600.0" prefWidth="980.0" spacing="20.0"
+      stylesheets="@../styles/global.css"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ni.edu.uam.proyectofinalpae.controller.VentaController">
+    <padding>
+        <Insets bottom="25.0" left="30.0" right="30.0" top="25.0" />
+    </padding>
+    <children>
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <children>
+                <Label styleClass="titulo-vista" text="Historial de Ventas" />
+                <Region HBox.hgrow="ALWAYS" />
+                <TextField fx:id="txtBuscar" prefWidth="260.0" promptText="Buscar factura, cliente, colaborador o estado..." />
+                <Button fx:id="btnRefrescar" mnemonicParsing="false" styleClass="btn-secundario" text="Refrescar" />
+                <Button fx:id="btnAnular" mnemonicParsing="false" styleClass="btn-secundario" text="Anular" />
+                <Button fx:id="btnFactura" mnemonicParsing="false" styleClass="btn-secundario" text="Factura PDF" />
+                <Button fx:id="btnNuevaVenta" mnemonicParsing="false" styleClass="btn-primario" text="Nueva Venta" />
+            </children>
+        </HBox>
+        <TableView fx:id="tblVentas" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colNumeroFactura" prefWidth="105.0" text="Factura" />
+                <TableColumn fx:id="colFecha" prefWidth="125.0" text="Fecha" />
+                <TableColumn fx:id="colCliente" prefWidth="150.0" text="Cliente" />
+                <TableColumn fx:id="colColaborador" prefWidth="150.0" text="Colaborador" />
+                <TableColumn fx:id="colMetodoPago" prefWidth="100.0" text="Pago" />
+                <TableColumn fx:id="colTotal" prefWidth="90.0" text="Total" />
+                <TableColumn fx:id="colEstado" prefWidth="95.0" text="Estado" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+    </children>
 </VBox>
