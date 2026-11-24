@@ -1,5 +1,6 @@
 package ni.edu.uam.proyectofinalpae.controller;
 
+import ni.edu.uam.proyectofinalpae.util.PestanaManager;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -309,8 +310,7 @@ public class NuevoPedidoController {
     }
 
     private void cerrarVentana() {
-        Stage stage = (Stage) btnCancelar.getScene().getWindow();
-        stage.close();
+        PestanaManager.cerrar(btnCancelar);
     }
 
     private void inicializarCampoCodigo() {

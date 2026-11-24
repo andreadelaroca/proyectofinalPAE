@@ -1,5 +1,6 @@
 package ni.edu.uam.proyectofinalpae.controller;
 
+import ni.edu.uam.proyectofinalpae.util.PestanaManager;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -69,5 +70,5 @@ public class NuevaVentaController {
             cerrar();
         } catch (Exception ex) { lblMensaje.setText("No se pudo registrar: " + ex.getMessage()); }
     }
-    private void cerrar() { ((Stage)btnCancelar.getScene().getWindow()).close(); }
+    private void cerrar() { PestanaManager.cerrar(btnCancelar); }
 }

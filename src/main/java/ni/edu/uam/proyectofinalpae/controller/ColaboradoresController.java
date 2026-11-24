@@ -1,5 +1,6 @@
 package ni.edu.uam.proyectofinalpae.controller;
 
+import ni.edu.uam.proyectofinalpae.util.PestanaManager;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -132,28 +133,27 @@ public class ColaboradoresController {
                 controller.cargarColaboradorParaEditar(colaboradorAEditar);
             }
 
-            Stage modal = new Stage();
-            modal.setTitle(colaboradorAEditar == null ? "BunBun Hub - Nuevo Colaborador" : "BunBun Hub - Editar Colaborador");
-            modal.setScene(new Scene(root));
-            modal.initOwner(btnNuevoColaborador.getScene().getWindow());
-            modal.initModality(Modality.WINDOW_MODAL);
-            modal.setResizable(false);
-            modal.showAndWait();
-
-            if (colaboradorAEditar == null && controller.getColaboradorCreado() != null) {
-                listaColaboradores.add(controller.getColaboradorCreado());
-            } else if (colaboradorAEditar != null && controller.isGuardadoExitoso()) {
-                tblColaboradores.refresh();
-            }
+            PestanaManager.abrir(root, colaboradorAEditar == null ? "Nuevo colaborador" : "Editar colaborador",
+                    btnNuevoColaborador, () -> {
+                if (colaboradorAEditar == null && controller.getColaboradorCreado() != null) {
+                    listaColaboradores.add(controller.getColaboradorCreado());
+                } else if (colaboradorAEditar != null && controller.isGuardadoExitoso()) {
+                    tblColaboradores.refresh();
+                }
+                reactivarBotones();
+            });
         } catch (IOException e) {
             e.printStackTrace();
             Alert alerta = new Alert(Alert.AlertType.ERROR, "No se pudo abrir el formulario de colaborador.");
             alerta.showAndWait();
-        } finally {
-            btnNuevoColaborador.setDisable(false);
-            btnEditarColaborador.disableProperty().bind(
-                    tblColaboradores.getSelectionModel().selectedItemProperty().isNull()
-            );
+            reactivarBotones();
         }
+    }
+
+    private void reactivarBotones() {
+        btnNuevoColaborador.setDisable(false);
+        btnEditarColaborador.disableProperty().bind(
+                tblColaboradores.getSelectionModel().selectedItemProperty().isNull()
+        );
     }
 }

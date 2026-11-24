@@ -1,5 +1,6 @@
 package ni.edu.uam.proyectofinalpae.controller;
 
+import ni.edu.uam.proyectofinalpae.util.PestanaManager;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -97,13 +98,11 @@ public class VentaController {
             if (url == null) throw new IOException("Falta nueva-venta-view.fxml");
             FXMLLoader loader = new FXMLLoader(url);
             Parent root = loader.load();
-            Stage ventana = new Stage();
-            ventana.setTitle("BunBun Hub - Nueva venta");
-            ventana.initOwner(btnNuevaVenta.getScene().getWindow());
-            ventana.initModality(Modality.WINDOW_MODAL);
-            ventana.setScene(new Scene(root, 700, 560));
-            ventana.showAndWait();
-            cargarVentas();
+            btnNuevaVenta.setDisable(true);
+            PestanaManager.abrir(root, "Nueva venta", btnNuevaVenta, () -> {
+                btnNuevaVenta.setDisable(false);
+                cargarVentas();
+            });
         } catch (Exception ex) { error("No se pudo abrir Nueva venta", ex); }
     }
     private void anularVenta() {
