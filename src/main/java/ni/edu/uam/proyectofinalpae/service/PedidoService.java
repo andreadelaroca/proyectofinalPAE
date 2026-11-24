@@ -39,9 +39,6 @@ public class PedidoService {
             cancelarPedido(idPedido);
             return;
         }
-        if (nuevoEstado == EstadoPedido.ENTREGADO) {
-            throw new NegocioException("Para marcar un pedido como entregado debe facturarlo desde el módulo de ventas.");
-        }
         Tx.exec("Error al actualizar el estado del pedido", s -> {
             Pedido p = s.get(Pedido.class, idPedido);
             if (p == null) throw new NegocioException("El pedido no existe.");
