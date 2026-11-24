@@ -66,9 +66,9 @@ public class ClienteHomeController {
 
     private void configurarTabla() {
         colNumero.setCellValueFactory(c -> new SimpleStringProperty(texto(c.getValue().getId())));
-        colFecha.setCellValueFactory(c -> new SimpleStringProperty(texto(c.getValue().getFecha())));
+        colFecha.setCellValueFactory(c -> new SimpleStringProperty(texto(c.getValue().getFechaPedido())));
         colEstado.setCellValueFactory(c -> new SimpleStringProperty(texto(c.getValue().getEstado())));
-        colTotal.setCellValueFactory(c -> new SimpleStringProperty(texto(c.getValue().getTotal())));
+        colTotal.setCellValueFactory(c -> new SimpleStringProperty(texto(c.getValue().getPrecioTotal())));
 
         listaFiltrada = new FilteredList<>(listaPedidos, p -> true);
         tblPedidos.setItems(listaFiltrada);
