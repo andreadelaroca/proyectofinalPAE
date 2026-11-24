@@ -1,6 +1,5 @@
 package ni.edu.uam.proyectofinalpae.controller;
 
-import ni.edu.uam.proyectofinalpae.util.PestanaManager;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -9,11 +8,11 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import ni.edu.uam.proyectofinalpae.model.*;
 import ni.edu.uam.proyectofinalpae.service.PedidoService;
 import ni.edu.uam.proyectofinalpae.service.ProductoService;
+import ni.edu.uam.proyectofinalpae.util.PestanaManager;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -217,8 +216,7 @@ public class NuevoPedidoController {
         if (existente != null) {
             existente.setCantidad(cantidadTotalSolicitada);
             existente.calcularSubtotal();
-            pedidoActual.agregarDetalle(existente);
-            pedidoActual.getDetalles().remove(pedidoActual.getDetalles().size() - 1);
+            pedidoActual.recalcularTotal();
             tblDetalles.refresh();
         } else {
             DetallePedido nuevoDetalle = new DetallePedido();
@@ -318,7 +316,6 @@ public class NuevoPedidoController {
         txtCodigoProducto.setTextFormatter(new TextFormatter<>(change -> {
             String nuevoTexto = change.getControlNewText();
 
-            // Si seleccionan todo y escriben solo números (ej. "002"), antepone "BUN-"
             if (nuevoTexto.matches("\\d+")) {
                 String completo = "BUN-" + nuevoTexto;
                 change.setRange(0, change.getControlText().length());
@@ -328,12 +325,10 @@ public class NuevoPedidoController {
                 return change;
             }
 
-            // Evita que se borre el prefijo "BUN-" con Backspace
             if (nuevoTexto.length() < 4 || !nuevoTexto.substring(0, 4).equalsIgnoreCase("BUN-")) {
                 return null;
             }
 
-            // Si pegan "BUN-002" teniendo ya "BUN-", limpia el duplicado
             if (nuevoTexto.toUpperCase().startsWith("BUN-BUN-")) {
                 String limpio = "BUN-" + nuevoTexto.substring(8).toUpperCase();
                 change.setRange(0, change.getControlText().length());

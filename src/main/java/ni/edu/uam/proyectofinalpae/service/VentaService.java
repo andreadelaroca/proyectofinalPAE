@@ -16,9 +16,8 @@ public class VentaService {
     private final GenericRepository<Venta, Long> repository = new GenericRepository<>(Venta.class);
 
     /**
-     * Registra la venta: valida, descuenta stock, calcula totales y asigna el número de factura.
-     * Si la venta viene de un pedido, el stock ya se descontó al crear el pedido, así que NO se
-     * vuelve a descontar; el pedido pasa a ENTREGADO.
+     * Registra una venta directa (o con pedido ya armado): valida, descuenta stock si no viene
+     * de pedido, calcula totales y asigna el número de factura.
      */
     public Venta registrarVenta(Venta venta) {
         return Tx.run("Error al registrar la venta", s -> {
@@ -31,25 +30,70 @@ public class VentaService {
                 Pedido pedido = s.get(Pedido.class, venta.getPedido().getId());
                 if (pedido == null) throw new NegocioException("El pedido no existe.");
                 if (pedido.getEstado() == EstadoPedido.CANCELADO) throw new NegocioException("El pedido está cancelado.");
+                if (pedido.getEstado() == EstadoPedido.ENTREGADO) throw new NegocioException("El pedido ya fue facturado y entregado.");
                 pedido.setEstado(EstadoPedido.ENTREGADO);
                 venta.setPedido(pedido);
             }
 
             venta.recalcularTotales();
-            venta.setNumeroFactura("TMP-" + UUID.randomUUID().toString().substring(0, 8)); // NOT NULL + unique
-            repository.save(s, venta);                                                     // ya tiene id
+            venta.setNumeroFactura("TMP-" + UUID.randomUUID().toString().substring(0, 8));
+            repository.save(s, venta);
             venta.setNumeroFactura(String.format("F-%06d", venta.getId()));
             return venta;
         });
     }
 
-    /** Anula la venta y, si descontó stock al venderse, lo devuelve. */
+    /**
+     * Convierte un pedido activo en una venta facturada respetando los precios congelados
+     * del pedido y sin volver a descontar el stock ya reservado.
+     */
+    public Venta facturarPedido(Long idPedido, Long idColaborador, MetodoPago metodoPago) {
+        return Tx.run("Error al facturar el pedido", s -> {
+            Pedido pedido = s.createQuery(
+                            "SELECT DISTINCT p FROM Pedido p JOIN FETCH p.cliente " +
+                                    "LEFT JOIN FETCH p.detalles d LEFT JOIN FETCH d.producto WHERE p.id = :id", Pedido.class)
+                    .setParameter("id", idPedido).uniqueResult();
+
+            if (pedido == null) throw new NegocioException("El pedido no existe.");
+            if (pedido.getEstado() == EstadoPedido.CANCELADO) throw new NegocioException("El pedido está cancelado.");
+            if (pedido.getEstado() == EstadoPedido.ENTREGADO) throw new NegocioException("Este pedido ya fue facturado y entregado.");
+
+            Colaborador colaborador = s.get(Colaborador.class, idColaborador);
+            if (colaborador == null) throw new NegocioException("El colaborador no existe.");
+
+            Venta venta = new Venta();
+            venta.setCliente(pedido.getCliente());
+            venta.setColaborador(colaborador);
+            venta.setMetodoPago(metodoPago);
+            venta.setPedido(pedido);
+
+            for (DetallePedido dp : pedido.getDetalles()) {
+                DetalleVenta dv = new DetalleVenta();
+                dv.setProducto(dp.getProducto());
+                dv.setCantidad(dp.getCantidad());
+                dv.setPrecioUnitario(dp.getPrecioUnitario());
+                venta.agregarDetalle(dv);
+            }
+
+            pedido.setEstado(EstadoPedido.ENTREGADO);
+            venta.recalcularTotales();
+            venta.setNumeroFactura("TMP-" + UUID.randomUUID().toString().substring(0, 8));
+            repository.save(s, venta);
+            venta.setNumeroFactura(String.format("F-%06d", venta.getId()));
+            return venta;
+        });
+    }
+
+    /** Anula la venta, devuelve el stock al inventario y cancela el pedido si estaba vinculada a uno. */
     public void anularVenta(Long idVenta) {
         Tx.exec("Error al anular la venta", s -> {
             Venta v = cargarCompleta(s, idVenta);
             if (v.getEstado() == EstadoVenta.ANULADA) throw new NegocioException("La venta ya está anulada.");
-            if (v.getPedido() == null) {
-                ProductoService.devolverStock(s, cantidadesPorProducto(v));
+
+            ProductoService.devolverStock(s, cantidadesPorProducto(v));
+
+            if (v.getPedido() != null) {
+                v.getPedido().setEstado(EstadoPedido.CANCELADO);
             }
             v.setEstado(EstadoVenta.ANULADA);
         });
