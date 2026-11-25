@@ -39,6 +39,7 @@
                 <Region HBox.hgrow="ALWAYS" />
                 <TextField fx:id="txtBuscar" prefWidth="250.0" promptText="Buscar por número o estado..." />
                 <Button fx:id="btnRefrescar" mnemonicParsing="false" onAction="#refrescar" styleClass="btn-secundario" text="Refrescar" />
+                <Button fx:id="btnReporte" mnemonicParsing="false" onAction="#verReporte" styleClass="btn-primario" text="Ver reporte" />
             </children>
         </HBox>
 

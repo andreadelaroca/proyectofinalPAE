@@ -18,6 +18,7 @@ import javafx.stage.Window;
 import ni.edu.uam.proyectofinalpae.model.EstadoVenta;
 import ni.edu.uam.proyectofinalpae.model.Venta;
 import ni.edu.uam.proyectofinalpae.report.ReporteService;
+import ni.edu.uam.proyectofinalpae.report.VistaPreviaReporte;
 import ni.edu.uam.proyectofinalpae.service.VentaService;
 
 import java.io.File;
@@ -67,7 +68,7 @@ public class VentaController {
         btnAnular.setOnAction(e -> anularVenta());
         btnFactura.setOnAction(e -> {
             Venta seleccionada = tblVentas.getSelectionModel().getSelectedItem();
-            if (seleccionada != null) exportarFactura(btnFactura.getScene().getWindow(), seleccionada.getId());
+            if (seleccionada != null) exportarFactura(btnFactura, seleccionada.getId());
         });
         cargarVentas();
     }
@@ -116,19 +117,11 @@ public class VentaController {
         try { ventaService.anularVenta(v.getId()); cargarVentas(); }
         catch (Exception ex) { error("No se pudo anular la venta", ex); }
     }
-    public static void exportarFactura(Window owner, Long idVenta) {
+    /** Genera la factura y abre su vista previa; desde ahí se descarga el PDF. */
+    public static void exportarFactura(Control origen, Long idVenta) {
         if (idVenta == null) return;
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Guardar factura PDF");
-        chooser.setInitialFileName("factura-" + idVenta + ".pdf");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Documento PDF", "*.pdf"));
-        File destino = chooser.showSaveDialog(owner);
-        if (destino == null) return;
-        try {
-            Venta completa = new VentaService().obtenerCompleta(idVenta);
-            Path pdf = new ReporteService().generarFactura(completa, destino.toPath());
-            new Alert(Alert.AlertType.INFORMATION, "Factura generada en: " + pdf.toAbsolutePath()).showAndWait();
-        } catch (Exception ex) { error("Error al generar factura", ex); }
+        VistaPreviaReporte.generarYMostrar(origen, "Factura", "factura-" + idVenta + ".pdf", () ->
+                new ReporteService().generarFactura(new VentaService().obtenerCompleta(idVenta)));
     }
     private static void error(String titulo, Exception ex) {
         new Alert(Alert.AlertType.ERROR, ex.getMessage() == null ? ex.toString() : ex.getMessage(), ButtonType.OK) {{
