@@ -61,6 +61,11 @@
                         <fx:include source="informes-view.fxml" />
                     </content>
                 </Tab>
+                <Tab closable="false" text="Tipo de cambio">
+                    <content>
+                        <fx:include source="tipo-cambio-view.fxml" />
+                    </content>
+                </Tab>
             </tabs>
         </TabPane>
     </center>
