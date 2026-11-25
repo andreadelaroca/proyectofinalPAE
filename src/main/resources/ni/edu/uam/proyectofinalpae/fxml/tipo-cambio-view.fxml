@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ni.edu.uam.proyectofinalpae.controller.TipoCambioController"
+      spacing="12" style="-fx-padding: 24;" stylesheets="@../styles/global.css">
+
+    <Label text="Consulta de Divisas y Conversor (REST API)" styleClass="titulo-vista"/>
+
+    <HBox spacing="12" alignment="CENTER_LEFT">
+        <VBox spacing="4">
+            <Label text="Moneda Base" styleClass="label-campo"/>
+            <ComboBox fx:id="cbMonedaBase" prefWidth="120"/>
+        </VBox>
+        <VBox spacing="4">
+            <Label text="Moneda Destino" styleClass="label-campo"/>
+            <ComboBox fx:id="cbMonedaDestino" prefWidth="120"/>
+        </VBox>
+        <VBox spacing="4">
+            <Label text="Monto a convertir ($)" styleClass="label-campo"/>
+            <TextField fx:id="txtMonto" prefWidth="140" promptText="Ej. 100.00"/>
+        </VBox>
+        <VBox spacing="4">
+            <Label text="Desde" styleClass="label-campo"/>
+            <DatePicker fx:id="dpDesde" prefWidth="140"/>
+        </VBox>
+        <VBox spacing="4">
+            <Label text="Hasta" styleClass="label-campo"/>
+            <DatePicker fx:id="dpHasta" prefWidth="140"/>
+        </VBox>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button fx:id="btnConsultarActual" text="Consultar Tasa Actual" styleClass="btn-primario"/>
+        <Button fx:id="btnConsultarHistorial" text="Consultar Historial (Rango)" styleClass="btn-secundario"/>
+        <ProgressIndicator fx:id="piCargando" prefWidth="24" prefHeight="24" visible="false"/>
+    </HBox>
+
+    <TableView fx:id="tblTasas" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colFecha" text="Fecha (date)" prefWidth="130"/>
+            <TableColumn fx:id="colBase" text="Base (base)" prefWidth="110"/>
+            <TableColumn fx:id="colDestino" text="Moneda (rates.key)" prefWidth="140"/>
+            <TableColumn fx:id="colTasa" text="Tipo Cambio (rates.value)" prefWidth="160"/>
+            <TableColumn fx:id="colConvertido" text="Monto Equivalente" prefWidth="160"/>
+        </columns>
+    </TableView>
+
+    <HBox alignment="CENTER_RIGHT">
+        <Button fx:id="btnCerrar" text="Cerrar" styleClass="btn-secundario"/>
+    </HBox>
+    <Label fx:id="lblResultadoActual" style="-fx-font-size: 7px; -fx-font-weight: bold;"/>
+    <Label fx:id="lblEstado" wrapText="true" style="-fx-text-fill: #a32121; -fx-font-size: 7px;"/>
+</VBox>
