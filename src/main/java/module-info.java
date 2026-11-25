@@ -21,6 +21,9 @@ module ni.edu.uam.proyectofinalpae {
     requires net.sf.jasperreports.fonts;
     requires org.apache.commons.logging;
     requires org.apache.commons.beanutils2;
+    requires com.fasterxml.jackson.annotation;
+    requires com.fasterxml.jackson.databind;
+    requires java.net.http;
 
     // Las filas del reporte se leen por reflexión (JRBeanCollectionDataSource / TableView)
     opens ni.edu.uam.proyectofinalpae.report;
@@ -31,4 +34,6 @@ module ni.edu.uam.proyectofinalpae {
     exports ni.edu.uam.proyectofinalpae.controller;
     opens ni.edu.uam.proyectofinalpae.controller to javafx.fxml;
     opens ni.edu.uam.proyectofinalpae.model;
+    exports ni.edu.uam.proyectofinalpae.model.dto;
+    opens ni.edu.uam.proyectofinalpae.model.dto to com.fasterxml.jackson.databind;
 }
