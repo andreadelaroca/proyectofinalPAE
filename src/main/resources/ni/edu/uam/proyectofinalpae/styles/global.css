@@ -350,3 +350,25 @@
 .text-area .text {
     -fx-fill: #2F4156;
 }
+
+
+/* ==========================================================================
+   VISTA PREVIA DE REPORTES (VistaPreviaReporte)
+   ========================================================================== */
+
+.barra-preview {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent transparent #B4C8D8 transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.fondo-preview,
+.fondo-preview > .viewport {
+    -fx-background-color: #9FB3C4;
+    -fx-background-insets: 0;
+}
+
+.hoja-preview {
+    -fx-background-color: #FFFFFF;
+    -fx-effect: dropshadow(three-pass-box, rgba(47, 65, 86, 0.35), 18, 0, 0, 6);
+}

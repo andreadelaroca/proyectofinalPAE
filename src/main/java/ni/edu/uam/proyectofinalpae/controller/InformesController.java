@@ -5,13 +5,10 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.FileChooser;
 import ni.edu.uam.proyectofinalpae.report.ReporteService;
+import ni.edu.uam.proyectofinalpae.report.VistaPreviaReporte;
 import ni.edu.uam.proyectofinalpae.report.ReporteService.FilaResumen;
 
-import java.awt.Desktop;
-import java.io.File;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -73,47 +70,13 @@ public class InformesController {
             return;
         }
 
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Guardar informe PDF");
-        chooser.setInitialFileName("informe_" + tipo.toLowerCase() + "_" + desde + "_" + hasta + ".pdf");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivo PDF", "*.pdf"));
-
-        File archivo = chooser.showSaveDialog(btnGenerarInforme.getScene().getWindow());
-        if (archivo == null) return;
-
-        btnGenerarInforme.setDisable(true);
-        Path destino = archivo.toPath();
-
-        Task<Path> task = new Task<>() {
-            @Override
-            protected Path call() throws Exception {
-                if ("Pedidos".equals(tipo)) {
-                    return reporteService.exportarPedidos(desde, hasta, destino);
-                } else {
-                    return reporteService.exportarVentas(desde, hasta, destino);
-                }
-            }
-        };
-
-        task.setOnSucceeded(e -> {
-            btnGenerarInforme.setDisable(false);
-            cargarResumen();
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Informe generado", "PDF guardado en:\n" + destino);
-            try {
-                if (Desktop.isDesktopSupported()) {
-                    Desktop.getDesktop().open(destino.toFile());
-                }
-            } catch (Exception ignored) {}
-        });
-
-        task.setOnFailed(e -> {
-            btnGenerarInforme.setDisable(false);
-            Throwable ex = task.getException();
-            if (ex != null) ex.printStackTrace();
-            mostrarAlerta(Alert.AlertType.ERROR, "Error al generar PDF", ex != null ? ex.getMessage() : "Error desconocido");
-        });
-
-        new Thread(task).start();
+        String archivo = "informe_" + tipo.toLowerCase() + "_" + desde + "_" + hasta + ".pdf";
+        // Primero la vista previa; el PDF se descarga desde ahí
+        VistaPreviaReporte.generarYMostrar(btnGenerarInforme, "Informe de " + tipo, archivo, () ->
+                "Pedidos".equals(tipo)
+                        ? reporteService.generarPedidos(desde, hasta)
+                        : reporteService.generarVentas(desde, hasta));
+        cargarResumen();
     }
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {

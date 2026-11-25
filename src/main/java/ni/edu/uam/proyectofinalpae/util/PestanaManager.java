@@ -47,6 +47,8 @@ public final class PestanaManager {
 
         ScrollPane scroll = new ScrollPane(contenido);
         scroll.setFitToWidth(true);
+        // Vistas con su propio scroll (p. ej. la vista previa de reportes) ocupan todo el alto
+        scroll.setFitToHeight(contenido.getStyleClass().contains("llenar-pestana"));
         scroll.getStyleClass().add("contenedor-pestana");
 
         Tab tab = new Tab(titulo, scroll);

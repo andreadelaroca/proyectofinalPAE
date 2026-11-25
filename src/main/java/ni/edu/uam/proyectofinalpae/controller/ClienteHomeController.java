@@ -16,6 +16,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import ni.edu.uam.proyectofinalpae.model.Cliente;
 import ni.edu.uam.proyectofinalpae.model.Pedido;
+import ni.edu.uam.proyectofinalpae.report.ReporteService;
+import ni.edu.uam.proyectofinalpae.report.VistaPreviaReporte;
 import ni.edu.uam.proyectofinalpae.service.PedidoService;
 import ni.edu.uam.proyectofinalpae.util.PestanaManager;
 import ni.edu.uam.proyectofinalpae.util.SceneManager;
@@ -33,6 +35,7 @@ public class ClienteHomeController {
     @FXML private Label lblTelefono;
     @FXML private TextField txtBuscar;
     @FXML private Button btnRefrescar;
+    @FXML private Button btnReporte;
     @FXML private Button btnEditarPerfil;
     @FXML private Button btnSalir;
 
@@ -43,6 +46,7 @@ public class ClienteHomeController {
     @FXML private TableColumn<Pedido, String> colTotal;
 
     private final PedidoService pedidoService = new PedidoService();
+    private final ReporteService reporteService = new ReporteService();
     private final ObservableList<Pedido> listaPedidos = FXCollections.observableArrayList();
     private FilteredList<Pedido> listaFiltrada;
 
@@ -151,6 +155,16 @@ public class ClienteHomeController {
     @FXML
     public void refrescar() {
         cargarPedidos();
+    }
+
+    /** Reporte JasperReports con SOLO los pedidos de este cliente: vista previa y descarga. */
+    @FXML
+    public void verReporte() {
+        if (cliente == null) return;
+        final Cliente actual = cliente;
+        VistaPreviaReporte.generarYMostrar(btnReporte, "Mis pedidos",
+                "mis-pedidos-" + texto(actual.getUsername()) + ".pdf",
+                () -> reporteService.generarPedidosCliente(actual));
     }
 
     @FXML

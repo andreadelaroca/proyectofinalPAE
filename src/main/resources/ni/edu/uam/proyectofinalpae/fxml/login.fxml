@@ -3,85 +3,49 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<ScrollPane xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ni.edu.uam.proyectofinalpae.controller.LoginController"
-            fitToWidth="true"
-            fitToHeight="true"
-            stylesheets="@../styles/global.css,@../styles/login.css">
+<ScrollPane fitToHeight="true" fitToWidth="true" stylesheets="@../styles/global.css,@../styles/login.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.proyectofinalpae.controller.LoginController">
 
     <content>
-        <HBox prefWidth="900" prefHeight="600">
+        <HBox prefHeight="600" prefWidth="900">
 
-            <VBox alignment="CENTER"
-                  spacing="20"
-                  prefWidth="360"
-                  styleClass="login-panel-izq">
+            <VBox alignment="CENTER" prefWidth="360" spacing="20" styleClass="login-panel-izq">
 
-                <Label text="BunBun Hub"
-                       styleClass="login-marca"/>
+                <Label styleClass="login-marca" text="BunBun Hub" />
 
-                <Label text="Bienvenido a BunBun Hub"
-                       styleClass="login-eslogan"/>
+                <Label styleClass="login-eslogan" text="Bienvenido a BunBun Hub" />
             </VBox>
 
-            <VBox alignment="CENTER"
-                  spacing="15"
-                  prefWidth="540"
-                  styleClass="login-panel-der">
+            <VBox alignment="CENTER" spacing="15" styleClass="login-panel-der" HBox.hgrow="ALWAYS">
 
-                <Label text="Iniciar sesión"
-                       styleClass="login-titulo"/>
+                <Label styleClass="login-titulo" text="Iniciar sesión" />
 
-                <TextField fx:id="txtUsuario"
-                           promptText="Usuario"
-                           maxWidth="340"
-                           styleClass="login-input"/>
+                <TextField fx:id="txtUsuario" maxWidth="340" promptText="Usuario" styleClass="login-input" />
 
-                <PasswordField fx:id="pwfPassword"
-                               promptText="Contraseña"
-                               maxWidth="340"
-                               styleClass="login-input"/>
+                <PasswordField fx:id="pwfPassword" maxWidth="340" promptText="Contraseña" styleClass="login-input" />
 
                 <HBox alignment="CENTER" spacing="12">
 
-                    <Button fx:id="btnIniciarSesion"
-                            text="Ingresar"
-                            styleClass="btn-primario"/>
+                    <Button fx:id="btnIniciarSesion" styleClass="btn-primario" text="Ingresar" />
 
-                    <Button fx:id="btnLimpiar"
-                            text="Limpiar"
-                            styleClass="btn-secundario"/>
+                    <Button fx:id="btnLimpiar" styleClass="btn-secundario" text="Limpiar" />
                 </HBox>
 
-                <Separator maxWidth="340"/>
+                <Separator maxWidth="340" />
 
-                <Label text="Verificación de correo"
-                       styleClass="subtitulo-seccion"/>
+                <Label styleClass="subtitulo-seccion" text="Verificación de correo" />
 
-                <TextField fx:id="txtCodigo"
-                           promptText="Código de 6 dígitos"
-                           maxWidth="340"
-                           styleClass="login-input"/>
+                <TextField fx:id="txtCodigo" maxWidth="340" promptText="Código de 6 dígitos" styleClass="login-input" />
 
                 <HBox alignment="CENTER" spacing="10">
 
-                    <Button text="Confirmar código"
-                            onAction="#verificarCorreo"
-                            styleClass="btn-primario"/>
+                    <Button onAction="#verificarCorreo" styleClass="btn-primario" text="Confirmar código" />
 
-                    <Button text="Reenviar código"
-                            onAction="#reenviarCodigo"
-                            styleClass="btn-secundario"/>
+                    <Button onAction="#reenviarCodigo" styleClass="btn-secundario" text="Reenviar código" />
                 </HBox>
 
-                <Button text="Registrarme"
-                        onAction="#abrirRegistro"
-                        styleClass="btn-secundario"/>
+                <Button onAction="#abrirRegistro" styleClass="btn-secundario" text="Registrarme" />
 
-                <Label fx:id="lblEstado"
-                       wrapText="true"
-                       maxWidth="340"
-                       styleClass="mensaje-error"/>
+                <Label fx:id="lblEstado" maxWidth="340" styleClass="mensaje-error" wrapText="true" />
             </VBox>
 
         </HBox>

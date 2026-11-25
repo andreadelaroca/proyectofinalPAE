@@ -25,7 +25,7 @@
                 <DatePicker fx:id="dpHasta" prefHeight="36.0" prefWidth="116.0" />
                 <Label styleClass="label-campo" text="Tipo:" />
                 <ComboBox fx:id="cbTipoInforme" prefHeight="44.0" prefWidth="177.0" promptText="Seleccione tipo" />
-                <Button fx:id="btnGenerarInforme" mnemonicParsing="false" styleClass="btn-primario" text="Generar Informe" />
+                <Button fx:id="btnGenerarInforme" mnemonicParsing="false" styleClass="btn-primario" text="Vista previa del informe" />
             </children>
         </HBox>
         <TableView fx:id="tblInformes" VBox.vgrow="ALWAYS">
